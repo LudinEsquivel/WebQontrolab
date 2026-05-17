@@ -10,8 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/experience.css">
+  <link rel="stylesheet" href="assets/css/polish.css">
 </head>
 <body>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="theme-flash" id="themeFlash" aria-hidden="true"></div>
   <div class="site-background"></div>
   <div class="grain"></div>
 
@@ -20,6 +23,7 @@
       <a class="brand" href="#top">Qontro<strong>lab</strong></a>
       <div class="nav__links">
         <a href="#beneficios">Beneficios</a>
+        <a href="#experiencia">Experiencia</a>
         <a href="#workflow">Flujo</a>
         <a href="#modulos">Módulos</a>
         <a href="#faq">Preguntas</a>
@@ -52,45 +56,17 @@
         <div class="product-stage">
           <div class="product-orbit product-orbit--one"></div>
           <div class="product-orbit product-orbit--two"></div>
-          <div class="floating-card floating-card--right motion-float">
-            <small>Estado operativo</small>
-            <strong>Resultados listos</strong>
-            <span>Validación y entrega profesional</span>
-          </div>
-          <div class="floating-card floating-card--left motion-float-slow">
-            <small>Synapse</small>
-            <strong>Equipos conectados</strong>
-            <span>Menos digitación manual</span>
-          </div>
+          <div class="floating-card floating-card--right motion-float"><small>Estado operativo</small><strong>Resultados listos</strong><span>Validación y entrega profesional</span></div>
+          <div class="floating-card floating-card--left motion-float-slow"><small>Synapse</small><strong>Equipos conectados</strong><span>Menos digitación manual</span></div>
 
           <div class="system-window">
-            <div class="browser-bar">
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-              <span class="browser-dot"></span>
-              <div class="browser-url">app.qontrolab.com</div>
-            </div>
+            <div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><div class="browser-url">app.qontrolab.com</div></div>
             <div class="app-mock">
-              <aside class="app-sidebar" id="moduleSidebar">
-                <b>Qontro<strong>lab</strong></b>
-              </aside>
+              <aside class="app-sidebar" id="moduleSidebar"><b>Qontro<strong>lab</strong></b></aside>
               <section class="app-content">
-                <div class="app-top">
-                  <div>
-                    <small id="moduleLabel">Dashboard</small>
-                    <h3 id="mockTitle">Órdenes recientes</h3>
-                  </div>
-                  <span class="live">En vivo</span>
-                </div>
-                <div class="kpis">
-                  <div class="kpi"><b>24</b><span>Órdenes</span></div>
-                  <div class="kpi"><b>7</b><span>Pendientes</span></div>
-                  <div class="kpi"><b>142</b><span>Pacientes/mes</span></div>
-                </div>
-                <div class="preview" id="mockPreview">
-                  <div class="rows" id="mockRows"></div>
-                  <div class="note" id="mockNote"></div>
-                </div>
+                <div class="app-top"><div><small id="moduleLabel">Dashboard</small><h3 id="mockTitle">Órdenes recientes</h3></div><span class="live">En vivo</span></div>
+                <div class="kpis"><div class="kpi"><b>24</b><span>Órdenes</span></div><div class="kpi"><b>7</b><span>Pendientes</span></div><div class="kpi"><b>142</b><span>Pacientes/mes</span></div></div>
+                <div class="preview" id="mockPreview"><div class="rows" id="mockRows"></div><div class="note" id="mockNote"></div></div>
               </section>
             </div>
           </div>
@@ -100,65 +76,44 @@
 
     <section class="section" id="beneficios">
       <div class="section-head section-head--split reveal">
-        <div>
-          <span class="eyebrow">Beneficios</span>
-          <h2>Diseñado para resolver el desorden operativo del laboratorio.</h2>
-        </div>
+        <div><span class="eyebrow">Beneficios</span><h2>Diseñado para resolver el desorden operativo del laboratorio.</h2></div>
         <p>La propuesta no es solo digitalizar formularios: es conectar recepción, laboratorio, caja, resultados, inventario y administración en una operación más clara.</p>
       </div>
       <div class="bento-grid">
-        <article class="bento-card bento-card--large reveal">
-          <span class="bento-number">01</span>
-          <h3>Menos pasos manuales, más seguimiento.</h3>
-          <p>Desde que el paciente entra hasta que recibe su resultado, Qontrolab mantiene cada estado visible para que el equipo sepa qué sigue y qué está pendiente.</p>
-        </article>
-        <article class="bento-card reveal">
-          <span class="bento-number">02</span>
-          <h3>Resultados con presentación profesional.</h3>
-          <p>Entrega PDFs claros, consistentes y alineados a la imagen del laboratorio.</p>
-        </article>
-        <article class="bento-card reveal">
-          <span class="bento-number">03</span>
-          <h3>Administración con datos reales.</h3>
-          <p>Ingresos, órdenes, médicos, inventario y actividad general en reportes útiles.</p>
-        </article>
-        <article class="bento-card bento-card--wide reveal">
-          <span class="bento-number">04</span>
-          <h3>Conexión con equipos mediante Synapse.</h3>
-          <p>Reduce digitación manual y mejora el flujo de resultados desde analizadores compatibles por ASTM, HL7 o archivos planos.</p>
-        </article>
+        <article class="bento-card bento-card--large reveal"><span class="bento-number">01</span><h3>Menos pasos manuales, más seguimiento.</h3><p>Desde que el paciente entra hasta que recibe su resultado, Qontrolab mantiene cada estado visible para que el equipo sepa qué sigue y qué está pendiente.</p></article>
+        <article class="bento-card reveal"><span class="bento-number">02</span><h3>Resultados con presentación profesional.</h3><p>Entrega PDFs claros, consistentes y alineados a la imagen del laboratorio.</p></article>
+        <article class="bento-card reveal"><span class="bento-number">03</span><h3>Administración con datos reales.</h3><p>Ingresos, órdenes, médicos, inventario y actividad general en reportes útiles.</p></article>
+        <article class="bento-card bento-card--wide reveal"><span class="bento-number">04</span><h3>Conexión con equipos mediante Synapse.</h3><p>Reduce digitación manual y mejora el flujo de resultados desde analizadores compatibles por ASTM, HL7 o archivos planos.</p></article>
+      </div>
+    </section>
+
+    <section class="experience-section section--panel" id="experiencia">
+      <div class="container-like experience-grid">
+        <div class="experience-copy reveal">
+          <span class="eyebrow">Experiencia Qontrolab</span>
+          <h2>Más que una lista de módulos: una operación visualmente conectada.</h2>
+          <p>El sistema se entiende como un circuito clínico: recepción, muestra, resultado, caja, inventario y gerencia conversan entre sí para reducir fricción operativa.</p>
+          <div class="experience-tags"><span>Recepción</span><span>Laboratorio</span><span>Caja</span><span>Gerencia</span></div>
+        </div>
+        <div class="operation-visual reveal" aria-hidden="true">
+          <div class="operation-card operation-card--main"><small>Flujo activo</small><strong>Orden OT-2026-0847</strong><div class="operation-steps"><span class="done">Paciente</span><span class="done">Muestra</span><span class="active">Resultado</span><span>PDF</span></div></div>
+          <div class="operation-node node-a">Caja</div><div class="operation-node node-b">Synapse</div><div class="operation-node node-c">Inventario</div><div class="operation-pulse"></div>
+        </div>
       </div>
     </section>
 
     <section class="section section--panel" id="workflow">
-      <div class="section-head reveal">
-        <span class="eyebrow">Flujo de trabajo</span>
-        <h2>De la recepción al resultado final, todo conectado.</h2>
-        <p>Qontrolab organiza el proceso completo para que el laboratorio trabaje con trazabilidad y menos dependencia de hojas sueltas o procesos aislados.</p>
-      </div>
-      <div class="workflow">
-        <article class="workflow-card reveal"><span>01</span><h3>Ingreso del paciente</h3><p>Registro, cita o cotización inicial.</p></article>
-        <article class="workflow-card reveal"><span>02</span><h3>Orden y muestra</h3><p>Exámenes, pago, estado y seguimiento.</p></article>
-        <article class="workflow-card reveal"><span>03</span><h3>Resultado validado</h3><p>Captura, revisión y PDF profesional.</p></article>
-        <article class="workflow-card reveal"><span>04</span><h3>Reportes y control</h3><p>Administración, caja, inventario y médicos.</p></article>
-      </div>
+      <div class="section-head reveal"><span class="eyebrow">Flujo de trabajo</span><h2>De la recepción al resultado final, todo conectado.</h2><p>Qontrolab organiza el proceso completo para que el laboratorio trabaje con trazabilidad y menos dependencia de hojas sueltas o procesos aislados.</p></div>
+      <div class="workflow"><article class="workflow-card reveal"><span>01</span><h3>Ingreso del paciente</h3><p>Registro, cita o cotización inicial.</p></article><article class="workflow-card reveal"><span>02</span><h3>Orden y muestra</h3><p>Exámenes, pago, estado y seguimiento.</p></article><article class="workflow-card reveal"><span>03</span><h3>Resultado validado</h3><p>Captura, revisión y PDF profesional.</p></article><article class="workflow-card reveal"><span>04</span><h3>Reportes y control</h3><p>Administración, caja, inventario y médicos.</p></article></div>
     </section>
 
     <section class="section" id="modulos">
-      <div class="section-head reveal">
-        <span class="eyebrow">Módulos principales</span>
-        <h2>Todo lo que necesita tu laboratorio en un solo lugar.</h2>
-        <p>Las tarjetas resumen cada área. Presiona “Ver detalle” para conocer cómo cada módulo ayuda a resolver problemas reales del día a día.</p>
-      </div>
+      <div class="section-head reveal"><span class="eyebrow">Módulos principales</span><h2>Todo lo que necesita tu laboratorio en un solo lugar.</h2><p>Las tarjetas resumen cada área. Presiona “Ver detalle” para conocer cómo cada módulo ayuda a resolver problemas reales del día a día.</p></div>
       <div class="modules-grid" id="moduleGrid"></div>
     </section>
 
     <section class="section section--panel" id="faq">
-      <div class="section-head reveal">
-        <span class="eyebrow">Preguntas frecuentes</span>
-        <h2>Dudas comunes antes de implementar Qontrolab.</h2>
-        <p>Estas respuestas ayudan a entender cómo puede adaptarse Qontrolab a la operación real de un laboratorio, sanatorio, clínica médica o centro de diagnóstico.</p>
-      </div>
+      <div class="section-head reveal"><span class="eyebrow">Preguntas frecuentes</span><h2>Dudas comunes antes de implementar Qontrolab.</h2><p>Estas respuestas ayudan a entender cómo puede adaptarse Qontrolab a la operación real de un laboratorio, sanatorio, clínica médica o centro de diagnóstico.</p></div>
       <div class="faq-grid">
         <article class="faq-card reveal"><h3>¿Qontrolab sirve solo para laboratorios clínicos?</h3><p>No. Está pensado para laboratorios clínicos, sanatorios, clínicas médicas y centros de diagnóstico que necesitan ordenar pacientes, órdenes, resultados, pagos y reportes.</p></article>
         <article class="faq-card reveal"><h3>¿Necesito instalar algo en cada computadora?</h3><p>No. Qontrolab funciona como plataforma web, por lo que puede utilizarse desde navegador en computadoras, tablets o celulares autorizados.</p></article>
@@ -169,50 +124,16 @@
       </div>
     </section>
 
-    <section class="cta reveal" id="contacto">
-      <div>
-        <span class="eyebrow">Demo gratuita</span>
-        <h2>Moderniza la operación sin perder el control del laboratorio.</h2>
-        <p>Solicita una demostración y conoce cómo Qontrolab puede ayudarte a mejorar la entrega de resultados, ordenar tus procesos y administrar con mayor claridad.</p>
-      </div>
-      <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Hablar por WhatsApp</a>
-    </section>
+    <section class="cta reveal" id="contacto"><div><span class="eyebrow">Demo gratuita</span><h2>Moderniza la operación sin perder el control del laboratorio.</h2><p>Solicita una demostración y conoce cómo Qontrolab puede ayudarte a mejorar la entrega de resultados, ordenar tus procesos y administrar con mayor claridad.</p></div><a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Hablar por WhatsApp</a></section>
   </main>
 
-  <footer>
-    <b>Qontrolab</b>
-    <span>Sistema de Gestión de Laboratorio · © 2026</span>
-  </footer>
+  <footer><b>Qontrolab</b><span>Sistema de Gestión de Laboratorio · © 2026</span></footer>
 
   <div class="module-modal" id="moduleModal">
     <div class="module-modal__panel">
       <button class="module-modal__close" id="modalClose" type="button">×</button>
-      <div class="module-modal__visual">
-        <div class="module-orb module-orb--one"></div>
-        <div class="module-orb module-orb--two"></div>
-        <div class="mini-system-card">
-          <div class="mini-system-card__bar"><span></span><span></span><span></span></div>
-          <div class="mini-system-card__body">
-            <small id="modalMiniLabel">Módulo</small>
-            <strong id="modalVisualTitle">Dashboard</strong>
-            <div class="mini-system-flow">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-        </div>
-        <div class="module-chip module-chip--top" id="modalChipTop">Operación ordenada</div>
-        <div class="module-chip module-chip--bottom" id="modalChipBottom">Menos trabajo manual</div>
-      </div>
-      <div class="module-modal__content">
-        <span class="eyebrow">Detalle del módulo</span>
-        <h3 id="modalTitle"></h3>
-        <p id="modalText"></p>
-        <div class="module-modal__grid">
-          <article><span>01</span><strong>Ordena</strong><p id="modalBenefitOne">Información centralizada para el equipo.</p></article>
-          <article><span>02</span><strong>Reduce</strong><p id="modalBenefitTwo">Menos pasos manuales y menos errores.</p></article>
-          <article><span>03</span><strong>Mejora</strong><p id="modalBenefitThree">Seguimiento claro para la operación diaria.</p></article>
-        </div>
-      </div>
+      <div class="module-modal__visual"><div class="module-orb module-orb--one"></div><div class="module-orb module-orb--two"></div><div class="mini-system-card"><div class="mini-system-card__bar"><span></span><span></span><span></span></div><div class="mini-system-card__body"><small id="modalMiniLabel">Módulo</small><strong id="modalVisualTitle">Dashboard</strong><div class="mini-system-flow"><span></span><span></span><span></span></div></div></div><div class="module-chip module-chip--top" id="modalChipTop">Operación ordenada</div><div class="module-chip module-chip--bottom" id="modalChipBottom">Menos trabajo manual</div></div>
+      <div class="module-modal__content"><span class="eyebrow">Detalle del módulo</span><h3 id="modalTitle"></h3><p id="modalText"></p><div class="module-modal__grid"><article><span>01</span><strong>Ordena</strong><p id="modalBenefitOne">Información centralizada para el equipo.</p></article><article><span>02</span><strong>Reduce</strong><p id="modalBenefitTwo">Menos pasos manuales y menos errores.</p></article><article><span>03</span><strong>Mejora</strong><p id="modalBenefitThree">Seguimiento claro para la operación diaria.</p></article></div></div>
     </div>
   </div>
 
