@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="assets/css/experience.css">
   <link rel="stylesheet" href="assets/css/polish.css">
   <link rel="stylesheet" href="assets/css/mobile.css">
+  <link rel="stylesheet" href="assets/css/module-illustrations.css">
 </head>
 <body>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
@@ -62,8 +63,8 @@
             <div class="app-mock">
               <aside class="app-sidebar" id="moduleSidebar"><b>Qontro<strong>lab</strong></b></aside>
               <section class="app-content">
-                <div class="app-top"><div><small id="moduleLabel">Dashboard</small><h3 id="mockTitle">Órdenes recientes</h3></div><span class="live">En vivo</span></div>
-                <div class="kpis"><div class="kpi"><b>24</b><span>Órdenes</span></div><div class="kpi"><b>7</b><span>Pendientes</span></div><div class="kpi"><b>142</b><span>Pacientes/mes</span></div></div>
+                <div class="app-top"><div><small id="moduleLabel">Dashboard</small><h3 id="mockTitle">Órdenes recientes</h3></div><span class="live" id="mockStatus">En vivo</span></div>
+                <div class="kpis"><div class="kpi"><b id="mockKpiOne">24</b><span id="mockKpiOneLabel">Órdenes</span></div><div class="kpi"><b id="mockKpiTwo">7</b><span id="mockKpiTwoLabel">Pendientes</span></div><div class="kpi"><b id="mockKpiThree">142</b><span id="mockKpiThreeLabel">Pacientes/mes</span></div></div>
                 <div class="preview" id="mockPreview"><div class="rows" id="mockRows"></div><div class="note" id="mockNote"></div></div>
               </section>
             </div>
@@ -87,10 +88,7 @@
 
   <footer><b>Qontrolab</b><span>Sistema de Gestión de Laboratorio · © 2026</span></footer>
 
-  <nav class="mobile-quick-actions" aria-label="Acciones rápidas">
-    <a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Demo</a>
-    <a href="#modulos">Módulos</a>
-  </nav>
+  <nav class="mobile-quick-actions" aria-label="Acciones rápidas"><a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Demo</a><a href="#modulos">Módulos</a></nav>
 
   <div class="module-modal" id="moduleModal"><div class="module-modal__panel"><button class="module-modal__close" id="modalClose" type="button">×</button><div class="module-modal__visual"><div class="module-orb module-orb--one"></div><div class="module-orb module-orb--two"></div><div class="mini-system-card"><div class="mini-system-card__bar"><span></span><span></span><span></span></div><div class="mini-system-card__body"><small id="modalMiniLabel">Módulo</small><strong id="modalVisualTitle">Dashboard</strong><div class="mini-system-flow" id="modalFlowRows"></div></div></div></div><div class="module-modal__content"><span class="eyebrow">Detalle del módulo</span><h3 id="modalTitle"></h3><p id="modalText"></p><div class="module-modal__grid"><article><span>01</span><strong>Ordena</strong><p id="modalBenefitOne">Información centralizada para el equipo.</p></article><article><span>02</span><strong>Reduce</strong><p id="modalBenefitTwo">Menos pasos manuales y menos errores.</p></article><article><span>03</span><strong>Mejora</strong><p id="modalBenefitThree">Seguimiento claro para la operación diaria.</p></article></div></div></div></div>
 
