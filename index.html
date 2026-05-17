@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/experience.css">
 </head>
 <body>
   <div class="site-background"></div>
@@ -97,13 +98,6 @@
       </div>
     </section>
 
-    <section class="impact-strip reveal">
-      <article><b>+5,000</b><span>órdenes mensuales sin perder control</span></article>
-      <article><b>24/7</b><span>soporte para acompañar tu operación</span></article>
-      <article><b>Web</b><span>sin instalaciones en cada equipo</span></article>
-      <article><b>Multi-sede</b><span>control para una o varias sucursales</span></article>
-    </section>
-
     <section class="section" id="beneficios">
       <div class="section-head section-head--split reveal">
         <div>
@@ -190,16 +184,34 @@
     <span>Sistema de Gestión de Laboratorio · © 2026</span>
   </footer>
 
-  <div class="modal" id="moduleModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <button class="close" id="modalClose" type="button">×</button>
+  <div class="module-modal" id="moduleModal">
+    <div class="module-modal__panel">
+      <button class="module-modal__close" id="modalClose" type="button">×</button>
+      <div class="module-modal__visual">
+        <div class="module-orb module-orb--one"></div>
+        <div class="module-orb module-orb--two"></div>
+        <div class="mini-system-card">
+          <div class="mini-system-card__bar"><span></span><span></span><span></span></div>
+          <div class="mini-system-card__body">
+            <small id="modalMiniLabel">Módulo</small>
+            <strong id="modalVisualTitle">Dashboard</strong>
+            <div class="mini-system-flow">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+        <div class="module-chip module-chip--top" id="modalChipTop">Operación ordenada</div>
+        <div class="module-chip module-chip--bottom" id="modalChipBottom">Menos trabajo manual</div>
+      </div>
+      <div class="module-modal__content">
+        <span class="eyebrow">Detalle del módulo</span>
         <h3 id="modalTitle"></h3>
         <p id="modalText"></p>
-      </div>
-      <div class="modal-body">
-        <h4>Qué resuelve</h4>
-        <ul id="modalBullets"></ul>
+        <div class="module-modal__grid">
+          <article><span>01</span><strong>Ordena</strong><p id="modalBenefitOne">Información centralizada para el equipo.</p></article>
+          <article><span>02</span><strong>Reduce</strong><p id="modalBenefitTwo">Menos pasos manuales y menos errores.</p></article>
+          <article><span>03</span><strong>Mejora</strong><p id="modalBenefitThree">Seguimiento claro para la operación diaria.</p></article>
+        </div>
       </div>
     </div>
   </div>
