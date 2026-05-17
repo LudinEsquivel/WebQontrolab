@@ -43,38 +43,30 @@ const modalBenefits = {
 };
 
 const state = { activeModule: 0 };
-
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
 function setActiveModule(index) {
   state.activeModule = index;
   const module = modules[index];
-
   $('#moduleLabel').textContent = module[0];
   $('#mockTitle').textContent = index === 0 ? 'Órdenes recientes' : 'Vista del módulo';
   $('#mockNote').textContent = module[1];
-
   $('#mockRows').innerHTML = rows.map((row, rowIndex) => `
     <div class="row is-entering" style="animation-delay:${rowIndex * 65}ms">
-      <span>${row[0]}</span>
-      <strong>${row[1]}</strong>
-      <em>${row[2]}</em>
+      <span>${row[0]}</span><strong>${row[1]}</strong><em>${row[2]}</em>
     </div>
   `).join('');
-
   const preview = $('#mockPreview');
   preview.classList.remove('is-changing');
   void preview.offsetWidth;
   preview.classList.add('is-changing');
-
   renderSidebar();
 }
 
 function renderSidebar() {
   const sidebar = $('#moduleSidebar');
   sidebar.querySelectorAll('button').forEach((button) => button.remove());
-
   modules.forEach((module, index) => {
     const button = document.createElement('button');
     button.textContent = module[0];
@@ -93,20 +85,12 @@ function renderModuleCards() {
       <button type="button">Ver detalle →</button>
     </article>
   `).join('');
-
-  $$('.module-card').forEach((card) => {
-    card.addEventListener('click', () => openModal(Number(card.dataset.moduleIndex)));
-  });
+  $$('.module-card').forEach((card) => card.addEventListener('click', () => openModal(Number(card.dataset.moduleIndex))));
 }
 
 function openModal(index) {
   const module = modules[index];
-  const benefits = modalBenefits[module[0]] || [
-    'Información centralizada para el equipo.',
-    'Menos pasos manuales y menos errores.',
-    'Seguimiento claro para la operación diaria.'
-  ];
-
+  const benefits = modalBenefits[module[0]] || ['Información centralizada para el equipo.', 'Menos pasos manuales y menos errores.', 'Seguimiento claro para la operación diaria.'];
   $('#modalTitle').textContent = module[0];
   $('#modalText').textContent = module[2];
   $('#modalMiniLabel').textContent = `Módulo ${String(index + 1).padStart(2, '0')}`;
@@ -116,7 +100,6 @@ function openModal(index) {
   $('#modalBenefitOne').textContent = benefits[0];
   $('#modalBenefitTwo').textContent = benefits[1];
   $('#modalBenefitThree').textContent = benefits[2];
-
   $('#moduleModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -126,16 +109,26 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
+function splitKineticTitles() {
+  $$('.hero h1, .section-head h2, .experience-copy h2, .cta h2').forEach((title) => {
+    if (title.dataset.kinetic === 'true') return;
+    const text = title.textContent.replace(/\s+/g, ' ').trim();
+    title.dataset.kinetic = 'true';
+    title.innerHTML = text.split(' ').map((word, index) => `<span class="kinetic-word" style="--w:${index}">${word}</span>`).join(' ');
+    requestAnimationFrame(() => title.classList.add('kinetic-ready'));
+  });
+}
+
 function initReveal() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
+        entry.target.querySelectorAll('.kinetic-word').forEach((word) => word.classList.add('is-visible'));
         observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
-
   $$('.reveal').forEach((element, index) => {
     element.style.transitionDelay = `${Math.min(index * 35, 180)}ms`;
     observer.observe(element);
@@ -144,15 +137,35 @@ function initReveal() {
 
 function initTheme() {
   $('#themeToggle').addEventListener('click', () => {
+    const flash = $('#themeFlash');
+    if (flash) {
+      flash.classList.remove('run');
+      void flash.offsetWidth;
+      flash.classList.add('run');
+    }
     const root = document.documentElement;
     root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
   });
 }
 
-function initNavigation() {
-  window.addEventListener('scroll', () => {
-    $('#nav').classList.toggle('is-scrolled', window.scrollY > 30);
+function updateScrollExperience() {
+  const nav = $('#nav');
+  const y = window.scrollY;
+  const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  nav.classList.toggle('is-scrolled', y > 30);
+  const progress = $('#scrollProgress');
+  if (progress) progress.style.transform = `scaleX(${Math.min(1, y / max)})`;
+  $$('.nav__links a').forEach((link) => {
+    const section = document.querySelector(link.getAttribute('href'));
+    if (!section) return;
+    const active = y + 120 >= section.offsetTop && y + 120 < section.offsetTop + section.offsetHeight;
+    link.classList.toggle('is-active', active);
   });
+}
+
+function initNavigation() {
+  window.addEventListener('scroll', updateScrollExperience, { passive: true });
+  updateScrollExperience();
 }
 
 function initModal() {
@@ -167,6 +180,7 @@ function initModal() {
 
 renderModuleCards();
 setActiveModule(0);
+splitKineticTitles();
 initReveal();
 initTheme();
 initNavigation();
