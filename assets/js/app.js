@@ -23,6 +23,25 @@ const rows = [
   ['OT-2026-00845','Valeria Morales','En proceso']
 ];
 
+const modalBenefits = {
+  Dashboard: ['Visión rápida para gerencia y administración.', 'Evita revisar reportes separados para saber qué ocurre.', 'Prioriza pendientes y decisiones del día.'],
+  Pacientes: ['Historial ordenado por paciente.', 'Reduce duplicados y búsquedas manuales.', 'Permite seguimiento más rápido en recepción.'],
+  'Citas y Agenda': ['Organiza horarios y carga diaria.', 'Reduce confusiones en recepción.', 'Convierte citas en órdenes sin repetir trabajo.'],
+  'Órdenes de Trabajo': ['Centraliza el proceso clínico.', 'Reduce pérdidas de información entre áreas.', 'Mejora trazabilidad desde ingreso hasta entrega.'],
+  Resultados: ['Entrega PDFs consistentes y profesionales.', 'Reduce errores de captura y validación.', 'Mejora la presentación frente a pacientes y médicos.'],
+  'Catálogo de Exámenes': ['Estandariza exámenes, perfiles y precios.', 'Agiliza cotizaciones y órdenes.', 'Evita diferencias internas en nombres o valores.'],
+  'Caja y Pagos': ['Controla pagos, saldos y cortes.', 'Reduce dudas sobre ingresos reales.', 'Mejora la administración diaria.'],
+  Inventario: ['Controla reactivos e insumos críticos.', 'Reduce pérdidas por vencimiento.', 'Ayuda a prevenir faltantes operativos.'],
+  'Médicos y Comisiones': ['Ordena referencias médicas.', 'Facilita cálculo de comisiones.', 'Mide relaciones comerciales con claridad.'],
+  Cotizaciones: ['Crea propuestas profesionales.', 'Evita reingresar información al vender.', 'Mejora atención a empresas e instituciones.'],
+  'Bitácora Diaria': ['Registra evidencia de turno.', 'Ordena controles internos.', 'Mejora disciplina operativa y calidad.'],
+  Reportes: ['Convierte operación en datos claros.', 'Apoya decisiones administrativas.', 'Facilita revisión de ingresos y productividad.'],
+  Synapse: ['Reduce digitación manual.', 'Mejora flujo desde analizadores.', 'Disminuye errores por transcripción.'],
+  'Portal Médico': ['Mejora comunicación con referentes.', 'Reduce consultas administrativas repetitivas.', 'Da seguimiento externo más ordenado.'],
+  'Multi-sucursal': ['Centraliza sedes sin mezclar operación.', 'Facilita control por sucursal.', 'Da visión general a gerencia.'],
+  Configuración: ['Adapta formatos e identidad.', 'Controla usuarios y permisos.', 'Alinea el sistema a tu forma de operar.']
+};
+
 const state = { activeModule: 0 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -82,13 +101,21 @@ function renderModuleCards() {
 
 function openModal(index) {
   const module = modules[index];
+  const benefits = modalBenefits[module[0]] || [
+    'Información centralizada para el equipo.',
+    'Menos pasos manuales y menos errores.',
+    'Seguimiento claro para la operación diaria.'
+  ];
+
   $('#modalTitle').textContent = module[0];
   $('#modalText').textContent = module[2];
-  $('#modalBullets').innerHTML = [
-    'Ordena la información relacionada con este proceso.',
-    'Reduce trabajo manual y mejora el seguimiento diario.',
-    'Ayuda a que el equipo trabaje con procesos más claros y profesionales.'
-  ].map((item) => `<li>${item}</li>`).join('');
+  $('#modalMiniLabel').textContent = `Módulo ${String(index + 1).padStart(2, '0')}`;
+  $('#modalVisualTitle').textContent = module[0];
+  $('#modalChipTop').textContent = module[1];
+  $('#modalChipBottom').textContent = benefits[0];
+  $('#modalBenefitOne').textContent = benefits[0];
+  $('#modalBenefitTwo').textContent = benefits[1];
+  $('#modalBenefitThree').textContent = benefits[2];
 
   $('#moduleModal').classList.add('open');
   document.body.style.overflow = 'hidden';
