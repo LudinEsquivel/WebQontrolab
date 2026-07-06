@@ -2,7 +2,7 @@
 
 Landing page oficial de **Qontrolab**.
 
-Qontrolab es un sistema web para laboratorios clínicos: pacientes, órdenes, resultados, inventario, reportes, catálogo de exámenes, médicos referentes y conexión con equipos.
+Qontrolab es una plataforma web modular para operaciones de salud: laboratorios, clínicas, sanatorios, hospitales, farmacias y profesionales independientes. Puede usarse solo para laboratorio, solo para farmacia, para clínica o como operación completa con pacientes, órdenes, resultados, inventario, caja, reportes, cotizaciones, agenda, portales, farmacia, módulo clínico, multi-sucursal y conexión con equipos.
 
 ## Deploy sugerido en Hostinger
 
