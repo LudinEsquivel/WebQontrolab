@@ -44,7 +44,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/site.css?v=20261015-p7">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261015-p8">
 </head>
 <body>
   <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
@@ -103,8 +103,7 @@
         </div>
       </div>
       <div class="hero__media media" aria-hidden="true">
-        <canvas class="particles" id="heroParticles"></canvas>
-        <div class="hero__caption"><span id="shapeIndex">01</span><span id="shapeLabel">Qontrol</span></div>
+        <canvas class="particles" id="networkCanvas"></canvas>
       </div>
     </section>
 
@@ -167,7 +166,10 @@
             <p class="hop__text" id="hopText">El paciente se admite a internamiento desde recepción.</p>
           </div>
         </div>
-        <div class="network__canvas" aria-hidden="true"><canvas class="particles" id="networkCanvas"></canvas></div>
+        <div class="network__canvas" aria-hidden="true">
+          <canvas class="particles" id="heroParticles"></canvas>
+          <div class="hero__caption"><span id="shapeIndex">01</span><span id="shapeLabel">Qontrol</span></div>
+        </div>
       </div>
     </section>
 
