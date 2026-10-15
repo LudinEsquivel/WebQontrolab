@@ -143,7 +143,7 @@
     canvas.height = Math.max(1, Math.round(r.height * dpr));
     var ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { ctx: ctx, w: r.width, h: r.height };
+    return { ctx: ctx, w: r.width, h: r.height, dpr: dpr };
   }
   function whenVisible(el, onChange) {
     var io = new IntersectionObserver(function (entries) { onChange(entries[0].isIntersecting); }, { threshold: 0 });
@@ -332,13 +332,13 @@
     var canvas = $('#heroParticles');
     if (!canvas) return;
     var label = $('#shapeLabel'), index = $('#shapeIndex');
-    var ctx, w, h, targets = [], particles = [], free = [];
+    var ctx, w, h, dpr = 1, targets = [], particles = [], free = [];
     var shapeAt = 0, running = false, raf = 0, lastSwitch = 0;
     var mouse = { x: -9999, y: -9999 };
     var HOLD = 5200;
 
     function build() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
+      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h; dpr = f.dpr;
       var count = Math.round(clamp(w * h / 150, 950, 2300));
       targets = SHAPES.map(function (sh) { return sampleShape(sh, w, h, count); });
       if (particles.length !== count) {
@@ -394,19 +394,26 @@
       }
     }
 
+    // Un punto oscuro sobre fondo claro se ve más chico y borroso que uno claro sobre negro.
+    // En el tema claro los puntos van más grandes, casi opacos y alineados a los píxeles
+    // de la pantalla (sin bordes suavizados), y el polvo suelto se aclara para no ensuciar la figura.
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      var accentBoost = palette.dark ? 0.7 : 0.3;
+      var light = !palette.dark;
+      var grow = light ? 0.6 : 0, accentBoost = light ? 0.8 : 0.7;
+      var solid = light ? 0.45 : 0, dust = light ? 0.45 : 1;
+      var px = light ? function (v) { return Math.round(v * dpr) / dpr; } : function (v) { return v; };
+      var size = light ? function (v) { return Math.max(1, Math.round(v * dpr)) / dpr; } : px;
       ctx.fillStyle = 'rgb(' + palette['p-base'] + ')';
-      for (var j = 0; j < free.length; j++) { var q = free[j]; ctx.globalAlpha = q.a; ctx.fillRect(q.x, q.y, q.s, q.s); }
+      for (var j = 0; j < free.length; j++) { var q = free[j]; ctx.globalAlpha = q.a * dust; ctx.fillRect(q.x, q.y, q.s, q.s); }
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
-        if (p.mix < 0.98) { ctx.globalAlpha = p.a * (1 - p.mix); ctx.fillRect(p.x, p.y, p.s, p.s); }
+        if (p.mix < 0.98) { var ps = size(p.s + grow); ctx.globalAlpha = Math.min(1, p.a + solid) * (1 - p.mix); ctx.fillRect(px(p.x), px(p.y), ps, ps); }
       }
       ctx.fillStyle = 'rgb(' + palette['p-accent'] + ')';
       for (var k = 0; k < particles.length; k++) {
         var r = particles[k];
-        if (r.mix > 0.02) { ctx.globalAlpha = Math.min(1, r.a * r.mix * 1.25); ctx.fillRect(r.x, r.y, r.s + accentBoost, r.s + accentBoost); }
+        if (r.mix > 0.02) { var rs = size(r.s + accentBoost); ctx.globalAlpha = Math.min(1, (r.a + solid) * r.mix * 1.25); ctx.fillRect(px(r.x), px(r.y), rs, rs); }
       }
       ctx.globalAlpha = 1;
     }
