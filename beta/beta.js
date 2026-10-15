@@ -137,6 +137,22 @@
         c.strokeStyle = accent;
         c.beginPath(); c.moveTo(cx + s * 0.16, cy + s * 0.15); c.lineTo(cx + s * 0.4, cy + s * 0.39); c.stroke();
       } },
+    { label: 'Hospitales y sanatorios · internamiento y quirófano', draw: function (c, cx, cy, s, accent) {
+        c.lineJoin = 'round'; c.lineCap = 'round';
+        var bw = s * 0.92, bh = s * 0.6, left = cx - bw / 2, top = cy - bh / 2 + s * 0.14;
+        c.strokeStyle = '#fff'; c.lineWidth = s * 0.035;
+        c.strokeRect(left, top, bw, bh);
+        c.beginPath(); c.moveTo(left - s * 0.06, top + bh); c.lineTo(left + bw + s * 0.06, top + bh); c.stroke();
+        c.fillStyle = '#fff';
+        [0.1, 0.27, 0.63, 0.8].forEach(function (fx) {
+          [0.16, 0.5].forEach(function (fy) { c.fillRect(left + bw * fx, top + bh * fy, s * 0.1, s * 0.09); });
+        });
+        c.strokeRect(cx - s * 0.08, top + bh - s * 0.22, s * 0.16, s * 0.22);
+        var cs = s * 0.26, t = cs * 0.34, ct = top - cs - s * 0.05;
+        c.fillStyle = accent;
+        c.fillRect(cx - t / 2, ct, t, cs);
+        c.fillRect(cx - cs / 2, ct + cs / 2 - t / 2, cs, t);
+      } },
     { label: 'Laboratorio · muestras y resultados', draw: function (c, cx, cy, s, accent) {
         var levels = [0.5, 0.72, 0.38];
         c.save(); c.translate(cx, cy); c.rotate(-0.08);
@@ -404,206 +420,296 @@
     });
   }
 
-  /* ---------- Red conectada: cada punto es un área ---------- */
+  /* ---------- Red conectada: la información viaja sin fin entre módulos ---------- */
+  // [lat, lon] en grados. Separados al menos ~30° para que no se encimen.
   var NODES = {
-    'Recepción': [12, 0], 'Laboratorio': [36, 58], 'Caja': [-16, 112], 'Reportes': [30, 168],
-    'Clínica': [-28, -56], 'Farmacia': [18, -112], 'Inventario': [-38, -164], 'Internamiento': [42, -18]
+    'Recepción': [5, 0], 'Citas': [40, -30], 'Consultas': [-35, -35], 'Historia Clínica': [10, -62],
+    'Internamiento': [42, -95], 'Enfermería': [-12, -100], 'Quirófano': [-55, -75], 'Rayos X': [18, -138],
+    'Ultrasonidos': [-38, -145], 'Cocina': [66, -130], 'Laboratorio': [35, 35], 'Synapse': [58, 82],
+    'Resultados': [0, 72], 'Portal del Paciente': [-42, 42], 'Farmacia': [-8, 140], 'Inventario': [-50, 112],
+    'Caja': [25, 112], 'Facturación FEL': [52, 155], 'Reportes': [-28, 178]
   };
-  var JOURNEYS = [
-    { title: 'Una orden de laboratorio', path: ['Recepción', 'Laboratorio', 'Caja', 'Reportes'] },
-    { title: 'Una consulta con receta', path: ['Recepción', 'Clínica', 'Farmacia', 'Inventario'] },
-    { title: 'Un paciente internado', path: ['Clínica', 'Internamiento', 'Farmacia', 'Caja'] }
+  // [desde, hacia, qué pasa, peso]. Solo conexiones que el sistema hace de verdad.
+  var HOPS = [
+    ['Recepción', 'Internamiento', 'El paciente se admite a internamiento desde recepción.', 3],
+    ['Recepción', 'Laboratorio', 'La orden llega al laboratorio sin volver a digitarse.', 2],
+    ['Recepción', 'Citas', 'Se agenda la cita del paciente.', 1],
+    ['Citas', 'Consultas', 'La cita se convierte en consulta cuando el paciente llega.', 1],
+    ['Consultas', 'Internamiento', 'El médico interna al paciente desde la consulta.', 2],
+    ['Consultas', 'Historia Clínica', 'La consulta queda en la historia clínica.', 1],
+    ['Consultas', 'Farmacia', 'La receta llega a la cola de farmacia.', 1],
+    ['Consultas', 'Laboratorio', 'El médico solicita exámenes de laboratorio.', 1],
+    ['Historia Clínica', 'Consultas', 'El médico revisa los antecedentes antes de atender.', 1],
+    ['Internamiento', 'Enfermería', 'Enfermería recibe al paciente en su cama.', 3],
+    ['Internamiento', 'Rayos X', 'Se pide una placa y queda cargada a la cuenta del paciente.', 1],
+    ['Internamiento', 'Ultrasonidos', 'Se pide un ultrasonido y queda en la cuenta del internamiento.', 1],
+    ['Internamiento', 'Quirófano', 'Se programa la cirugía del paciente.', 1],
+    ['Internamiento', 'Cocina', 'La dieta se asigna desde el internamiento y cocina la ve por habitación.', 1],
+    ['Internamiento', 'Caja', 'Al dar de alta, la cuenta ya trae los cargos del internamiento.', 1],
+    ['Enfermería', 'Laboratorio', 'Enfermería pide exámenes para el paciente internado.', 2],
+    ['Enfermería', 'Inventario', 'El medicamento administrado se descuenta de la bodega.', 2],
+    ['Quirófano', 'Internamiento', 'Después de la cirugía, el paciente vuelve a su cama.', 1],
+    ['Rayos X', 'Internamiento', 'El estudio queda cargado a la cuenta del internamiento.', 1],
+    ['Ultrasonidos', 'Internamiento', 'El estudio queda cargado a la cuenta del internamiento.', 1],
+    ['Cocina', 'Internamiento', 'Cada habitación recibe la dieta indicada.', 1],
+    ['Laboratorio', 'Synapse', 'La muestra entra al analizador conectado.', 3],
+    ['Laboratorio', 'Caja', 'La orden se cobra en caja.', 1],
+    ['Synapse', 'Resultados', 'El equipo envía el resultado por ASTM o HL7.', 1],
+    ['Resultados', 'Internamiento', 'El médico tratante ve el resultado del paciente internado.', 2],
+    ['Resultados', 'Portal del Paciente', 'El paciente consulta su resultado validado en su portal.', 1],
+    ['Resultados', 'Historia Clínica', 'El resultado queda en la historia clínica.', 1],
+    ['Portal del Paciente', 'Recepción', 'Menos llamadas a recepción preguntando por resultados.', 1],
+    ['Farmacia', 'Inventario', 'La venta descuenta el stock de la bodega.', 1],
+    ['Farmacia', 'Caja', 'La venta se cobra en caja.', 1],
+    ['Inventario', 'Reportes', 'Existencias y vencimientos a la vista de gerencia.', 1],
+    ['Caja', 'Facturación FEL', 'La factura FEL sale del mismo cobro.', 2],
+    ['Caja', 'Reportes', 'El corte de caja queda en los reportes.', 1],
+    ['Facturación FEL', 'Reportes', 'Ingresos y facturas, juntos en los reportes.', 1],
+    ['Reportes', 'Recepción', 'Y la operación sigue: llega el siguiente paciente.', 1]
   ];
 
   function initNetwork() {
     var canvas = $('#networkCanvas');
     if (!canvas) return;
-    var titleEl = $('#journeyTitle'), stepsEl = $('#journeySteps');
-    var ctx, w, h, dots = [], running = false, raf = 0, last = 0;
-    var rotY = 0, tilt = 0.28, tiltTarget = 0.28;
-    var nodes = {};
+    var box = $('#hop'), routeEl = $('#hopRoute'), textEl = $('#hopText');
+    var ctx, w, h, dots = [], running = false, raf = 0, last = 0, clock = 0;
+    var rotY = 0, tilt = 0.26, tiltTarget = 0.26;
+    var TRAVEL = 1600, DWELL = 650, FADE = 6500, SEGS = 36;
+    var nodes = {}, out = {}, trails = [], walkers = [], visible = false;
+
     Object.keys(NODES).forEach(function (name) {
       var lat = NODES[name][0] * Math.PI / 180, lon = NODES[name][1] * Math.PI / 180;
-      nodes[name] = { name: name, lon: lon, v: [Math.cos(lat) * Math.sin(lon), -Math.sin(lat), -Math.cos(lat) * Math.cos(lon)] };
+      nodes[name] = { name: name, lon: lon, lit: 0, v: [Math.cos(lat) * Math.sin(lon), -Math.sin(lat), -Math.cos(lat) * Math.cos(lon)] };
     });
+    HOPS.forEach(function (hp) { (out[hp[0]] = out[hp[0]] || []).push(hp); });
 
-    // Estado del recorrido
-    var j = 0, seg = 0, phase = 'travel', phaseStart = 0;
-    var TRAVEL = 1700, HOLD = 900, REST = 1600;
-
-    function renderSteps() {
-      var jr = JOURNEYS[j];
-      titleEl.textContent = jr.title;
-      stepsEl.innerHTML = jr.path.map(function (n) { return '<li><span>' + n + '</span></li>'; }).join('');
-      markSteps();
-    }
-    function markSteps() {
-      var reached = phase === 'travel' ? seg : seg + 1;
-      $$('li', stepsEl).forEach(function (li, k) {
-        li.classList.toggle('is-on', k === reached);
-        li.classList.toggle('is-done', k < reached);
-      });
-    }
-
-    function build() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      var n = w < 600 ? 700 : 1200;
-      dots = [];
-      var golden = Math.PI * (3 - Math.sqrt(5));
-      for (var i = 0; i < n; i++) {
-        var y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = golden * i;
-        dots.push([Math.cos(th) * r, y, Math.sin(th) * r]);
-      }
-      render(performance.now(), 0);
-    }
-
-    function project(v, R, cx, cy, lift) {
-      var cosY = Math.cos(rotY), sinY = Math.sin(rotY), cosX = Math.cos(tilt), sinX = Math.sin(tilt);
-      var x = v[0] * lift, y = v[1] * lift, z = v[2] * lift;
-      var x1 = x * cosY - z * sinY, z1 = x * sinY + z * cosY;
-      var y2 = y * cosX - z1 * sinX, z2 = y * sinX + z1 * cosX;
-      var fov = 3.2, s = fov / (fov + z2);
-      return { x: cx + x1 * R * s, y: cy + y2 * R * s, z: z2, s: s };
-    }
     function slerp(a, b, t) {
       var d = clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1, 1), om = Math.acos(d), so = Math.sin(om) || 1;
       var ka = Math.sin((1 - t) * om) / so, kb = Math.sin(t * om) / so;
       return [a[0] * ka + b[0] * kb, a[1] * ka + b[1] * kb, a[2] * ka + b[2] * kb];
     }
     function angleTo(from, to) { var d = (to - from) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; return d; }
+    var ease = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
 
-    function arcPoints(a, b, R, cx, cy) {
-      var pts = [];
-      for (var i = 0; i <= 40; i++) { var t = i / 40; pts.push(project(slerp(a, b, t), R, cx, cy, 1 + Math.sin(Math.PI * t) * 0.14)); }
-      return pts;
+    // Proyección: se calcula seno/coseno una vez por cuadro
+    var P = { cy: 1, sy: 0, cx: 1, sx: 0, R: 100, ox: 0, oy: 0 };
+    function project(v, lift, o) {
+      var x = v[0] * lift, y = v[1] * lift, z = v[2] * lift;
+      var x1 = x * P.cy - z * P.sy, z1 = x * P.sy + z * P.cy;
+      var y2 = y * P.cx - z1 * P.sx, z2 = y * P.sx + z1 * P.cx;
+      var s = 3.2 / (3.2 + z2);
+      o.x = P.ox + x1 * P.R * s; o.y = P.oy + y2 * P.R * s; o.z = z2; o.s = s;
+      return o;
+    }
+    // Puntos de arco reutilizables (sin crear objetos en cada cuadro)
+    var arcBuf = [];
+    for (var ab = 0; ab <= SEGS; ab++) arcBuf.push({ x: 0, y: 0, z: 0, s: 1 });
+    function arc(a, b, upto) {
+      var n = Math.max(1, Math.round(upto * SEGS));
+      for (var i = 0; i <= n; i++) { var t = i / SEGS; project(slerp(a, b, Math.min(t, upto)), 1 + Math.sin(Math.PI * Math.min(t, upto)) * 0.13, arcBuf[i]); }
+      return n;
+    }
+    function strokeArc(a, b, upto, alpha, width) {
+      var n = arc(a, b, upto);
+      var front = new Path2D(), back = new Path2D(), inF = false, inB = false;
+      for (var i = 1; i <= n; i++) {
+        var p0 = arcBuf[i - 1], p1 = arcBuf[i], isFront = (p0.z + p1.z) / 2 < 0.25;
+        var path = isFront ? front : back;
+        if (isFront ? !inF : !inB) { path.moveTo(p0.x, p0.y); }
+        path.lineTo(p1.x, p1.y);
+        inF = isFront; inB = !isFront;
+      }
+      ctx.lineWidth = width;
+      ctx.globalAlpha = alpha; ctx.stroke(front);
+      ctx.globalAlpha = alpha * 0.22; ctx.stroke(back);
+      return arcBuf[n];
     }
 
-    function render(now, progress) {
-      ctx.clearRect(0, 0, w, h);
-      var R = Math.min(w * 0.3, h * 0.38), cx = w / 2, cy = h * 0.5;
-      var ink = palette['p-ink'], node = palette['p-node'];
+    function pickHop(wk) {
+      var options = out[wk.at] || HOPS;
+      var pool = options.filter(function (hp) { return hp[1] !== wk.prev; });
+      if (!pool.length) pool = options;
+      var total = 0; pool.forEach(function (hp) { total += hp[3] || 1; });
+      var r = Math.random() * total;
+      for (var i = 0; i < pool.length; i++) { r -= pool[i][3] || 1; if (r <= 0) return pool[i]; }
+      return pool[pool.length - 1];
+    }
+    function announce(hp) {
+      if (!box) return;
+      box.classList.add('is-swapping');
+      setTimeout(function () {
+        routeEl.innerHTML = '<span>' + hp[0] + '</span><i aria-hidden="true">→</i><span>' + hp[1] + '</span>';
+        textEl.textContent = hp[2];
+        box.classList.remove('is-swapping');
+      }, 260);
+    }
+    function launch(wk) {
+      wk.hop = pickHop(wk); wk.phase = 'travel'; wk.t0 = clock;
+      if (wk.featured) announce(wk.hop);
+    }
 
-      // Puntos de la esfera
+    walkers = [
+      { at: 'Recepción', prev: null, featured: true, delay: 0 },
+      { at: 'Internamiento', prev: null, featured: false, delay: 900 },
+      { at: 'Farmacia', prev: null, featured: false, delay: 1800 }
+    ];
+
+    function build() {
+      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
+      var n = w < 600 ? 650 : 1100;
+      dots = [];
+      var golden = Math.PI * (3 - Math.sqrt(5));
+      for (var i = 0; i < n; i++) {
+        var y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = golden * i;
+        dots.push([Math.cos(th) * r, y, Math.sin(th) * r]);
+      }
+      draw();
+    }
+
+    function step(dt) {
+      clock += dt;
+      walkers.forEach(function (wk) {
+        if (!wk.hop) { if (clock >= wk.delay) launch(wk); return; }
+        var el = clock - wk.t0;
+        if (wk.phase === 'travel' && el >= TRAVEL) {
+          trails.push({ a: wk.hop[0], b: wk.hop[1], born: clock, featured: wk.featured });
+          nodes[wk.hop[1]].lit = 1;
+          wk.prev = wk.at; wk.at = wk.hop[1]; wk.phase = 'dwell'; wk.t0 = clock;
+        } else if (wk.phase === 'dwell' && el >= DWELL) {
+          launch(wk);
+        }
+      });
+      for (var i = trails.length - 1; i >= 0; i--) if (clock - trails[i].born > FADE) trails.splice(i, 1);
+      var decay = Math.exp(-dt / 900);
+      Object.keys(nodes).forEach(function (k) { nodes[k].lit *= decay; });
+
+      // El globo sigue con suavidad hacia donde va la información, sin saltos
+      var lead = walkers[0], target = lead.hop ? nodes[lead.phase === 'travel' ? lead.hop[1] : lead.at] : nodes['Recepción'];
+      rotY += angleTo(rotY, -target.lon) * (1 - Math.exp(-dt / 1700)) + dt * 0.00002;
+      tilt += (tiltTarget - tilt) * (1 - Math.exp(-dt / 400));
+    }
+
+    var tmp = { x: 0, y: 0, z: 0, s: 1 };
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      P.R = Math.min(w * 0.3, h * 0.4); P.ox = w / 2; P.oy = h * 0.5;
+      P.cy = Math.cos(rotY); P.sy = Math.sin(rotY); P.cx = Math.cos(tilt); P.sx = Math.sin(tilt);
+      var ink = 'rgb(' + palette['p-ink'] + ')', accent = 'rgb(' + palette['p-node'] + ')';
+
+      // Esfera de puntos
+      ctx.fillStyle = ink;
       for (var i = 0; i < dots.length; i++) {
-        var p = project(dots[i], R, cx, cy, 1);
-        var depth = (1 - p.z) / 2;
-        ctx.fillStyle = 'rgba(' + ink + ',' + (0.05 + depth * 0.32).toFixed(3) + ')';
+        var p = project(dots[i], 1, tmp), depth = (1 - p.z) / 2;
+        ctx.globalAlpha = 0.05 + depth * 0.3;
         var sz = (0.8 + depth * 1.1) * p.s;
         ctx.fillRect(p.x, p.y, sz, sz);
       }
 
-      var jr = JOURNEYS[j];
-      // Recorrido: tramos ya hechos + tramo en curso
-      ctx.lineCap = 'round';
-      for (var k = 0; k < jr.path.length - 1; k++) {
-        var done = k < seg || (k === seg && phase !== 'travel');
-        var active = k === seg && phase === 'travel';
-        if (!done && !active) continue;
-        var pts = arcPoints(nodes[jr.path[k]].v, nodes[jr.path[k + 1]].v, R, cx, cy);
-        var upto = active ? Math.max(1, Math.round(progress * 40)) : 40;
-        ctx.lineWidth = 2;
-        for (var q = 1; q <= upto; q++) {
-          var a = pts[q - 1], b = pts[q];
-          var front = clamp((0.35 - (a.z + b.z) / 2) / 0.7, 0.15, 1);
-          ctx.strokeStyle = 'rgba(' + node + ',' + (front * (active ? 0.95 : 0.55)).toFixed(3) + ')';
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-        }
-        if (active) {
-          var head = pts[upto];
-          var g = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 14);
-          g.addColorStop(0, 'rgba(' + node + ',.9)'); g.addColorStop(1, 'rgba(' + node + ',0)');
-          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(head.x, head.y, 14, 0, Math.PI * 2); ctx.fill();
-        }
-      }
+      // Rastros que se desvanecen poco a poco (nunca desaparecen de golpe)
+      ctx.strokeStyle = accent; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      trails.forEach(function (tr) {
+        var age = (clock - tr.born) / FADE, a = Math.pow(1 - age, 1.6) * (tr.featured ? 0.75 : 0.4);
+        if (a > 0.01) strokeArc(nodes[tr.a].v, nodes[tr.b].v, 1, a, tr.featured ? 2 : 1.5);
+      });
 
-      // Nodos (áreas) con su nombre
-      var t = now * 0.001;
-      var reached = phase === 'travel' ? seg : seg + 1;
+      // Pulsos en viaje
+      walkers.forEach(function (wk) {
+        if (!wk.hop || wk.phase !== 'travel') return;
+        var t = ease(clamp((clock - wk.t0) / TRAVEL, 0, 1));
+        var head = strokeArc(nodes[wk.hop[0]].v, nodes[wk.hop[1]].v, Math.max(t, 0.001), wk.featured ? 0.95 : 0.55, wk.featured ? 2.2 : 1.6);
+        var front = clamp((0.35 - head.z) / 0.7, 0.2, 1);
+        var g = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, wk.featured ? 14 : 9);
+        g.addColorStop(0, accent); g.addColorStop(1, 'rgba(' + palette['p-node'] + ',0)');
+        ctx.globalAlpha = front * (wk.featured ? 0.95 : 0.6);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(head.x, head.y, wk.featured ? 14 : 9, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // Nodos con su nombre
+      var lead = walkers[0], dest = lead.hop ? (lead.phase === 'travel' ? lead.hop[1] : lead.at) : 'Recepción';
+      var from = lead.hop ? lead.hop[0] : null;
       ctx.font = '500 13px Inter, system-ui, sans-serif';
       ctx.textBaseline = 'middle';
+      ctx.lineWidth = 5;
+      var halo = 'rgb(' + palette['p-bg'] + ')';
+      var pulse = Math.sin(clock * 0.004);
+      // Puntos de cada nodo; los nombres se dibujan después sin encimarse
+      var labels = [];
       Object.keys(nodes).forEach(function (name) {
-        var n = nodes[name], p2 = project(n.v, R, cx, cy, 1);
+        var n = nodes[name], p2 = project(n.v, 1, tmp);
         var vis = clamp((0.3 - p2.z) / 0.6, 0, 1);
-        var idx = jr.path.indexOf(name);
-        var isCurrent = idx === reached, inPath = idx > -1 && idx <= reached;
-        var base = 0.25 + vis * 0.75;
-        // anillo
-        var r = (isCurrent ? 6 + Math.sin(t * 4) * 1.2 : 4) * p2.s;
-        ctx.fillStyle = 'rgba(' + (inPath ? node : ink) + ',' + (base * (inPath ? 1 : 0.55)).toFixed(3) + ')';
+        if (vis <= 0.02) return;
+        var key = name === dest || name === from;
+        var r = (3.2 + n.lit * 2.5 + (name === dest ? 1.5 + pulse * 0.8 : 0)) * p2.s;
+        ctx.globalAlpha = vis * (key || n.lit > 0.1 ? 1 : 0.5);
+        ctx.fillStyle = key || n.lit > 0.05 ? accent : ink;
         ctx.beginPath(); ctx.arc(p2.x, p2.y, r, 0, Math.PI * 2); ctx.fill();
-        if (isCurrent) {
-          ctx.strokeStyle = 'rgba(' + node + ',' + (0.35 * base).toFixed(3) + ')';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.arc(p2.x, p2.y, r + 7 + Math.sin(t * 4) * 2, 0, Math.PI * 2); ctx.stroke();
+        if (name === dest) {
+          ctx.globalAlpha = vis * 0.35; ctx.strokeStyle = accent; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(p2.x, p2.y, r + 7 + pulse * 2, 0, Math.PI * 2); ctx.stroke();
         }
-        if (vis > 0.05) {
-          var tw = ctx.measureText(name).width;
-          var right = p2.x >= cx - 10;
-          if (right && p2.x + 12 + tw > w - 4) right = false;
-          if (!right && p2.x - 12 - tw < 4) right = true;
-          var lx = p2.x + (right ? 12 : -12);
-          ctx.textAlign = right ? 'left' : 'right';
-          ctx.lineJoin = 'round';
-          ctx.lineWidth = 5;
-          ctx.strokeStyle = 'rgba(' + palette['p-bg'] + ',' + (vis * 0.9).toFixed(3) + ')';
-          ctx.strokeText(name, lx, p2.y);
-          ctx.fillStyle = 'rgba(' + ink + ',' + (vis * (inPath ? 1 : 0.6)).toFixed(3) + ')';
-          ctx.fillText(name, lx, p2.y);
-        }
+        if (key || vis > 0.3) labels.push({ name: name, x: p2.x, y: p2.y, vis: vis, key: key, rank: (key ? 2 : 0) + vis + n.lit });
       });
+      labels.sort(function (a, b) { return b.rank - a.rank; });
+      var placed = [];
+      ctx.lineWidth = 5;
+      labels.forEach(function (lb) {
+        var tw = ctx.measureText(lb.name).width, right = lb.x >= P.ox - 10;
+        if (right && lb.x + 12 + tw > w - 4) right = false;
+        if (!right && lb.x - 12 - tw < 4) right = true;
+        var lx = lb.x + (right ? 12 : -12), x0 = right ? lx : lx - tw;
+        var box = { l: x0 - 4, r: x0 + tw + 4, t: lb.y - 10, b: lb.y + 10 };
+        for (var i = 0; i < placed.length; i++) {
+          var q = placed[i];
+          if (box.l < q.r && box.r > q.l && box.t < q.b && box.b > q.t) { if (!lb.key) return; }
+        }
+        placed.push(box);
+        ctx.textAlign = right ? 'left' : 'right';
+        ctx.globalAlpha = lb.vis * 0.9; ctx.strokeStyle = halo; ctx.strokeText(lb.name, lx, lb.y);
+        ctx.globalAlpha = lb.vis * (lb.key ? 1 : 0.6); ctx.fillStyle = ink; ctx.fillText(lb.name, lx, lb.y);
+      });
+      ctx.globalAlpha = 1;
     }
 
     function tick(now) {
-      var dt = last ? Math.min(now - last, 50) : 16; last = now;
-      var jr = JOURNEYS[j];
-      var elapsed = now - phaseStart, progress = 0;
-      if (phase === 'travel') {
-        progress = clamp(elapsed / TRAVEL, 0, 1);
-        progress = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-        if (elapsed >= TRAVEL) { phase = 'hold'; phaseStart = now; markSteps(); }
-      } else if (phase === 'hold' && elapsed >= HOLD) {
-        if (seg < jr.path.length - 2) { seg++; phase = 'travel'; phaseStart = now; markSteps(); }
-        else { phase = 'rest'; phaseStart = now; }
-      } else if (phase === 'rest' && elapsed >= REST) {
-        j = (j + 1) % JOURNEYS.length; seg = 0; phase = 'travel'; phaseStart = now; renderSteps();
-      }
-      // El globo gira para mostrar el área hacia donde va la información
-      var focus = nodes[jr.path[phase === 'travel' ? seg + 1 : Math.min(seg + 1, jr.path.length - 1)]];
-      var k = 1 - Math.exp(-dt / 700);
-      rotY += angleTo(rotY, -focus.lon) * k;
-      tilt += (tiltTarget - tilt) * 0.05;
-      render(now, progress);
+      var dt = last ? Math.min(now - last, 34) : 16; last = now;
+      step(dt); draw();
       raf = requestAnimationFrame(tick);
     }
-    function start() { if (running || reduceMotion) return; running = true; last = 0; phaseStart = performance.now(); raf = requestAnimationFrame(tick); }
+    function start() { if (running || reduceMotion) return; running = true; last = 0; raf = requestAnimationFrame(tick); }
     function stop() { running = false; cancelAnimationFrame(raf); }
 
-    renderSteps();
-    rotY = -nodes[JOURNEYS[0].path[0]].lon;
+    rotY = -nodes['Recepción'].lon;
     build();
-    if (reduceMotion) { seg = JOURNEYS[0].path.length - 2; phase = 'hold'; markSteps(); render(performance.now(), 1); }
-    whenVisible(canvas, function (vis) { vis ? start() : stop(); });
-    document.addEventListener('qontrolab:theme', function () { if (!running) render(performance.now(), 1); });
+    if (reduceMotion) {
+      // Imagen fija: un recorrido completo, sin animación
+      [['Recepción', 'Internamiento'], ['Internamiento', 'Enfermería'], ['Enfermería', 'Laboratorio'], ['Laboratorio', 'Synapse']].forEach(function (pr) {
+        trails.push({ a: pr[0], b: pr[1], born: clock, featured: true });
+      });
+      walkers[0].at = 'Synapse';
+      draw();
+    }
+    whenVisible(canvas, function (vis) { visible = vis; vis ? start() : stop(); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else if (visible) start(); });
+    document.addEventListener('qontrolab:theme', function () { if (!running) draw(); });
     var rt = 0;
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 180); });
     if (finePointer) {
       canvas.parentElement.addEventListener('pointermove', function (e) {
         var r = canvas.getBoundingClientRect();
-        tiltTarget = 0.28 + ((e.clientY - r.top) / r.height - 0.5) * 0.4;
+        tiltTarget = 0.26 + ((e.clientY - r.top) / r.height - 0.5) * 0.4;
       });
-      canvas.parentElement.addEventListener('pointerleave', function () { tiltTarget = 0.28; });
+      canvas.parentElement.addEventListener('pointerleave', function () { tiltTarget = 0.26; });
     }
   }
 
-  /* ---------- Módulos (los 36 del sistema) ---------- */
+  /* ---------- Módulos (los 36 del sistema, hospital primero) ---------- */
   var MODULES = [
-    ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.'],
-    ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.'],
-    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.'],
-    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea propuestas profesionales para pacientes, empresas o instituciones. Cuando el cliente acepta, puedes convertir la cotización en una orden.'],
-    ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.'],
-    ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.'],
-    ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.'],
+    ['hos', 'Internamiento', 'Encamamiento y censo.', 'Gestiona ingresos, camas, censo y la cuenta de cada paciente internado, con médico tratante asignado. Laboratorio, Rayos X y ultrasonidos se cargan directo a su cuenta.'],
+    ['hos', 'Enfermería y Emergencia', 'Pantallas propias para enfermería.', 'Enfermería trabaja con sus propias pantallas: emergencia, encamamiento, órdenes de laboratorio, insumos de su área y medicamentos administrados, que se descuentan de la bodega.'],
+    ['hos', 'Quirófano', 'Cirugías organizadas.', 'Organiza las cirugías y sus paquetes quirúrgicos dentro de la misma plataforma, con el personal de quirófano y sus permisos.'],
+    ['hos', 'Rayos X', 'Solicitudes de imagen.', 'Solicitudes de Rayos X con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
+    ['hos', 'Ultrasonidos', 'Estudios de ultrasonido.', 'Solicitudes de ultrasonido con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
+    ['hos', 'Cocina', 'Dietas de pacientes internados.', 'Muestra las dietas activas de los pacientes internados, ordenadas por habitación. Las dietas se asignan desde el internamiento.'],
     ['lab', 'Órdenes de Trabajo', 'Proceso controlado de principio a fin.', 'Controla todo el proceso desde que entra el paciente: exámenes solicitados, pagos, muestra, estado de proceso y entrega final. Todo queda trazable.'],
     ['lab', 'Resultados', 'Captura, validación y PDFs.', 'Captura, valida y entrega resultados con formato profesional, dentro de la misma orden de trabajo. Maneja valores de referencia y genera PDFs listos para el paciente o el médico.'],
     ['lab', 'Catálogo de Exámenes', 'Exámenes y precios claros.', 'Mantén ordenados tus exámenes, perfiles, precios y áreas. Facilita cotizar, crear órdenes y estandarizar la forma en que trabaja el laboratorio.'],
@@ -615,17 +721,18 @@
     ['cli', 'Consultas', 'Atención médica documentada.', 'Gestiona consultas clínicas, signos vitales, diagnósticos, recetas, constancias y seguimiento del paciente. Ideal para clínicas, médicos independientes y sanatorios.'],
     ['cli', 'Historia Clínica', 'El expediente clínico completo.', 'Reúne la historia clínica del paciente para que el médico tenga antecedentes, consultas y seguimiento en un solo lugar.'],
     ['cli', 'Catálogo de Servicios', 'Servicios clínicos y precios.', 'Mantén ordenados los servicios clínicos y sus precios para cotizar, cobrar y cargarlos a la cuenta del paciente.'],
-    ['cli', 'Internamiento', 'Encamamiento y censo.', 'Gestiona ingresos, camas, censo y la cuenta de cada paciente internado, con médico tratante asignado y cargos de laboratorio, imagen y farmacia en la misma cuenta.'],
-    ['cli', 'Enfermería y Emergencia', 'Pantallas propias para enfermería.', 'Enfermería trabaja con sus propias pantallas: emergencia, encamamiento, órdenes de laboratorio e insumos de su área, con permisos a la medida.'],
-    ['cli', 'Quirófano', 'Cirugías organizadas.', 'Organiza las cirugías y sus paquetes quirúrgicos dentro de la misma plataforma, con el personal de quirófano y sus permisos.'],
-    ['cli', 'Rayos X', 'Solicitudes de imagen.', 'Solicitudes de Rayos X con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
-    ['cli', 'Ultrasonidos', 'Estudios de ultrasonido.', 'Solicitudes de ultrasonido con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
-    ['cli', 'Cocina', 'Dietas de pacientes internados.', 'Muestra las dietas activas de los pacientes internados, ordenadas por habitación. Las dietas se asignan desde el internamiento.'],
     ['cli', 'Portal del Paciente', 'Resultados e historial en línea.', 'Permite que el paciente consulte su historial, órdenes y resultados desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.'],
     ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectada con la clínica.'],
     ['far', 'Recetas', 'De la consulta a la farmacia.', 'Las recetas que emite el médico llegan a una cola de farmacia para despacharlas sin volver a escribirlas.'],
     ['far', 'Compras y Proveedores', 'Abastecimiento ordenado.', 'Catálogo de productos, proveedores, compras, entradas y precios de la farmacia en un mismo flujo.'],
     ['far', 'Traslados y Bodegas', 'Stock donde se necesita.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.'],
+    ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.'],
+    ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.'],
+    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.'],
+    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea propuestas profesionales para pacientes, empresas o instituciones. Cuando el cliente acepta, puedes convertir la cotización en una orden.'],
+    ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.'],
+    ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.'],
+    ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.'],
     ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede emitir los cobros que quedaron pendientes de facturar.'],
     ['adm', 'Contabilidad', 'Cuentas bancarias y movimientos.', 'Cuentas bancarias, saldos y movimientos. Las transferencias cobradas llegan a la cuenta que elijas como predeterminada.'],
     ['adm', 'Médicos y Comisiones', 'Referencias bajo control.', 'Gestiona médicos referentes, órdenes enviadas y comisiones. Cada médico puede consultar sus pacientes, órdenes y comisiones desde el Portal Médico.'],
@@ -634,7 +741,7 @@
     ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.'],
     ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrolab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.']
   ];
-  var AREAS = { op: 'Operación', lab: 'Laboratorio', cli: 'Clínica y hospital', far: 'Farmacia', adm: 'Administración' };
+  var AREAS = { hos: 'Hospital y sanatorio', lab: 'Laboratorio', cli: 'Clínica', far: 'Farmacia', op: 'Operación', adm: 'Administración' };
 
   function initModules() {
     var grid = $('#moduleGrid'), sheet = $('#moduleSheet');
