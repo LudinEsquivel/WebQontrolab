@@ -14,7 +14,7 @@
   .hero::before{display:none}
   .hero__grid{display:block!important;width:100%;max-width:100%;gap:0;overflow:hidden}
   .hero__content{width:100%;max-width:100%;min-width:0;overflow:hidden}
-  .eyebrow{font-size:10px;letter-spacing:.12em;line-height:1.4;max-width:100%;white-space:normal}
+  .eyebrow{font-size:11px;letter-spacing:.08em;line-height:1.4;max-width:100%;white-space:normal;text-wrap:balance}
   .eyebrow::before{width:24px;flex:0 0 24px}
   .hero h1{font-size:clamp(34px,10.5vw,43px)!important;line-height:1.02!important;letter-spacing:-.065em!important;margin:18px 0 16px;max-width:100%;width:100%;overflow-wrap:normal;word-break:normal;text-wrap:balance}
   .hero h1 .kinetic-word{display:inline!important;opacity:1!important;transform:none!important;transition:none!important}

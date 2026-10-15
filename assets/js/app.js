@@ -51,6 +51,8 @@ function renderModuleCards(){
   grid.innerHTML=moduleData.map((m,i)=>`<article class="module-card reveal" data-module-index="${i}"><div class="icon">${String(i+1).padStart(2,'0')}</div><h3>${m.name}</h3><p>${m.tagline}</p><button type="button">Ver detalle →</button></article>`).join('');
 }
 
+let modalReturnFocus=null;
+
 function openModal(index){
   const m=moduleData[index] || moduleData[0];
   setText('#modalTitle',m.name); setText('#modalText',m.text); setText('#modalMiniLabel',m.modal.type.toUpperCase()); setText('#modalVisualTitle',m.name);
@@ -58,10 +60,19 @@ function openModal(index){
   const visual=$('.module-modal__visual'); if(visual) visual.className=`module-modal__visual module-visual--${m.modal.accent}`;
   const card=$('.mini-system-card'); if(card) card.className=`mini-system-card mini-system-card--${m.modal.type}`;
   const flow=$('#modalFlowRows'); if(flow) flow.innerHTML=m.modal.rows.map((txt,i)=>`<span class="real-row real-row--${m.modal.type}"><b>${i+1}</b><em>${txt}</em></span>`).join('');
-  const modal=$('#moduleModal'); if(modal){ modal.classList.add('open'); document.body.style.overflow='hidden'; }
+  const modal=$('#moduleModal'); if(modal){ modalReturnFocus=document.activeElement; modal.classList.add('open'); document.body.style.overflow='hidden'; const close=$('#modalClose'); if(close) close.focus(); }
 }
 
-function closeModal(){ const modal=$('#moduleModal'); if(modal) modal.classList.remove('open'); document.body.style.overflow=''; }
+function closeModal(){ const modal=$('#moduleModal'); if(!modal || !modal.classList.contains('open')) return; modal.classList.remove('open'); document.body.style.overflow=''; if(modalReturnFocus && modalReturnFocus.focus) modalReturnFocus.focus(); modalReturnFocus=null; }
+
+function trapModalFocus(e){
+  const modal=$('#moduleModal'); if(e.key!=='Tab' || !modal || !modal.classList.contains('open')) return;
+  const items=$$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').filter(el=>modal.contains(el) && el.offsetParent!==null);
+  if(!items.length) return;
+  const first=items[0], last=items[items.length-1];
+  if(e.shiftKey && (document.activeElement===first || !modal.contains(document.activeElement))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && (document.activeElement===last || !modal.contains(document.activeElement))){ e.preventDefault(); first.focus(); }
+}
 
 function initModules(){
   renderModuleCards(); setActiveModule(0);
@@ -86,6 +97,6 @@ function updateScroll(){
   $$('.nav__links a').forEach(link=>{ const section=document.querySelector(link.getAttribute('href')); if(!section) return; link.classList.toggle('is-active',y+120>=section.offsetTop && y+120<section.offsetTop+section.offsetHeight); });
 }
 
-function initModal(){ const close=$('#modalClose'); if(close) close.addEventListener('click',closeModal); const modal=$('#moduleModal'); if(modal) modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); }); }
+function initModal(){ const close=$('#modalClose'); if(close) close.addEventListener('click',closeModal); const modal=$('#moduleModal'); if(modal) modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); trapModalFocus(e); }); }
 
 document.addEventListener('DOMContentLoaded',()=>{ initModules(); splitKineticTitles(); initReveal(); initTheme(); initModal(); updateScroll(); window.addEventListener('scroll',updateScroll,{passive:true}); });

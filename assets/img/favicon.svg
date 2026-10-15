@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Qontrolab — favicon adaptable (jul 2026), compartido con la app (qontrolab.com).
+       Sigue el tema del SISTEMA/navegador vía prefers-color-scheme:
+       modo claro → loseta azul marino; modo oscuro → loseta blanca.
+       Solo aplica a la pestaña: los íconos de app instalada (PNG) son fijos. -->
+  <style>
+    .tile { fill: #0f1023; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #ffffff; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="q" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#66D4FF"/>
+      <stop offset="1" stop-color="#0A84FF"/>
+    </linearGradient>
+  </defs>
+  <rect class="tile" width="512" height="512" rx="112"/>
+  <circle cx="256" cy="242" r="116" fill="none" stroke="url(#q)" stroke-width="54" stroke-linecap="round"/>
+  <line x1="312" y1="298" x2="382" y2="368" stroke="url(#q)" stroke-width="54" stroke-linecap="round"/>
+</svg>
