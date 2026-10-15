@@ -554,7 +554,7 @@
     ['Recepción', 'Laboratorio', 'La orden llega al laboratorio sin volver a digitarse.', 2],
     ['Recepción', 'Citas', 'Se agenda la cita del paciente.', 1],
     ['Citas', 'Consultas', 'La cita se convierte en consulta cuando el paciente llega.', 1],
-    ['Consultas', 'Internamiento', 'El médico interna al paciente desde la consulta.', 2],
+    ['Consultas', 'Internamiento', 'La consulta del paciente internado se carga a la cuenta del internamiento.', 2],
     ['Consultas', 'Historia Clínica', 'La consulta queda en la historia clínica.', 1],
     ['Consultas', 'Farmacia', 'La receta llega a la cola de farmacia.', 1],
     ['Consultas', 'Laboratorio', 'El médico solicita exámenes de laboratorio.', 1],
@@ -578,12 +578,12 @@
     ['Resultados', 'Portal del Paciente', 'El paciente consulta su resultado validado en su portal.', 1],
     ['Resultados', 'Historia Clínica', 'El resultado queda en la historia clínica.', 1],
     ['Portal del Paciente', 'Recepción', 'Menos llamadas a recepción para preguntar por resultados.', 1],
-    ['Farmacia', 'Inventario', 'La venta descuenta las existencias de la bodega.', 1],
+    ['Farmacia', 'Inventario', 'La venta descuenta las existencias del inventario de farmacia.', 1],
     ['Farmacia', 'Caja', 'La venta se cobra en caja.', 1],
     ['Inventario', 'Reportes', 'Existencias y vencimientos a la vista de gerencia.', 1],
-    ['Caja', 'Facturación FEL', 'La factura FEL sale del mismo cobro.', 2],
+    ['Caja', 'Facturación FEL', 'Los cobros de órdenes, consultas e imagen se facturan con FEL desde la misma caja.', 2],
     ['Caja', 'Reportes', 'El corte de caja queda en los reportes.', 1],
-    ['Facturación FEL', 'Reportes', 'Ingresos y facturas, juntos en los reportes.', 1],
+    ['Facturación FEL', 'Recepción', 'La factura queda en Facturación y recepción sigue con el siguiente paciente.', 1],
     ['Reportes', 'Recepción', 'Y la operación sigue: llega el siguiente paciente.', 1]
   ];
 
@@ -847,27 +847,27 @@
     ['lab', 'Control de Calidad', 'Controles internos y trazabilidad.', 'Gestión de calidad del laboratorio: controles internos de equipos, temperatura y ambiente, lotes de material de control, estadística acumulada, revisión y trazabilidad.', ['hosp', 'lab']],
     ['lab', 'Bitácora Diaria', 'Evidencia diaria del laboratorio.', 'Registra controles de inicio de turno, temperaturas, control de calidad y observaciones. Ayuda a mantener evidencia interna y orden en la operación.', ['hosp', 'lab']],
     ['lab', 'Laboratorios Referentes', 'Referencias y comisiones.', 'Registra los laboratorios y hospitales que te refieren exámenes, con su comisión. Cada laboratorio referente puede consultar sus comisiones desde su propio portal.', ['hosp', 'lab', 'clinic']],
-    ['lab', 'Logística', 'Envíos de muestras controlados.', 'Registra los envíos a laboratorios de referencia, con los insumos del inventario que viajan en cada envío y sus devoluciones.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['lab', 'Logística', 'Envíos y recolecciones controlados.', 'Registra envíos y recolecciones, con los insumos del inventario que viajan y sus devoluciones.', ['hosp', 'lab', 'clinic']],
     ['cli', 'Consultas', 'Atención médica documentada.', 'Gestiona consultas clínicas, signos vitales, diagnósticos, recetas, constancias y seguimiento del paciente. Ideal para clínicas, médicos independientes y sanatorios.', ['hosp', 'clinic']],
     ['cli', 'Historia Clínica', 'El expediente clínico completo.', 'Reúne la historia clínica del paciente para que el médico tenga antecedentes, consultas y seguimiento en un solo lugar.', ['hosp', 'clinic']],
     ['cli', 'Catálogo de Servicios', 'Servicios clínicos y precios.', 'Mantén ordenados los servicios clínicos y sus precios para cotizar, cobrar y cargarlos a la cuenta del paciente.', ['hosp', 'clinic']],
-    ['cli', 'Portal del Paciente', 'Resultados e historial en línea.', 'Permite que el paciente consulte su historial, órdenes y resultados desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.', ['hosp', 'lab', 'clinic']],
+    ['lab', 'Portal del Paciente', 'Resultados de laboratorio en línea.', 'El paciente consulta sus órdenes y resultados de laboratorio validados y descarga su PDF desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.', ['hosp', 'lab']],
     ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectado con la clínica.', ['hosp', 'farm']],
-    ['far', 'Recetas', 'De la consulta a la farmacia.', 'Las recetas que emite el médico llegan a una cola de farmacia para despacharlas sin volver a escribirlas.', ['hosp', 'farm']],
+    ['far', 'Recetas', 'De la consulta a la farmacia.', 'Cuando clínica y farmacia operan juntas en Qontrol, las recetas del médico llegan a la cola de farmacia para despacharlas sin volver a escribirlas.', ['hosp', 'farm']],
     ['far', 'Compras y Proveedores', 'Abastecimiento ordenado.', 'Catálogo de productos, proveedores, compras, entradas y precios de la farmacia en un mismo flujo.', ['hosp', 'farm']],
-    ['far', 'Traslados y Bodegas', 'Existencias donde se necesitan.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.', ['hosp', 'farm']],
+    ['far', 'Traslados', 'Existencias donde se necesitan.', 'Mueve existencias entre tus farmacias con registro de cada traslado. El inventario se lleva por producto, lote y vencimiento.', ['hosp', 'farm']],
     ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.', ['hosp', 'lab', 'clinic', 'farm']],
     ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.', ['hosp', 'lab', 'clinic', 'farm']],
-    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.', ['hosp', 'lab', 'clinic']],
-    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea propuestas profesionales para pacientes, empresas o instituciones. Cuando el cliente acepta, puedes convertir la cotización en una orden.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte la cita en orden de trabajo o en consulta, según tu solución.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea cotizaciones profesionales para tus pacientes. Cuando las aceptan, las conviertes en orden o en consulta.', ['hosp', 'lab', 'clinic']],
     ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.', ['hosp', 'lab', 'clinic']],
     ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.', ['hosp', 'lab', 'clinic']],
     ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.', ['hosp', 'lab', 'clinic']],
-    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede facturar los cobros que quedaron pendientes.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros de órdenes, consultas e imagen. Administración gestiona la facturación y caja puede facturar los cobros que quedaron pendientes. Requiere habilitar FEL con tu certificador.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Contabilidad', 'Cuentas bancarias y movimientos.', 'Cuentas bancarias, saldos y movimientos. Las transferencias cobradas llegan a la cuenta que elijas como predeterminada.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Médicos y Comisiones', 'Referencias bajo control.', 'Gestiona médicos referentes, órdenes enviadas y comisiones. Cada médico puede consultar sus pacientes, órdenes y comisiones desde el Portal Médico.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Portal Médico', 'Comunicación más ágil.', 'Permite que médicos referentes consulten sus pacientes, órdenes y comisiones sin llamar ni saturar al equipo.', ['hosp', 'lab', 'clinic']],
-    ['adm', 'Multisucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Multisucursal', 'Varias sedes en orden.', 'Asigna usuarios y bodegas por sucursal, o maneja cada sede como una cuenta separada y cambia entre ellas con el mismo usuario.', ['hosp', 'lab', 'clinic', 'farm']],
     ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.', ['hosp', 'lab', 'clinic', 'farm']],
     ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrol se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
   ];
@@ -900,7 +900,7 @@
           '<span class="tile__desc">' + x.m[2] + '</span><span class="arrow" aria-hidden="true">→</span></button>';
       }).join('');
       var alsoHtml = sys.key === 'hosp'
-        ? '<div class="system__also"><span>Además incluye todo lo de</span><div class="system__chips">' +
+        ? '<div class="system__also"><span>En su operación completa, además incluye todo lo de</span><div class="system__chips">' +
             ['lab', 'clinic', 'farm'].map(function (k) { return '<a class="chip-link" href="#sys-' + k + '" data-open-system="' + k + '">' + name(k) + ' <span aria-hidden="true">→</span></a>'; }).join('') + '</div></div>'
         : '<div class="system__also"><span>También incluye</span><div class="system__chips">' +
             also.map(function (x) { return '<button type="button" class="chip-mod" data-index="' + x.i + '">' + x.m[1] + '</button>'; }).join('') + '</div></div>';

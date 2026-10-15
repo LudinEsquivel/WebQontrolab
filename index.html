@@ -44,7 +44,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/site.css?v=20261015-p3">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261015-p4">
 </head>
 <body>
   <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
@@ -119,7 +119,7 @@
         <li><a class="prod" href="#areas" data-open-tab="0">
           <small>Hospitales y sanatorios</small>
           <strong class="pw">Qontrol<b>Hosp</b></strong>
-          <span class="prod__text">La operación completa: internamiento, enfermería, quirófano, imagen, laboratorio y farmacia, con una sola cuenta por paciente.</span>
+          <span class="prod__text">La operación completa: internamiento, enfermería, quirófano, imagen, laboratorio y farmacia, con laboratorio e imagen cargados a la cuenta del paciente.</span>
           <span class="prod__more">Ver QontrolHosp <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="1">
@@ -131,13 +131,13 @@
         <li><a class="prod" href="#areas" data-open-tab="2">
           <small>Clínicas</small>
           <strong class="pw">Qontrol<b>Clinic</b></strong>
-          <span class="prod__text">Consultas, historia clínica, agenda, recetas y constancias, con portal del paciente.</span>
+          <span class="prod__text">Consultas, historia clínica, agenda, recetas y constancias.</span>
           <span class="prod__more">Ver QontrolClinic <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="3">
           <small>Farmacias</small>
           <strong class="pw">Qontrol<b>Farm</b></strong>
-          <span class="prod__text">Punto de venta, caja, recetas, inventario por bodega, traslados, compras y proveedores.</span>
+          <span class="prod__text">Punto de venta, caja, recetas, inventario por lote y vencimiento, traslados entre tus farmacias, compras y proveedores.</span>
           <span class="prod__more">Ver QontrolFarm <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
       </ul>
@@ -149,7 +149,7 @@
         <div class="edge__copy">
           <small>Solo para laboratorios · sin internet estable</small>
           <strong class="pw">Qontro<b>Lab</b> <span class="edge__tag">Edge</span></strong>
-          <p>El sistema funciona dentro de tu laboratorio, en un equipo propio conectado a la red local. Aunque se caiga el internet, tu sede sigue recibiendo pacientes, procesando, validando e imprimiendo resultados.</p>
+          <p>El sistema funciona dentro de tu laboratorio, en un equipo propio conectado a la red local. Está diseñado para que tu sede siga recibiendo pacientes, procesando, validando e imprimiendo resultados aunque se caiga el internet.</p>
           <p class="edge__scope">Incluye pacientes, citas, órdenes y resultados, catálogo de exámenes, Synapse para equipos, inventario y reportes. Es exclusivo para laboratorios: no está disponible para hospitales, sanatorios, clínicas ni farmacias, y no incluye caja ni facturación.</p>
         </div>
         <a class="btn btn--soft" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20QontroLab%20Edge" target="_blank" rel="noreferrer">Consultar QontroLab Edge <span class="arrow" aria-hidden="true">→</span></a>
@@ -222,7 +222,7 @@
       <div class="areas__head reveal">
         <div class="areas__intro">
           <h2>Cada solución, a la medida de tu institución.</h2>
-          <p>Elige el hospital completo, el laboratorio, la clínica o la farmacia: todas las soluciones comparten pacientes, órdenes y cuentas.</p>
+          <p>Elige el hospital completo, el laboratorio, la clínica o la farmacia, y crece de una a otra sin cambiar de sistema.</p>
         </div>
         <div class="tabs" role="tablist" aria-label="Soluciones de Qontrol">
           <button role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true"><span class="tab__n">01</span><span class="tab__name">Qontrol<b>Hosp</b></span><i class="tabs__bar"></i></button>
@@ -301,8 +301,8 @@
           <div class="area__copy">
             <small class="area__for">Clínicas</small>
             <h3 class="pw">Qontrol<b>Clinic</b></h3>
-            <p>Consultas, signos vitales, historia clínica, recetas y constancias, con agenda y portal del paciente. La receta llega a farmacia y los exámenes al laboratorio sin volver a escribirlos.</p>
-            <ul class="tags"><li>Consultas</li><li>Historia Clínica</li><li>Citas y Agenda</li><li>Catálogo de Servicios</li><li>Portal del Paciente</li></ul>
+            <p>Consultas, signos vitales, historia clínica, recetas y constancias, con agenda y expediente del paciente. Si también usas farmacia o laboratorio en Qontrol, la receta llega a farmacia y los exámenes al laboratorio sin volver a escribirlos.</p>
+            <ul class="tags"><li>Consultas</li><li>Historia Clínica</li><li>Citas y Agenda</li><li>Catálogo de Servicios</li></ul>
             <a class="btn btn--soft" href="#modulos" data-filter-link="clinic">Ver módulos de QontrolClinic <span class="arrow" aria-hidden="true">→</span></a>
           </div>
         </div>
@@ -315,16 +315,16 @@
               <div class="pos"><span>Ibuprofeno 400 mg × 1</span><b>Q22.00</b></div>
               <div class="pos"><span>Suero oral × 3</span><b>Q55.50</b></div>
               <div class="pos pos--total"><span>Total</span><b>Q125.50</b></div>
-              <div class="card__foot"><span class="doc"></span>Receta vinculada a la consulta</div>
+              <div class="card__foot"><span class="doc"></span>Venta registrada en caja</div>
             </div>
-            <div class="chip">Inventario por bodega</div>
+            <div class="chip">Inventario por lote</div>
             <span class="note">Datos de ejemplo</span>
           </div>
           <div class="area__copy">
             <small class="area__for">Farmacias</small>
             <h3 class="pw">Qontrol<b>Farm</b></h3>
-            <p>Punto de venta, caja, recetas, inventario, traslados entre bodegas, catálogo, proveedores, compras y precios. Funciona de forma independiente o conectada con la clínica y la caja.</p>
-            <ul class="tags"><li>Farmacia y Punto de Venta</li><li>Recetas</li><li>Compras y Proveedores</li><li>Traslados y Bodegas</li></ul>
+            <p>Punto de venta, caja, recetas, inventario por lote y vencimiento, traslados entre tus farmacias, catálogo, proveedores, compras y precios. Funciona de forma independiente o conectada con la clínica y la caja.</p>
+            <ul class="tags"><li>Farmacia y Punto de Venta</li><li>Recetas</li><li>Compras y Proveedores</li><li>Traslados</li></ul>
             <a class="btn btn--soft" href="#modulos" data-filter-link="farm">Ver módulos de QontrolFarm <span class="arrow" aria-hidden="true">→</span></a>
           </div>
         </div>
@@ -343,9 +343,9 @@
             <span class="note">Datos de ejemplo</span>
           </div>
           <div class="area__copy">
-            <small class="area__for">Para todas las soluciones</small>
+            <small class="area__for">Para QontrolHosp, QontroLab y QontrolClinic</small>
             <h3>Administración</h3>
-            <p>Caja y cortes, facturación electrónica FEL, contabilidad, reportes, médicos y comisiones, sucursales, usuarios y permisos. Toma decisiones con datos, sin revisar hojas separadas.</p>
+            <p>Caja y cortes, facturación electrónica FEL, contabilidad, reportes, médicos y comisiones, sucursales, usuarios y permisos. Toma decisiones con datos, sin revisar hojas separadas. QontrolFarm trae su propia caja, reportes y usuarios.</p>
             <ul class="tags"><li>Facturación FEL</li><li>Contabilidad</li><li>Reportes</li><li>Médicos y Comisiones</li><li>Multisucursal</li><li>Configuración y Permisos</li></ul>
             <a class="btn btn--soft" href="#modulos" data-filter-link="all">Ver todos los módulos <span class="arrow" aria-hidden="true">→</span></a>
           </div>
@@ -402,10 +402,10 @@
           <li><em>Cocina</em><strong>Dietas por habitación</strong><dl><dt>Antes</dt><dd>Avisar a cocina en papel o por mensaje qué dieta lleva cada paciente.</dd><dt>Con Qontrol</dt><dd>La dieta se asigna en el internamiento y cocina la ve ordenada por habitación.</dd></dl></li>
           <li><em>Synapse</em><strong>Resultados de los equipos</strong><dl><dt>Antes</dt><dd>Copiar cada valor del analizador al sistema o a un documento.</dd><dt>Con Qontrol</dt><dd>El resultado llega del equipo por ASTM, HL7 o archivo plano; tu personal solo revisa y valida.</dd></dl></li>
           <li><em>Resultados</em><strong>Reportes en PDF</strong><dl><dt>Antes</dt><dd>Armar cada reporte en Word o Excel y darle formato a mano.</dd><dt>Con Qontrol</dt><dd>El PDF sale con tu formato, tu logo y los valores de referencia al validar.</dd></dl></li>
-          <li><em>Citas y Agenda</em><strong>De la cita a la orden</strong><dl><dt>Antes</dt><dd>Volver a escribir los datos del paciente cuando llega a su cita.</dd><dt>Con Qontrol</dt><dd>La cita se convierte en orden de trabajo sin volver a capturar datos.</dd></dl></li>
-          <li><em>Recetas</em><strong>De la consulta a la farmacia</strong><dl><dt>Antes</dt><dd>Volver a escribir en farmacia lo que indicó el médico.</dd><dt>Con Qontrol</dt><dd>La receta llega a la cola de farmacia para despacharla.</dd></dl></li>
+          <li><em>Citas y Agenda</em><strong>De la cita a la orden</strong><dl><dt>Antes</dt><dd>Volver a escribir los datos del paciente cuando llega a su cita.</dd><dt>Con Qontrol</dt><dd>La cita se convierte en orden o en consulta sin volver a capturar datos.</dd></dl></li>
+          <li><em>Recetas</em><strong>De la consulta a la farmacia</strong><dl><dt>Antes</dt><dd>Volver a escribir en farmacia lo que indicó el médico.</dd><dt>Con Qontrol</dt><dd>Si clínica y farmacia operan juntas, la receta llega a la cola de farmacia.</dd></dl></li>
           <li><em>Facturación FEL</em><strong>Facturar después de cobrar</strong><dl><dt>Antes</dt><dd>Hacer la factura en otro sistema, repitiendo los datos del cobro.</dd><dt>Con Qontrol</dt><dd>La factura electrónica se emite desde el mismo cobro.</dd></dl></li>
-          <li><em>Portal del Paciente</em><strong>Preguntas por resultados</strong><dl><dt>Antes</dt><dd>Atender llamadas para saber si los resultados ya están listos.</dd><dt>Con Qontrol</dt><dd>El paciente consulta su historial y resultados en su propio portal.</dd></dl></li>
+          <li><em>Portal del Paciente</em><strong>Preguntas por resultados</strong><dl><dt>Antes</dt><dd>Atender llamadas para saber si los resultados ya están listos.</dd><dt>Con Qontrol</dt><dd>El paciente consulta sus resultados de laboratorio validados en su propio portal.</dd></dl></li>
         </ul>
       </div>
     </section>
@@ -415,7 +415,7 @@
       <h2 class="reveal" id="statsTitle">La columna operativa de hospitales, sanatorios y laboratorios.</h2>
       <div class="stats__row reveal" id="statsRow">
         <div class="stat is-active"><b data-count="5000" data-prefix="+" data-format="comma">+5,000</b><span>órdenes gestionadas al mes</span></div>
-        <div class="stat"><b data-count="36">36</b><span>módulos activables</span></div>
+        <div class="stat"><b data-count="36">36</b><span>módulos y funciones</span></div>
         <div class="stat"><b>24/7</b><span>soporte disponible</span></div>
         <i class="stats__line"><i class="stats__seg"></i></i>
       </div>
@@ -424,7 +424,7 @@
     <!-- Capacidades -->
     <section class="caps" aria-label="Capacidades">
       <ul class="caps__list reveal">
-        <li><span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>Plataforma web, sin instalar</li>
+        <li><span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>Desde el navegador</li>
         <li><span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 21V9l6-4 6 4v12"/><path d="M15 21V12h6v9M3 21h18M8 13h2M8 17h2"/></svg></span>Multisucursal</li>
         <li><span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 7h10v10H7z"/><path d="M10 2v5M14 2v5M10 17v5M14 17v5M2 10h5M2 14h5M17 10h5M17 14h5"/></svg></span>Equipos vía ASTM · HL7</li>
         <li><span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>Facturación FEL</li>
@@ -461,7 +461,7 @@
     <section class="impl" id="implementacion">
       <div class="split-head reveal">
         <h2>Cómo se implementa Qontrol.</h2>
-        <p>Sin servidores ni programas que instalar (salvo en QontroLab Edge): trabajamos contigo paso a paso, según los módulos que actives y el ritmo de tu institución.</p>
+        <p>Qontrol se usa desde el navegador, sin servidores propios. Solo si conectas analizadores se instala Synapse en la computadora conectada a ellos. Trabajamos contigo paso a paso, según los módulos que actives y el ritmo de tu institución.</p>
       </div>
       <div class="impl__body">
         <aside class="impl__aside reveal">
@@ -492,9 +492,9 @@
       <div class="faq__list reveal">
         <details><summary>¿Qué diferencia hay entre QontrolHosp, QontroLab, QontrolClinic y QontrolFarm?</summary><p>Son las soluciones de la misma plataforma Qontrol según tu tipo de institución: QontrolHosp para hospitales y sanatorios con operación completa, QontroLab para laboratorios, QontrolClinic para clínicas y QontrolFarm para farmacias. Puedes empezar con una y crecer a otra sin cambiar de sistema.</p></details>
         <details><summary>¿Qontrol sirve solo para laboratorios clínicos?</summary><p>No. Qontrol es modular: puede funcionar para un hospital, un sanatorio, un laboratorio, una clínica, una farmacia o una operación individual, activando solo lo que necesitas.</p></details>
-        <details><summary>¿Funciona sin internet?</summary><p>Qontrol es una plataforma web: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm trabajan en línea. Solo para laboratorios existe QontroLab Edge, que funciona dentro del laboratorio en un equipo propio: aunque se caiga el internet, se siguen recibiendo pacientes, procesando, validando e imprimiendo resultados. QontroLab Edge no está disponible para hospitales, sanatorios, clínicas ni farmacias.</p></details>
-        <details><summary>¿Necesito instalar algo en cada computadora?</summary><p>No. Qontrol funciona como plataforma web, por lo que puede utilizarse desde el navegador en computadoras, tablets o celulares autorizados.</p></details>
-        <details><summary>¿Puede manejar varias sucursales?</summary><p>Sí. La operación puede organizarse por sede o sucursal para mantener datos separados y una visión general de toda la institución.</p></details>
+        <details><summary>¿Funciona sin internet?</summary><p>Qontrol es una plataforma web: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm trabajan en línea. Solo para laboratorios existe QontroLab Edge, que funciona dentro del laboratorio en un equipo propio: está diseñado para seguir recibiendo pacientes, procesando, validando e imprimiendo resultados aunque se caiga el internet. QontroLab Edge no está disponible para hospitales, sanatorios, clínicas ni farmacias.</p></details>
+        <details><summary>¿Necesito instalar algo en cada computadora?</summary><p>No. Qontrol funciona desde el navegador en computadoras, tablets o celulares autorizados. Solo si conectas analizadores se instala Synapse en la computadora conectada a ellos.</p></details>
+        <details><summary>¿Puede manejar varias sucursales?</summary><p>Sí. Puedes asignar usuarios y bodegas por sucursal, o manejar cada sede como una cuenta separada y cambiar entre ellas con el mismo usuario.</p></details>
         <details><summary>¿Puedo contratar solo algunos módulos?</summary><p>Sí. Puedes usar solo laboratorio, solo farmacia, solo clínica o la operación hospitalaria completa con internamiento, enfermería y quirófano, según tu crecimiento y tus necesidades.</p></details>
         <details><summary>¿Puede conectarse con equipos de laboratorio?</summary><p>Sí, mediante Synapse. Según el equipo, evaluamos la conexión por ASTM, HL7 o archivos planos para reducir la digitación.</p></details>
         <details><summary>¿Cuánto tarda la implementación?</summary><p>Depende de los módulos que actives, de cuántas sucursales tengas y de si vas a conectar equipos. En el diagnóstico revisamos tu caso y te entregamos un plan con tiempos claros antes de empezar.</p></details>
@@ -534,6 +534,6 @@
     <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
   </dialog>
 
-  <script src="assets/js/site.js?v=20261015-p2"></script>
+  <script src="assets/js/site.js?v=20261015-p4"></script>
 </body>
 </html>
