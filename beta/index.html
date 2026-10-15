@@ -30,9 +30,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beta.css?v=20261015-6">
+  <link rel="stylesheet" href="beta.css?v=20261015-7">
 </head>
 <body>
+  <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
   <a class="skip" href="#contenido">Saltar al contenido</a>
 
   <header class="nav" id="nav">
@@ -138,6 +139,22 @@
           <p class="edge__scope">Incluye pacientes, citas, órdenes y resultados, catálogo de exámenes, Synapse para equipos, inventario y reportes. Es exclusivo para laboratorios: no aplica para hospitales, sanatorios, clínicas ni farmacias, y no incluye caja ni facturación.</p>
         </div>
         <a class="btn btn--soft" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20QontroLab%20Edge" target="_blank" rel="noreferrer">Consultar QontroLab Edge <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <!-- Todo conectado: la red de módulos -->
+    <section class="connect" id="conectado" aria-labelledby="connectTitle">
+      <div class="network reveal">
+        <div class="network__copy">
+          <h2 id="connectTitle">Todo conectado, de verdad.</h2>
+          <p>Cada punto es un módulo de Qontrol. Así viaja la información de un paciente entre admisión, enfermería, laboratorio, imagen, farmacia y caja, sin volver a digitarse.</p>
+          <div class="hop" id="hop">
+            <small>Así viaja la información</small>
+            <p class="hop__route" id="hopRoute"><span>Recepción</span><i aria-hidden="true">→</i><span>Internamiento</span></p>
+            <p class="hop__text" id="hopText">El paciente se admite a internamiento desde recepción.</p>
+          </div>
+        </div>
+        <div class="network__canvas" aria-hidden="true"><canvas class="particles" id="networkCanvas"></canvas></div>
       </div>
     </section>
 
@@ -378,7 +395,7 @@
       </div>
     </section>
 
-    <!-- Cifras + red conectada -->
+    <!-- Cifras -->
     <section class="stats" aria-labelledby="statsTitle">
       <h2 class="reveal" id="statsTitle">La columna operativa de hospitales, sanatorios y laboratorios.</h2>
       <div class="stats__row reveal" id="statsRow">
@@ -386,19 +403,6 @@
         <div class="stat"><b data-count="36">36</b><span>módulos activables</span></div>
         <div class="stat"><b>24/7</b><span>soporte disponible</span></div>
         <i class="stats__line"><i class="stats__seg"></i></i>
-      </div>
-
-      <div class="network reveal">
-        <div class="network__copy">
-          <h3>Todo conectado, de verdad.</h3>
-          <p>Cada punto es un módulo de Qontrol. Así viaja la información de un paciente entre admisión, enfermería, laboratorio, imagen, farmacia y caja, sin volver a digitarse.</p>
-          <div class="hop" id="hop">
-            <small>Así viaja la información</small>
-            <p class="hop__route" id="hopRoute"><span>Recepción</span><i aria-hidden="true">→</i><span>Internamiento</span></p>
-            <p class="hop__text" id="hopText">El paciente se admite a internamiento desde recepción.</p>
-          </div>
-        </div>
-        <div class="network__canvas" aria-hidden="true"><canvas class="particles" id="networkCanvas"></canvas></div>
       </div>
     </section>
 
@@ -415,22 +419,13 @@
       </ul>
     </section>
 
-    <!-- Módulos -->
+    <!-- Módulos por sistema -->
     <section class="modules" id="modulos">
-      <div class="modules__head reveal">
+      <div class="split-head reveal">
         <h2><span id="moduleCount">36</span> módulos.<br>Activa solo lo que necesitas.</h2>
-        <div class="modules__tools">
-          <div class="filter" role="group" aria-label="Filtrar módulos por solución">
-            <button type="button" class="is-on" data-filter="all" aria-pressed="true">Todos</button>
-            <button type="button" data-filter="hosp" aria-pressed="false">Qontrol<b>Hosp</b></button>
-            <button type="button" data-filter="lab" aria-pressed="false">Qontro<b>Lab</b></button>
-            <button type="button" data-filter="clinic" aria-pressed="false">Qontrol<b>Clinic</b></button>
-            <button type="button" data-filter="farm" aria-pressed="false">Qontrol<b>Farm</b></button>
-          </div>
-          <p class="modules__count" id="moduleCountLine" aria-live="polite">Mostrando los 36 módulos de Qontrol.</p>
-        </div>
+        <p>Abre tu tipo de sistema para ver qué incluye. Toca cualquier módulo para ver el detalle.</p>
       </div>
-      <div class="modules__grid" id="moduleGrid"></div>
+      <div class="systems reveal" id="systems"></div>
     </section>
 
     <!-- Flujo -->
@@ -526,6 +521,6 @@
     <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
   </dialog>
 
-  <script src="beta.js?v=20261015-6"></script>
+  <script src="beta.js?v=20261015-7"></script>
 </body>
 </html>

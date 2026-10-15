@@ -1,5 +1,5 @@
 /* ============================================================
-   QontroLab · Landing beta editorial — interacciones
+   Qontrol · Landing — interacciones
    Mejora progresiva: sin JS el contenido se ve completo.
    ============================================================ */
 (function () {
@@ -149,6 +149,73 @@
   function whenVisible(el, onChange) {
     var io = new IntersectionObserver(function (entries) { onChange(entries[0].isIntersecting); }, { threshold: 0 });
     io.observe(el);
+  }
+
+  /* ---------- Puntos de fondo: pocos, suaves, acompañan al bajar ---------- */
+  function initAmbient() {
+    var canvas = $('#ambient');
+    if (!canvas) return;
+    var ctx, w, h, dots = [], raf = 0, last = 0, running = false;
+    function build() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = window.innerWidth; h = window.innerHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(clamp(w * h / 24000, 28, 80));
+      dots = [];
+      for (var i = 0; i < n; i++) {
+        var d = 0.25 + Math.random() * 0.75;
+        dots.push({ x: Math.random() * w, y: Math.random() * (h + 60), d: d, s: 0.9 + d * 1.3, a: 0.1 + d * 0.22,
+          vx: (Math.random() - 0.5) * 0.006, ph: Math.random() * 6.28, accent: Math.random() < 0.16 });
+      }
+      draw(performance.now());
+    }
+    function draw(now) {
+      ctx.clearRect(0, 0, w, h);
+      var sy = window.scrollY, span = h + 60, t = now * 0.001;
+      var inkCol = 'rgb(' + palette['p-ink'] + ')', accentCol = 'rgb(' + palette['p-node'] + ')';
+      var pos = [];
+      for (var i = 0; i < dots.length; i++) {
+        var p = dots[i];
+        var y = ((p.y - sy * p.d * 0.32) % span + span) % span - 30;
+        var x = ((p.x % w) + w) % w;
+        pos.push(x, y);
+        ctx.globalAlpha = p.a * (0.75 + Math.sin(t * 0.6 + p.ph) * 0.25);
+        ctx.fillStyle = p.accent ? accentCol : inkCol;
+        ctx.beginPath(); ctx.arc(x, y, p.s, 0, Math.PI * 2); ctx.fill();
+      }
+      // Hilos muy tenues entre puntos cercanos (como la red, pero en susurro)
+      ctx.strokeStyle = inkCol;
+      ctx.lineWidth = 0.6;
+      for (var a = 0; a < dots.length; a++) {
+        for (var b = a + 1; b < dots.length; b++) {
+          var dx = pos[a * 2] - pos[b * 2], dy = pos[a * 2 + 1] - pos[b * 2 + 1], d2 = dx * dx + dy * dy;
+          if (d2 < 11000) {
+            ctx.globalAlpha = (1 - d2 / 11000) * 0.07;
+            ctx.beginPath(); ctx.moveTo(pos[a * 2], pos[a * 2 + 1]); ctx.lineTo(pos[b * 2], pos[b * 2 + 1]); ctx.stroke();
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+    function tick(now) {
+      var dt = last ? Math.min(now - last, 50) : 16; last = now;
+      for (var i = 0; i < dots.length; i++) { var p = dots[i]; p.y -= dt * 0.006 * p.d; p.x += p.vx * dt; }
+      draw(now);
+      raf = requestAnimationFrame(tick);
+    }
+    function start() { if (running) return; running = true; last = 0; raf = requestAnimationFrame(tick); }
+    function stop() { running = false; cancelAnimationFrame(raf); }
+    build();
+    if (reduceMotion) {
+      window.addEventListener('scroll', function () { requestAnimationFrame(function () { draw(performance.now()); }); }, { passive: true });
+    } else {
+      start();
+      document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    }
+    document.addEventListener('qontrol:theme', function () { if (!running) draw(performance.now()); });
+    var rt = 0;
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 200); });
   }
 
   /* ---------- Partículas del hero: Q → tubos → corazón → cápsula ---------- */
@@ -620,7 +687,7 @@
     var tmp = { x: 0, y: 0, z: 0, s: 1 };
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      P.R = Math.min(w * 0.3, h * 0.4); P.ox = w / 2; P.oy = h * 0.5;
+      P.R = Math.min(w * 0.33, h * 0.42); P.ox = w / 2; P.oy = h * 0.5;
       P.cy = Math.cos(rotY); P.sy = Math.sin(rotY); P.cx = Math.cos(tilt); P.sx = Math.sin(tilt);
       var ink = 'rgb(' + palette['p-ink'] + ')', accent = 'rgb(' + palette['p-node'] + ')';
 
@@ -776,52 +843,66 @@
   var PRODUCTS = { hosp: ['Qontrol', 'Hosp'], lab: ['Qontro', 'Lab'], clinic: ['Qontrol', 'Clinic'], farm: ['Qontrol', 'Farm'] };
   var SHORT = { hosp: 'Hosp', lab: 'Lab', clinic: 'Clinic', farm: 'Farm' };
 
+  var SYSTEMS = [
+    { key: 'hosp', area: 'hos', for: 'Hospitales y sanatorios', lead: 'Lo propio de hospital y sanatorio' },
+    { key: 'lab', area: 'lab', for: 'Laboratorios', lead: 'Lo propio del laboratorio' },
+    { key: 'clinic', area: 'cli', for: 'Clínicas', lead: 'Lo propio de la clínica' },
+    { key: 'farm', area: 'far', for: 'Farmacias', lead: 'Lo propio de la farmacia' }
+  ];
+
   function initModules() {
-    var grid = $('#moduleGrid'), sheet = $('#moduleSheet');
-    if (!grid) return;
+    var box = $('#systems'), sheet = $('#moduleSheet');
+    if (!box) return;
     var countEl = $('#moduleCount');
     if (countEl) countEl.textContent = MODULES.length;
     $$('.stat [data-count]').forEach(function (el) { if (el.dataset.count === '36') { el.dataset.count = MODULES.length; el.textContent = MODULES.length; } });
+    var pw = function (k) { return PRODUCTS[k][0] + '<b>' + PRODUCTS[k][1] + '</b>'; };
+    var name = function (k) { return PRODUCTS[k].join(''); };
 
-    grid.innerHTML = MODULES.map(function (m, i) {
-      return '<button type="button" class="tile" data-area="' + m[0] + '" data-index="' + i + '">' +
-        '<small>' + String(i + 1).padStart(2, '0') + ' · ' + AREAS[m[0]] + '</small>' +
-        '<strong>' + m[1] + '</strong><span class="tile__desc">' + m[2] + '</span>' +
-        '<span class="tile__prods" aria-label="Incluido en: ' + m[4].map(function (k) { return PRODUCTS[k].join(''); }).join(', ') + '">' +
-        m[4].map(function (k) { return '<i data-p="' + k + '">' + SHORT[k] + '</i>'; }).join('') + '</span>' +
-        '<span class="arrow" aria-hidden="true">→</span></button>';
+    box.innerHTML = SYSTEMS.map(function (sys, si) {
+      var inSys = MODULES.map(function (m, i) { return { m: m, i: i }; }).filter(function (x) { return x.m[4].indexOf(sys.key) > -1; });
+      var own = inSys.filter(function (x) { return x.m[0] === sys.area; });
+      var also = inSys.filter(function (x) { return x.m[0] !== sys.area; });
+      var tiles = own.map(function (x) {
+        return '<button type="button" class="tile" data-index="' + x.i + '"><strong>' + x.m[1] + '</strong>' +
+          '<span class="tile__desc">' + x.m[2] + '</span><span class="arrow" aria-hidden="true">→</span></button>';
+      }).join('');
+      var alsoHtml = sys.key === 'hosp'
+        ? '<div class="system__also"><span>Además incluye todo lo de</span><div class="system__chips">' +
+            ['lab', 'clinic', 'farm'].map(function (k) { return '<a class="chip-link" href="#sys-' + k + '" data-open-system="' + k + '">' + name(k) + ' <span aria-hidden="true">→</span></a>'; }).join('') + '</div></div>'
+        : '<div class="system__also"><span>También incluye</span><div class="system__chips">' +
+            also.map(function (x) { return '<button type="button" class="chip-mod" data-index="' + x.i + '">' + x.m[1] + '</button>'; }).join('') + '</div></div>';
+      return '<details class="system" id="sys-' + sys.key + '" name="sistemas" data-system="' + sys.key + '"' + (si === 0 ? ' open' : '') + '>' +
+        '<summary><span class="system__name"><small>' + sys.for + '</small><strong class="pw">' + pw(sys.key) + '</strong></span>' +
+        '<span class="system__count">' + inSys.length + ' módulos</span><span class="system__chev" aria-hidden="true"></span></summary>' +
+        '<div class="system__body"><p class="system__lead">' + sys.lead + '</p><div class="system__grid">' + tiles + '</div>' + alsoHtml + '</div></details>';
     }).join('');
 
-    grid.addEventListener('click', function (e) {
-      var tile = e.target.closest('.tile');
-      if (!tile || !sheet || typeof sheet.showModal !== 'function') return;
-      var m = MODULES[+tile.dataset.index];
-      $('#sheetArea').textContent = AREAS[m[0]] + ' · ' + m[4].map(function (k) { return PRODUCTS[k].join(''); }).join(', ');
+    var all = $$('.system', box);
+    function openSystem(k, scroll) {
+      all.forEach(function (d) { d.open = d.dataset.system === k; });
+      if (scroll) { var t = $('#sys-' + k); if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+    }
+    // Solo uno abierto a la vez (también en navegadores sin <details name>)
+    all.forEach(function (d) {
+      d.addEventListener('toggle', function () { if (d.open) all.forEach(function (o) { if (o !== d) o.open = false; }); });
+    });
+    box.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-open-system]');
+      if (link) { e.preventDefault(); openSystem(link.dataset.openSystem, true); return; }
+      var item = e.target.closest('[data-index]');
+      if (!item || !sheet || typeof sheet.showModal !== 'function') return;
+      var m = MODULES[+item.dataset.index];
+      $('#sheetArea').textContent = AREAS[m[0]] + ' · ' + m[4].map(name).join(', ');
       $('#sheetTitle').textContent = m[1];
       $('#sheetText').textContent = m[3];
       sheet.showModal();
     });
     if (sheet) sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
-
-    var countLine = $('#moduleCountLine');
-    function applyFilter(f) {
-      $$('.filter button').forEach(function (b) { var on = b.dataset.filter === f; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
-      var shown = 0;
-      $$('.tile', grid).forEach(function (t) {
-        var m = MODULES[+t.dataset.index];
-        var show = f === 'all' || m[4].indexOf(f) > -1;
-        if (show) shown++;
-        t.classList.toggle('is-hidden', !show);
-        t.classList.remove('is-entering');
-        $$('.tile__prods i', t).forEach(function (chip) { chip.classList.toggle('is-match', chip.dataset.p === f); });
-        if (show) { void t.offsetWidth; t.classList.add('is-entering'); }
-      });
-      if (countLine) countLine.textContent = f === 'all'
-        ? 'Mostrando los ' + MODULES.length + ' módulos de Qontrol.'
-        : PRODUCTS[f].join('') + ' incluye ' + shown + ' módulos.';
-    }
-    $$('.filter button').forEach(function (btn) { btn.addEventListener('click', function () { applyFilter(btn.dataset.filter); }); });
-    $$('[data-filter-link]').forEach(function (a) { a.addEventListener('click', function () { applyFilter(a.dataset.filterLink); }); });
+    // Botones "Ver módulos de…" de las pestañas abren su sistema
+    $$('[data-filter-link]').forEach(function (a) {
+      a.addEventListener('click', function () { var k = a.dataset.filterLink; if (PRODUCTS[k]) openSystem(k, false); });
+    });
   }
 
   /* ---------- Calculadora: horas de digitación que se evitan ---------- */
@@ -914,6 +995,7 @@
 
   function boot() {
     initTheme();
+    initAmbient();
     initNav();
     initReveal();
     initHeroParticles();
