@@ -259,7 +259,8 @@ main>section{padding:0 var(--gutter)}
 .areas__intro{display:grid;gap:18px;padding-bottom:28px}
 .tabs{display:flex;align-self:end}
 .tabs button{position:relative;display:flex;gap:10px;align-items:baseline;padding:14px 20px 16px;border:0;background:none;cursor:pointer;color:var(--muted);font-size:15px;font-weight:500;white-space:nowrap;transition:color .2s}
-.tabs button span{font-size:13px;font-variant-numeric:tabular-nums}
+.tabs button .tab__n{font-size:13px;font-variant-numeric:tabular-nums}
+.tab__name{white-space:nowrap}
 .tabs button:hover{color:var(--body)}
 .tabs button[aria-selected="true"]{color:var(--ink)}
 .tabs__bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left}
@@ -500,6 +501,33 @@ main>section{padding:0 var(--gutter)}
 .impl__steps:not(.is-live) li h3{color:var(--ink)}
 .impl__steps:not(.is-live) li p{color:var(--body)}
 
+/* ---------- Soluciones (cuatro productos) ---------- */
+.pw{font-family:var(--font-display);font-weight:400;letter-spacing:-.03em;color:var(--ink);white-space:nowrap}
+.pw b{font-weight:400;color:var(--brand-b)}
+.suite{padding-top:var(--section)!important;display:grid;gap:var(--gutter)}
+.suite__grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.prod{position:relative;display:flex;flex-direction:column;gap:14px;height:100%;min-height:260px;padding:26px 24px 22px;border-radius:var(--radius-tile);background:var(--surface);overflow:hidden;isolation:isolate;transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .45s var(--ease)}
+.prod::before{content:"";position:absolute;inset:auto -30% -60% auto;width:80%;height:80%;background:radial-gradient(circle,rgba(var(--glow),.16),transparent 65%);z-index:-1;opacity:0;transition:opacity .4s var(--ease)}
+.prod:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(15,16,35,.09)}
+:root[data-theme="dark"] .prod:hover{box-shadow:0 0 0 1px var(--line)}
+.prod:hover::before{opacity:1}
+.prod small{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
+.prod .pw{font-size:clamp(28px,2.6vw,36px);line-height:1}
+.prod__text{font-size:15px;line-height:1.55;color:var(--body)}
+.prod__more{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink)}
+.prod__more .arrow{transition:transform .25s var(--ease)}
+.prod:hover .prod__more .arrow{transform:translateX(3px)}
+.area__for{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
+.area__copy h3.pw{font-size:clamp(36px,3.6vw,52px);line-height:1}
+.tabs button b,.filter button b{font-weight:inherit;color:inherit}
+.tabs button[aria-selected="true"] b{color:var(--brand-b)}
+.filter button.is-on b{color:var(--brand-b)}
+.modules__tools{display:grid;gap:10px;justify-items:start}
+.modules__count{font-size:14px;color:var(--body)}
+.tile__prods{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.tile__prods i{font-style:normal;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--body)}
+.tile__prods i.is-match{background:var(--accent-soft);color:var(--accent-ink)}
+
 /* ---------- Revelado ---------- */
 .js .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease-out),transform 1s var(--ease-out)}
 .js .reveal.is-in{opacity:1;transform:none}
@@ -590,9 +618,12 @@ main>section{padding:0 var(--gutter)}
 
 @media (max-width:1100px){
   .swap__grid{grid-template-columns:repeat(2,1fr)}
+  .suite__grid{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:860px){
-  .benefits,.impl{padding-top:var(--section)!important}
+  .benefits,.impl,.suite{padding-top:var(--section)!important}
+  .suite__grid{grid-template-columns:1fr}
+  .prod{min-height:0;padding:22px 20px}
   .calc{grid-template-columns:1fr}
   .calc__inputs{gap:26px;padding:22px 18px}
   .field label{font-size:14px}

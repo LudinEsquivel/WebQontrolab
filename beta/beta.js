@@ -64,7 +64,7 @@
         links.forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + entry.target.id); });
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
-    ['plataforma', 'beneficios', 'modulos', 'implementacion', 'preguntas'].forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+    ['soluciones', 'beneficios', 'modulos', 'implementacion', 'preguntas'].forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
   }
 
   /* ---------- Titular por palabras + revelado ---------- */
@@ -129,7 +129,7 @@
 
   /* ---------- Partículas del hero: Q → tubos → corazón → cápsula ---------- */
   var SHAPES = [
-    { label: 'Qontrolab', draw: function (c, cx, cy, s, accent) {
+    { label: 'Qontrol', draw: function (c, cx, cy, s, accent) {
         c.lineCap = 'round';
         c.lineWidth = s * 0.12;
         c.strokeStyle = '#fff';
@@ -137,7 +137,7 @@
         c.strokeStyle = accent;
         c.beginPath(); c.moveTo(cx + s * 0.16, cy + s * 0.15); c.lineTo(cx + s * 0.4, cy + s * 0.39); c.stroke();
       } },
-    { label: 'Hospitales y sanatorios · internamiento y quirófano', draw: function (c, cx, cy, s, accent) {
+    { label: 'QontrolHosp · hospitales y sanatorios', draw: function (c, cx, cy, s, accent) {
         c.lineJoin = 'round'; c.lineCap = 'round';
         var bw = s * 0.92, bh = s * 0.6, left = cx - bw / 2, top = cy - bh / 2 + s * 0.14;
         c.strokeStyle = '#fff'; c.lineWidth = s * 0.035;
@@ -153,7 +153,7 @@
         c.fillRect(cx - t / 2, ct, t, cs);
         c.fillRect(cx - cs / 2, ct + cs / 2 - t / 2, cs, t);
       } },
-    { label: 'Laboratorio · muestras y resultados', draw: function (c, cx, cy, s, accent) {
+    { label: 'Qontrolab · laboratorios', draw: function (c, cx, cy, s, accent) {
         var levels = [0.5, 0.72, 0.38];
         c.save(); c.translate(cx, cy); c.rotate(-0.08);
         [-0.32, 0, 0.32].forEach(function (dx, i) {
@@ -169,7 +169,7 @@
         c.beginPath(); c.moveTo(-s * 0.56, s * 0.08); c.lineTo(s * 0.56, s * 0.08); c.stroke();
         c.restore();
       } },
-    { label: 'Clínica · consultas y signos vitales', draw: function (c, cx, cy, s, accent) {
+    { label: 'QontrolClinic · clínicas', draw: function (c, cx, cy, s, accent) {
         c.lineJoin = 'round'; c.lineCap = 'round';
         c.strokeStyle = '#fff'; c.lineWidth = s * 0.06;
         c.beginPath();
@@ -185,7 +185,7 @@
         c.lineTo(cx + s * 0.82, y);
         c.stroke();
       } },
-    { label: 'Farmacia · ventas, stock y recetas', draw: function (c, cx, cy, s, accent) {
+    { label: 'QontrolFarm · farmacias', draw: function (c, cx, cy, s, accent) {
         c.save(); c.translate(cx, cy); c.rotate(-0.62);
         var w = s * 1.02, h = s * 0.36, r = h / 2;
         c.fillStyle = accent;
@@ -397,6 +397,10 @@
     });
     whenVisible($('#areas'), function (vis) { visible = vis; syncPause(); });
     syncPause();
+    // Tarjetas de producto y enlaces del pie abren su pestaña
+    $$('[data-open-tab]').forEach(function (a) {
+      a.addEventListener('click', function () { select(+a.dataset.openTab); });
+    });
   }
 
   /* ---------- Cifras que se turnan ---------- */
@@ -702,46 +706,51 @@
     }
   }
 
-  /* ---------- Módulos (los 36 del sistema, hospital primero) ---------- */
+  /* ---------- Módulos (los 36 del sistema, hospital primero, por solución) ---------- */
+  // Último campo: soluciones que incluyen el módulo, según la matriz de modos de
+  // operación de la app (src/lib/operationMode.ts). Los módulos hospitalarios
+  // (internamiento, enfermería, quirófano, imagen, cocina) se venden en QontrolHosp.
   var MODULES = [
-    ['hos', 'Internamiento', 'Encamamiento y censo.', 'Gestiona ingresos, camas, censo y la cuenta de cada paciente internado, con médico tratante asignado. Laboratorio, Rayos X y ultrasonidos se cargan directo a su cuenta.'],
-    ['hos', 'Enfermería y Emergencia', 'Pantallas propias para enfermería.', 'Enfermería trabaja con sus propias pantallas: emergencia, encamamiento, órdenes de laboratorio, insumos de su área y medicamentos administrados, que se descuentan de la bodega.'],
-    ['hos', 'Quirófano', 'Cirugías organizadas.', 'Organiza las cirugías y sus paquetes quirúrgicos dentro de la misma plataforma, con el personal de quirófano y sus permisos.'],
-    ['hos', 'Rayos X', 'Solicitudes de imagen.', 'Solicitudes de Rayos X con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
-    ['hos', 'Ultrasonidos', 'Estudios de ultrasonido.', 'Solicitudes de ultrasonido con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.'],
-    ['hos', 'Cocina', 'Dietas de pacientes internados.', 'Muestra las dietas activas de los pacientes internados, ordenadas por habitación. Las dietas se asignan desde el internamiento.'],
-    ['lab', 'Órdenes de Trabajo', 'Proceso controlado de principio a fin.', 'Controla todo el proceso desde que entra el paciente: exámenes solicitados, pagos, muestra, estado de proceso y entrega final. Todo queda trazable.'],
-    ['lab', 'Resultados', 'Captura, validación y PDFs.', 'Captura, valida y entrega resultados con formato profesional, dentro de la misma orden de trabajo. Maneja valores de referencia y genera PDFs listos para el paciente o el médico.'],
-    ['lab', 'Catálogo de Exámenes', 'Exámenes y precios claros.', 'Mantén ordenados tus exámenes, perfiles, precios y áreas. Facilita cotizar, crear órdenes y estandarizar la forma en que trabaja el laboratorio.'],
-    ['lab', 'Synapse', 'Equipos conectados.', 'Conecta equipos de laboratorio para reducir digitación manual. Recibe resultados de analizadores mediante ASTM, HL7 o archivos planos, según el equipo.'],
-    ['lab', 'Control de Calidad', 'Controles internos y trazabilidad.', 'Gestión de calidad del laboratorio: controles internos de equipos, temperatura y ambiente, lotes de material de control, estadística acumulada, revisión y trazabilidad.'],
-    ['lab', 'Bitácora Diaria', 'Evidencia diaria del laboratorio.', 'Registra controles de inicio de turno, temperaturas, control de calidad y observaciones. Ayuda a mantener evidencia interna y orden en la operación.'],
-    ['lab', 'Laboratorios Referentes', 'Referencias y comisiones.', 'Registra los laboratorios y hospitales que te refieren exámenes, con su comisión. Cada laboratorio referente puede consultar sus comisiones desde su propio portal.'],
-    ['lab', 'Logística', 'Envíos de muestras controlados.', 'Registra los envíos a laboratorios de referencia, con los insumos del inventario que viajan en cada envío y sus devoluciones.'],
-    ['cli', 'Consultas', 'Atención médica documentada.', 'Gestiona consultas clínicas, signos vitales, diagnósticos, recetas, constancias y seguimiento del paciente. Ideal para clínicas, médicos independientes y sanatorios.'],
-    ['cli', 'Historia Clínica', 'El expediente clínico completo.', 'Reúne la historia clínica del paciente para que el médico tenga antecedentes, consultas y seguimiento en un solo lugar.'],
-    ['cli', 'Catálogo de Servicios', 'Servicios clínicos y precios.', 'Mantén ordenados los servicios clínicos y sus precios para cotizar, cobrar y cargarlos a la cuenta del paciente.'],
-    ['cli', 'Portal del Paciente', 'Resultados e historial en línea.', 'Permite que el paciente consulte su historial, órdenes y resultados desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.'],
-    ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectada con la clínica.'],
-    ['far', 'Recetas', 'De la consulta a la farmacia.', 'Las recetas que emite el médico llegan a una cola de farmacia para despacharlas sin volver a escribirlas.'],
-    ['far', 'Compras y Proveedores', 'Abastecimiento ordenado.', 'Catálogo de productos, proveedores, compras, entradas y precios de la farmacia en un mismo flujo.'],
-    ['far', 'Traslados y Bodegas', 'Stock donde se necesita.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.'],
-    ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.'],
-    ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.'],
-    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.'],
-    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea propuestas profesionales para pacientes, empresas o instituciones. Cuando el cliente acepta, puedes convertir la cotización en una orden.'],
-    ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.'],
-    ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.'],
-    ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.'],
-    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede emitir los cobros que quedaron pendientes de facturar.'],
-    ['adm', 'Contabilidad', 'Cuentas bancarias y movimientos.', 'Cuentas bancarias, saldos y movimientos. Las transferencias cobradas llegan a la cuenta que elijas como predeterminada.'],
-    ['adm', 'Médicos y Comisiones', 'Referencias bajo control.', 'Gestiona médicos referentes, órdenes enviadas y comisiones. Cada médico puede consultar sus pacientes, órdenes y comisiones desde el Portal Médico.'],
-    ['adm', 'Portal Médico', 'Comunicación más ágil.', 'Permite que médicos referentes consulten sus pacientes, órdenes y comisiones sin llamar ni saturar al equipo.'],
-    ['adm', 'Multi-sucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.'],
-    ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.'],
-    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrolab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.']
+    ['hos', 'Internamiento', 'Encamamiento y censo.', 'Gestiona ingresos, camas, censo y la cuenta de cada paciente internado, con médico tratante asignado. Laboratorio, Rayos X y ultrasonidos se cargan directo a su cuenta.', ['hosp']],
+    ['hos', 'Enfermería y Emergencia', 'Pantallas propias para enfermería.', 'Enfermería trabaja con sus propias pantallas: emergencia, encamamiento, órdenes de laboratorio, insumos de su área y medicamentos administrados, que se descuentan de la bodega.', ['hosp']],
+    ['hos', 'Quirófano', 'Cirugías organizadas.', 'Organiza las cirugías y sus paquetes quirúrgicos dentro de la misma plataforma, con el personal de quirófano y sus permisos.', ['hosp']],
+    ['hos', 'Rayos X', 'Solicitudes de imagen.', 'Solicitudes de Rayos X con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.', ['hosp']],
+    ['hos', 'Ultrasonidos', 'Estudios de ultrasonido.', 'Solicitudes de ultrasonido con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.', ['hosp']],
+    ['hos', 'Cocina', 'Dietas de pacientes internados.', 'Muestra las dietas activas de los pacientes internados, ordenadas por habitación. Las dietas se asignan desde el internamiento.', ['hosp']],
+    ['lab', 'Órdenes de Trabajo', 'Proceso controlado de principio a fin.', 'Controla todo el proceso desde que entra el paciente: exámenes solicitados, pagos, muestra, estado de proceso y entrega final. Todo queda trazable.', ['hosp', 'lab']],
+    ['lab', 'Resultados', 'Captura, validación y PDFs.', 'Captura, valida y entrega resultados con formato profesional, dentro de la misma orden de trabajo. Maneja valores de referencia y genera PDFs listos para el paciente o el médico.', ['hosp', 'lab']],
+    ['lab', 'Catálogo de Exámenes', 'Exámenes y precios claros.', 'Mantén ordenados tus exámenes, perfiles, precios y áreas. Facilita cotizar, crear órdenes y estandarizar la forma en que trabaja el laboratorio.', ['hosp', 'lab']],
+    ['lab', 'Synapse', 'Equipos conectados.', 'Conecta equipos de laboratorio para reducir digitación manual. Recibe resultados de analizadores mediante ASTM, HL7 o archivos planos, según el equipo.', ['hosp', 'lab']],
+    ['lab', 'Control de Calidad', 'Controles internos y trazabilidad.', 'Gestión de calidad del laboratorio: controles internos de equipos, temperatura y ambiente, lotes de material de control, estadística acumulada, revisión y trazabilidad.', ['hosp', 'lab']],
+    ['lab', 'Bitácora Diaria', 'Evidencia diaria del laboratorio.', 'Registra controles de inicio de turno, temperaturas, control de calidad y observaciones. Ayuda a mantener evidencia interna y orden en la operación.', ['hosp', 'lab']],
+    ['lab', 'Laboratorios Referentes', 'Referencias y comisiones.', 'Registra los laboratorios y hospitales que te refieren exámenes, con su comisión. Cada laboratorio referente puede consultar sus comisiones desde su propio portal.', ['hosp', 'lab', 'clinic']],
+    ['lab', 'Logística', 'Envíos de muestras controlados.', 'Registra los envíos a laboratorios de referencia, con los insumos del inventario que viajan en cada envío y sus devoluciones.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['cli', 'Consultas', 'Atención médica documentada.', 'Gestiona consultas clínicas, signos vitales, diagnósticos, recetas, constancias y seguimiento del paciente. Ideal para clínicas, médicos independientes y sanatorios.', ['hosp', 'clinic']],
+    ['cli', 'Historia Clínica', 'El expediente clínico completo.', 'Reúne la historia clínica del paciente para que el médico tenga antecedentes, consultas y seguimiento en un solo lugar.', ['hosp', 'clinic']],
+    ['cli', 'Catálogo de Servicios', 'Servicios clínicos y precios.', 'Mantén ordenados los servicios clínicos y sus precios para cotizar, cobrar y cargarlos a la cuenta del paciente.', ['hosp', 'clinic']],
+    ['cli', 'Portal del Paciente', 'Resultados e historial en línea.', 'Permite que el paciente consulte su historial, órdenes y resultados desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.', ['hosp', 'lab', 'clinic']],
+    ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectada con la clínica.', ['hosp', 'farm']],
+    ['far', 'Recetas', 'De la consulta a la farmacia.', 'Las recetas que emite el médico llegan a una cola de farmacia para despacharlas sin volver a escribirlas.', ['hosp', 'farm']],
+    ['far', 'Compras y Proveedores', 'Abastecimiento ordenado.', 'Catálogo de productos, proveedores, compras, entradas y precios de la farmacia en un mismo flujo.', ['hosp', 'farm']],
+    ['far', 'Traslados y Bodegas', 'Stock donde se necesita.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.', ['hosp', 'farm']],
+    ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Cotizaciones', 'Propuestas más profesionales.', 'Crea propuestas profesionales para pacientes, empresas o instituciones. Cuando el cliente acepta, puedes convertir la cotización en una orden.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.', ['hosp', 'lab', 'clinic']],
+    ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.', ['hosp', 'lab', 'clinic']],
+    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede emitir los cobros que quedaron pendientes de facturar.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Contabilidad', 'Cuentas bancarias y movimientos.', 'Cuentas bancarias, saldos y movimientos. Las transferencias cobradas llegan a la cuenta que elijas como predeterminada.', ['hosp', 'lab', 'clinic']],
+    ['adm', 'Médicos y Comisiones', 'Referencias bajo control.', 'Gestiona médicos referentes, órdenes enviadas y comisiones. Cada médico puede consultar sus pacientes, órdenes y comisiones desde el Portal Médico.', ['hosp', 'lab', 'clinic']],
+    ['adm', 'Portal Médico', 'Comunicación más ágil.', 'Permite que médicos referentes consulten sus pacientes, órdenes y comisiones sin llamar ni saturar al equipo.', ['hosp', 'lab', 'clinic']],
+    ['adm', 'Multi-sucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrolab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
   ];
   var AREAS = { hos: 'Hospital y sanatorio', lab: 'Laboratorio', cli: 'Clínica', far: 'Farmacia', op: 'Operación', adm: 'Administración' };
+  var PRODUCTS = { hosp: ['Qontrol', 'Hosp'], lab: ['Qontro', 'lab'], clinic: ['Qontrol', 'Clinic'], farm: ['Qontrol', 'Farm'] };
+  var SHORT = { hosp: 'Hosp', lab: 'Lab', clinic: 'Clinic', farm: 'Farm' };
 
   function initModules() {
     var grid = $('#moduleGrid'), sheet = $('#moduleSheet');
@@ -753,28 +762,39 @@
     grid.innerHTML = MODULES.map(function (m, i) {
       return '<button type="button" class="tile" data-area="' + m[0] + '" data-index="' + i + '">' +
         '<small>' + String(i + 1).padStart(2, '0') + ' · ' + AREAS[m[0]] + '</small>' +
-        '<strong>' + m[1] + '</strong><span class="tile__desc">' + m[2] + '</span><span class="arrow" aria-hidden="true">→</span></button>';
+        '<strong>' + m[1] + '</strong><span class="tile__desc">' + m[2] + '</span>' +
+        '<span class="tile__prods" aria-label="Incluido en: ' + m[4].map(function (k) { return PRODUCTS[k].join(''); }).join(', ') + '">' +
+        m[4].map(function (k) { return '<i data-p="' + k + '">' + SHORT[k] + '</i>'; }).join('') + '</span>' +
+        '<span class="arrow" aria-hidden="true">→</span></button>';
     }).join('');
 
     grid.addEventListener('click', function (e) {
       var tile = e.target.closest('.tile');
       if (!tile || !sheet || typeof sheet.showModal !== 'function') return;
       var m = MODULES[+tile.dataset.index];
-      $('#sheetArea').textContent = AREAS[m[0]];
+      $('#sheetArea').textContent = AREAS[m[0]] + ' · ' + m[4].map(function (k) { return PRODUCTS[k].join(''); }).join(', ');
       $('#sheetTitle').textContent = m[1];
       $('#sheetText').textContent = m[3];
       sheet.showModal();
     });
     if (sheet) sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
 
+    var countLine = $('#moduleCountLine');
     function applyFilter(f) {
       $$('.filter button').forEach(function (b) { var on = b.dataset.filter === f; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+      var shown = 0;
       $$('.tile', grid).forEach(function (t) {
-        var show = f === 'all' || t.dataset.area === f;
+        var m = MODULES[+t.dataset.index];
+        var show = f === 'all' || m[4].indexOf(f) > -1;
+        if (show) shown++;
         t.classList.toggle('is-hidden', !show);
         t.classList.remove('is-entering');
+        $$('.tile__prods i', t).forEach(function (chip) { chip.classList.toggle('is-match', chip.dataset.p === f); });
         if (show) { void t.offsetWidth; t.classList.add('is-entering'); }
       });
+      if (countLine) countLine.textContent = f === 'all'
+        ? 'Mostrando los ' + MODULES.length + ' módulos de Qontrol.'
+        : PRODUCTS[f].join('') + ' incluye ' + shown + ' módulos.';
     }
     $$('.filter button').forEach(function (btn) { btn.addEventListener('click', function () { applyFilter(btn.dataset.filter); }); });
     $$('[data-filter-link]').forEach(function (a) { a.addEventListener('click', function () { applyFilter(a.dataset.filterLink); }); });
