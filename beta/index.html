@@ -7,15 +7,21 @@
   <meta name="description" content="Plataforma modular para hospitales, sanatorios, laboratorios, clínicas y farmacias.">
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#F7F8FC">
+  <meta name="color-scheme" content="light dark">
   <script>
-    // Tema antes de pintar: evita el destello de tema equivocado.
+    // Tema antes de pintar: sigue el tema del navegador (claro u oscuro),
+    // salvo que la persona haya elegido uno con el botón.
     (function () {
-      var t = 'light';
-      try { t = localStorage.getItem('qontrolab-theme') || 'light'; } catch (e) {}
+      var saved = null, sys = 'light';
+      try { saved = localStorage.getItem('qontrol-theme'); } catch (e) {}
+      if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) sys = 'dark';
+      var t = saved === 'dark' || saved === 'light' ? saved : sys;
       if (/[?&]tema=oscuro/.test(location.search)) t = 'dark';
       if (/[?&]tema=claro/.test(location.search)) t = 'light';
-      document.documentElement.dataset.theme = t === 'dark' ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
       document.documentElement.classList.add('js');
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t === 'dark' ? '#09090A' : '#F7F8FC');
     })();
   </script>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
@@ -24,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beta.css?v=20261015-5">
+  <link rel="stylesheet" href="beta.css?v=20261015-6">
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -92,7 +98,7 @@
     <section class="suite" id="soluciones">
       <div class="split-head reveal">
         <h2>Una plataforma, cuatro soluciones.</h2>
-        <p>Qontrol se adapta a tu tipo de institución. Elige la solución que necesitas: todas comparten la misma base y puedes crecer de una a otra sin cambiar de sistema.</p>
+        <p>Qontrol se adapta a tu tipo de institución. Elige la solución que necesitas: todas comparten la misma base y puedes crecer de una a otra sin cambiar de sistema. Y solo para laboratorios sin internet estable, existe QontroLab Edge.</p>
       </div>
       <ul class="suite__grid reveal">
         <li><a class="prod" href="#areas" data-open-tab="0">
@@ -103,9 +109,9 @@
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="1">
           <small>Laboratorios</small>
-          <strong class="pw">Qontro<b>lab</b></strong>
+          <strong class="pw">Qontro<b>Lab</b></strong>
           <span class="prod__text">Órdenes, resultados validados y PDFs, equipos conectados con Synapse, control de calidad y laboratorios referentes.</span>
-          <span class="prod__more">Ver Qontrolab <span class="arrow" aria-hidden="true">→</span></span>
+          <span class="prod__more">Ver QontroLab <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="2">
           <small>Clínicas</small>
@@ -120,6 +126,19 @@
           <span class="prod__more">Ver QontrolFarm <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
       </ul>
+
+      <div class="edge reveal" id="edge">
+        <div class="edge__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><rect x="9" y="8" width="30" height="11" rx="3"/><rect x="9" y="22" width="30" height="11" rx="3"/><path d="M15 13.5h4M15 27.5h4"/><circle cx="33" cy="13.5" r="1.4"/><circle cx="33" cy="27.5" r="1.4"/><path d="M24 33v5M14 41h20"/><path class="edge__slash" d="M38 36l6 6M44 36l-6 6"/></svg>
+        </div>
+        <div class="edge__copy">
+          <small>Solo para laboratorios · sin internet estable</small>
+          <strong class="pw">Qontro<b>Lab</b> <span class="edge__tag">Edge</span></strong>
+          <p>El sistema funciona dentro de tu laboratorio, en un equipo propio conectado a la red local. Aunque se caiga el internet, tu sede sigue recibiendo pacientes, procesando, validando e imprimiendo resultados.</p>
+          <p class="edge__scope">Incluye pacientes, citas, órdenes y resultados, catálogo de exámenes, Synapse para equipos, inventario y reportes. Es exclusivo para laboratorios: no aplica para hospitales, sanatorios, clínicas ni farmacias, y no incluye caja ni facturación.</p>
+        </div>
+        <a class="btn btn--soft" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20QontroLab%20Edge" target="_blank" rel="noreferrer">Consultar QontroLab Edge <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
     </section>
 
     <!-- Declaración + PC -->
@@ -176,7 +195,7 @@
         </div>
         <div class="tabs" role="tablist" aria-label="Soluciones de Qontrol">
           <button role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true"><span class="tab__n">01</span><span class="tab__name">Qontrol<b>Hosp</b></span><i class="tabs__bar"></i></button>
-          <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1"><span class="tab__n">02</span><span class="tab__name">Qontro<b>lab</b></span><i class="tabs__bar"></i></button>
+          <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1"><span class="tab__n">02</span><span class="tab__name">Qontro<b>Lab</b></span><i class="tabs__bar"></i></button>
           <button role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1"><span class="tab__n">03</span><span class="tab__name">Qontrol<b>Clinic</b></span><i class="tabs__bar"></i></button>
           <button role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1"><span class="tab__n">04</span><span class="tab__name">Qontrol<b>Farm</b></span><i class="tabs__bar"></i></button>
           <button role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1"><span class="tab__n">05</span><span class="tab__name">Administración</span><i class="tabs__bar"></i></button>
@@ -225,10 +244,10 @@
           </div>
           <div class="area__copy">
             <small class="area__for">Laboratorios</small>
-            <h3 class="pw">Qontro<b>lab</b></h3>
+            <h3 class="pw">Qontro<b>Lab</b></h3>
             <p>Órdenes, toma de muestra, resultados validados y PDFs profesionales con valores de referencia. Conecta tus analizadores con Synapse, lleva control de calidad y envía muestras a laboratorios de referencia.</p>
             <ul class="tags"><li>Órdenes de Trabajo</li><li>Resultados</li><li>Synapse</li><li>Control de Calidad</li><li>Laboratorios Referentes</li><li>Logística</li></ul>
-            <a class="btn btn--soft" href="#modulos" data-filter-link="lab">Ver módulos de Qontrolab <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="lab">Ver módulos de QontroLab <span class="arrow" aria-hidden="true">→</span></a>
           </div>
         </div>
 
@@ -404,7 +423,7 @@
           <div class="filter" role="group" aria-label="Filtrar módulos por solución">
             <button type="button" class="is-on" data-filter="all" aria-pressed="true">Todos</button>
             <button type="button" data-filter="hosp" aria-pressed="false">Qontrol<b>Hosp</b></button>
-            <button type="button" data-filter="lab" aria-pressed="false">Qontro<b>lab</b></button>
+            <button type="button" data-filter="lab" aria-pressed="false">Qontro<b>Lab</b></button>
             <button type="button" data-filter="clinic" aria-pressed="false">Qontrol<b>Clinic</b></button>
             <button type="button" data-filter="farm" aria-pressed="false">Qontrol<b>Farm</b></button>
           </div>
@@ -463,8 +482,9 @@
     <section class="faq" id="preguntas">
       <h2 class="reveal">Preguntas frecuentes</h2>
       <div class="faq__list reveal">
-        <details><summary>¿Qué diferencia hay entre QontrolHosp, Qontrolab, QontrolClinic y QontrolFarm?</summary><p>Son las soluciones de la misma plataforma Qontrol según tu tipo de institución: QontrolHosp para hospitales y sanatorios con operación completa, Qontrolab para laboratorios, QontrolClinic para clínicas y QontrolFarm para farmacias. Puedes empezar con una y crecer a otra sin cambiar de sistema.</p></details>
+        <details><summary>¿Qué diferencia hay entre QontrolHosp, QontroLab, QontrolClinic y QontrolFarm?</summary><p>Son las soluciones de la misma plataforma Qontrol según tu tipo de institución: QontrolHosp para hospitales y sanatorios con operación completa, QontroLab para laboratorios, QontrolClinic para clínicas y QontrolFarm para farmacias. Puedes empezar con una y crecer a otra sin cambiar de sistema.</p></details>
         <details><summary>¿Qontrol sirve solo para laboratorios clínicos?</summary><p>No. Qontrol es modular: puede funcionar para un hospital, un sanatorio, un laboratorio, una clínica, una farmacia o una operación individual, activando solo lo que se necesita.</p></details>
+        <details><summary>¿Funciona sin internet?</summary><p>Qontrol es una plataforma web: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm trabajan en línea. Solo para laboratorios existe QontroLab Edge, que funciona dentro del laboratorio en un equipo propio: aunque se caiga el internet, se siguen recibiendo pacientes, procesando, validando e imprimiendo resultados. Edge no aplica para hospitales, sanatorios, clínicas ni farmacias.</p></details>
         <details><summary>¿Necesito instalar algo en cada computadora?</summary><p>No. Qontrol funciona como plataforma web, por lo que puede utilizarse desde el navegador en computadoras, tablets o celulares autorizados.</p></details>
         <details><summary>¿Puede manejar varias sucursales?</summary><p>Sí. La operación puede organizarse por sede o sucursal para mantener datos separados y una visión general de toda la institución.</p></details>
         <details><summary>¿Puedo contratar solo algunos módulos?</summary><p>Sí. Puedes usar solo laboratorio, solo farmacia, clínica, o la operación hospitalaria completa con internamiento, enfermería y quirófano, según el crecimiento y las necesidades reales.</p></details>
@@ -491,7 +511,7 @@
         <p>Plataforma modular de gestión clínica.</p>
       </div>
       <div class="footer__cols">
-        <div><h4>Soluciones</h4><a href="#areas" data-open-tab="0">QontrolHosp</a><a href="#areas" data-open-tab="1">Qontrolab</a><a href="#areas" data-open-tab="2">QontrolClinic</a><a href="#areas" data-open-tab="3">QontrolFarm</a></div><div><h4>Producto</h4><a href="#plataforma">Plataforma</a><a href="#beneficios">Beneficios</a><a href="#modulos">Módulos</a><a href="#implementacion">Implementación</a><a href="#preguntas">Preguntas</a></div>
+        <div><h4>Soluciones</h4><a href="#areas" data-open-tab="0">QontrolHosp</a><a href="#areas" data-open-tab="1">QontroLab</a><a href="#areas" data-open-tab="2">QontrolClinic</a><a href="#areas" data-open-tab="3">QontrolFarm</a><a href="#edge">QontroLab Edge</a></div><div><h4>Producto</h4><a href="#plataforma">Plataforma</a><a href="#beneficios">Beneficios</a><a href="#modulos">Módulos</a><a href="#implementacion">Implementación</a><a href="#preguntas">Preguntas</a></div>
         <div><h4>Contacto</h4><a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">WhatsApp</a><a href="https://qontrolab.com/">Iniciar sesión</a></div>
       </div>
     </div>
@@ -506,6 +526,6 @@
     <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
   </dialog>
 
-  <script src="beta.js?v=20261015-5"></script>
+  <script src="beta.js?v=20261015-6"></script>
 </body>
 </html>

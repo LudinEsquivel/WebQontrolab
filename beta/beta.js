@@ -1,5 +1,5 @@
 /* ============================================================
-   Qontrolab · Landing beta editorial — interacciones
+   QontroLab · Landing beta editorial — interacciones
    Mejora progresiva: sin JS el contenido se ve completo.
    ============================================================ */
 (function () {
@@ -21,22 +21,46 @@
   }
   readPalette();
 
-  /* ---------- Tema claro / oscuro (blanco y negro) ---------- */
+  /* ---------- Tema claro / oscuro (blanco y negro) ----------
+     Por defecto sigue el tema del navegador y cambia en vivo si la persona
+     lo cambia en su sistema. Si elige otro con el botón, se respeta; si
+     vuelve a elegir el mismo del sistema, la página vuelve a seguirlo. */
   function initTheme() {
     var btn = $('#themeToggle');
     var meta = $('meta[name="theme-color"]');
-    function apply(theme, save) {
+    var KEY = 'qontrol-theme';
+    var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    var forced = /[?&]tema=(oscuro|claro)/.test(location.search);
+    function system() { return mq && mq.matches ? 'dark' : 'light'; }
+    function saved() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function set(theme) {
+      root.classList.add('theme-switching');
       root.dataset.theme = theme;
       var dark = theme === 'dark';
       btn.setAttribute('aria-pressed', String(dark));
       btn.setAttribute('aria-label', dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
       if (meta) meta.setAttribute('content', dark ? '#09090A' : '#F7F8FC');
-      if (save) { try { localStorage.setItem('qontrolab-theme', theme); } catch (e) {} }
       readPalette();
-      document.dispatchEvent(new CustomEvent('qontrolab:theme'));
+      document.dispatchEvent(new CustomEvent('qontrol:theme'));
+      requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('theme-switching'); }); });
+    }
+    // Fundido suave de toda la página donde el navegador lo permite; si no, cambio limpio al instante.
+    function apply(theme, animate) {
+      if (animate && !reduceMotion && document.startViewTransition) document.startViewTransition(function () { set(theme); });
+      else set(theme);
     }
     apply(root.dataset.theme === 'dark' ? 'dark' : 'light', false);
-    btn.addEventListener('click', function () { apply(root.dataset.theme === 'dark' ? 'light' : 'dark', true); });
+    btn.addEventListener('click', function () {
+      var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try {
+        if (next === system()) localStorage.removeItem(KEY); else localStorage.setItem(KEY, next);
+      } catch (e) {}
+      apply(next, true);
+    });
+    if (mq) {
+      var follow = function () { if (!forced && !saved()) apply(system(), true); };
+      if (mq.addEventListener) mq.addEventListener('change', follow); else if (mq.addListener) mq.addListener(follow);
+    }
   }
 
   /* ---------- Navegación ---------- */
@@ -153,7 +177,7 @@
         c.fillRect(cx - t / 2, ct, t, cs);
         c.fillRect(cx - cs / 2, ct + cs / 2 - t / 2, cs, t);
       } },
-    { label: 'Qontrolab · laboratorios', draw: function (c, cx, cy, s, accent) {
+    { label: 'QontroLab · laboratorios', draw: function (c, cx, cy, s, accent) {
         var levels = [0.5, 0.72, 0.38];
         c.save(); c.translate(cx, cy); c.rotate(-0.08);
         [-0.32, 0, 0.32].forEach(function (dx, i) {
@@ -312,7 +336,7 @@
     build();
     whenVisible(canvas, function (vis) { vis ? start() : stop(); });
     document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
-    document.addEventListener('qontrolab:theme', function () { if (!running) draw(); });
+    document.addEventListener('qontrol:theme', function () { if (!running) draw(); });
     var rt = 0;
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 180); });
     if (finePointer) {
@@ -694,7 +718,7 @@
     }
     whenVisible(canvas, function (vis) { visible = vis; vis ? start() : stop(); });
     document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else if (visible) start(); });
-    document.addEventListener('qontrolab:theme', function () { if (!running) draw(); });
+    document.addEventListener('qontrol:theme', function () { if (!running) draw(); });
     var rt = 0;
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 180); });
     if (finePointer) {
@@ -746,10 +770,10 @@
     ['adm', 'Portal Médico', 'Comunicación más ágil.', 'Permite que médicos referentes consulten sus pacientes, órdenes y comisiones sin llamar ni saturar al equipo.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Multi-sucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.', ['hosp', 'lab', 'clinic', 'farm']],
     ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.', ['hosp', 'lab', 'clinic', 'farm']],
-    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrolab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
+    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'QontroLab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
   ];
   var AREAS = { hos: 'Hospital y sanatorio', lab: 'Laboratorio', cli: 'Clínica', far: 'Farmacia', op: 'Operación', adm: 'Administración' };
-  var PRODUCTS = { hosp: ['Qontrol', 'Hosp'], lab: ['Qontro', 'lab'], clinic: ['Qontrol', 'Clinic'], farm: ['Qontrol', 'Farm'] };
+  var PRODUCTS = { hosp: ['Qontrol', 'Hosp'], lab: ['Qontro', 'Lab'], clinic: ['Qontrol', 'Clinic'], farm: ['Qontrol', 'Farm'] };
   var SHORT = { hosp: 'Hosp', lab: 'Lab', clinic: 'Clinic', farm: 'Farm' };
 
   function initModules() {
