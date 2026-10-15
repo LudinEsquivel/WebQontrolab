@@ -1,12 +1,27 @@
 # WebQontrolab
 
-Landing page oficial de **Qontrolab**.
+Landing page oficial de **Qontrol**.
 
-Qontrolab es una plataforma web modular para operaciones de salud: laboratorios, clínicas, sanatorios, hospitales, farmacias y profesionales independientes. Puede usarse solo para laboratorio, solo para farmacia, para clínica o como operación completa con pacientes, órdenes, resultados, inventario, caja, reportes, cotizaciones, agenda, portales, farmacia, módulo clínico, multi-sucursal y conexión con equipos.
+Qontrol es una plataforma web modular para operaciones de salud, con una solución para cada tipo de institución:
 
-## Deploy sugerido en Hostinger
+- **QontrolHosp** — hospitales y sanatorios
+- **QontroLab** — laboratorios (y **QontroLab Edge**, solo para laboratorios que trabajan sin internet)
+- **QontrolClinic** — clínicas
+- **QontrolFarm** — farmacias
 
-Para esta primera versión es una página estática.
+## Estructura
+
+Página estática, sin paso de compilación.
+
+- `index.html` — la página
+- `assets/css/site.css` — estilos (tema claro y oscuro)
+- `assets/js/site.js` — interacciones y animaciones
+- `assets/img/` — íconos, marca e imagen para compartir
+- `beta/` — redirige a la página principal (enlace usado durante la versión de prueba)
+
+## Publicación en Hostinger
+
+Cada cambio en la rama `main` se publica solo en https://qontrolab.site.
 
 - Entry point: `index.html`
 - Build command: vacío / no requerido

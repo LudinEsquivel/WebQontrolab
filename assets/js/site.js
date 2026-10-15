@@ -601,7 +601,7 @@
     for (var ab = 0; ab <= SEGS; ab++) arcBuf.push({ x: 0, y: 0, z: 0, s: 1 });
     function arc(a, b, upto) {
       var n = Math.max(1, Math.round(upto * SEGS));
-      for (var i = 0; i <= n; i++) { var t = i / SEGS; project(slerp(a, b, Math.min(t, upto)), 1 + Math.sin(Math.PI * Math.min(t, upto)) * 0.13, arcBuf[i]); }
+      for (var i = 0; i <= n; i++) { var t = i / SEGS; project(slerp(a, b, Math.min(t, upto)), 1 + Math.sin(Math.PI * Math.min(t, upto)) * 0.1, arcBuf[i]); }
       return n;
     }
     function strokeArc(a, b, upto, alpha, width) {
@@ -687,7 +687,9 @@
     var tmp = { x: 0, y: 0, z: 0, s: 1 };
     function draw() {
       ctx.clearRect(0, 0, w, h);
-      P.R = Math.min(w * 0.33, h * 0.42); P.ox = w / 2; P.oy = h * 0.5;
+      // Tamaño que garantiza que esfera, arcos (hasta 1.18 R con la perspectiva),
+      // el brillo del pulso y los nombres quepan siempre dentro del lienzo.
+      P.R = Math.max(60, Math.min((w / 2 - 24) / 1.18, (h / 2 - 26) / 1.18)); P.ox = w / 2; P.oy = h * 0.5;
       P.cy = Math.cos(rotY); P.sy = Math.sin(rotY); P.cx = Math.cos(tilt); P.sx = Math.sin(tilt);
       var ink = 'rgb(' + palette['p-ink'] + ')', accent = 'rgb(' + palette['p-node'] + ')';
 
@@ -749,8 +751,8 @@
       ctx.lineWidth = 5;
       labels.forEach(function (lb) {
         var tw = ctx.measureText(lb.name).width, right = lb.x >= P.ox - 10;
-        if (right && lb.x + 12 + tw > w - 4) right = false;
-        if (!right && lb.x - 12 - tw < 4) right = true;
+        if (right && lb.x + 12 + tw > w - 12) right = false;
+        if (!right && lb.x - 12 - tw < 12) right = true;
         var lx = lb.x + (right ? 12 : -12), x0 = right ? lx : lx - tw;
         var box = { l: x0 - 4, r: x0 + tw + 4, t: lb.y - 10, b: lb.y + 10 };
         for (var i = 0; i < placed.length; i++) {
@@ -872,21 +874,78 @@
             ['lab', 'clinic', 'farm'].map(function (k) { return '<a class="chip-link" href="#sys-' + k + '" data-open-system="' + k + '">' + name(k) + ' <span aria-hidden="true">→</span></a>'; }).join('') + '</div></div>'
         : '<div class="system__also"><span>También incluye</span><div class="system__chips">' +
             also.map(function (x) { return '<button type="button" class="chip-mod" data-index="' + x.i + '">' + x.m[1] + '</button>'; }).join('') + '</div></div>';
-      return '<details class="system" id="sys-' + sys.key + '" name="sistemas" data-system="' + sys.key + '"' + (si === 0 ? ' open' : '') + '>' +
+      return '<details class="system" id="sys-' + sys.key + '" data-system="' + sys.key + '">' +
         '<summary><span class="system__name"><small>' + sys.for + '</small><strong class="pw">' + pw(sys.key) + '</strong></span>' +
         '<span class="system__count">' + inSys.length + ' módulos</span><span class="system__chev" aria-hidden="true"></span></summary>' +
         '<div class="system__body"><p class="system__lead">' + sys.lead + '</p><div class="system__grid">' + tiles + '</div>' + alsoHtml + '</div></details>';
     }).join('');
 
     var all = $$('.system', box);
-    function openSystem(k, scroll) {
-      all.forEach(function (d) { d.open = d.dataset.system === k; });
-      if (scroll) { var t = $('#sys-' + k); if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+    var EASE = 'cubic-bezier(.22,1,.36,1)';
+
+    // Apertura suave: el panel crece con fundido y las tarjetas aparecen en cascada.
+    function animateOpen(d, done) {
+      if (d.open) { if (done) done(); return; }
+      d.open = true;
+      var body = $('.system__body', d);
+      if (reduceMotion || !body.animate) { if (done) done(); return; }
+      var h = body.scrollHeight;
+      body.style.overflow = 'hidden';
+      var a = body.animate([{ height: '0px', opacity: 0 }, { height: h + 'px', opacity: 1 }], { duration: 720, easing: EASE });
+      a.onfinish = a.oncancel = function () { body.style.overflow = ''; if (done) done(); };
+      $$('.tile, .chip-mod, .chip-link, .system__lead, .system__also > span', body).forEach(function (el, i) {
+        el.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 560, delay: 140 + i * 45, easing: EASE, fill: 'backwards' });
+      });
     }
-    // Solo uno abierto a la vez (también en navegadores sin <details name>)
+    function animateClose(d) {
+      if (!d.open) return;
+      var body = $('.system__body', d);
+      if (reduceMotion || !body.animate) { d.open = false; return; }
+      body.style.overflow = 'hidden';
+      var a = body.animate([{ height: body.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 420, easing: EASE });
+      a.onfinish = function () { d.open = false; body.style.overflow = ''; };
+    }
     all.forEach(function (d) {
-      d.addEventListener('toggle', function () { if (d.open) all.forEach(function (o) { if (o !== d) o.open = false; }); });
+      $('summary', d).addEventListener('click', function (e) {
+        e.preventDefault();
+        d.dataset.touched = '1'; // la persona decidió: el scroll ya no lo toca
+        d.open ? animateClose(d) : animateOpen(d);
+      });
     });
+
+    // Al bajar, los sistemas se abren de uno en uno y en orden: primero QontrolHosp, luego
+    // QontroLab, QontrolClinic y QontrolFarm. El siguiente espera a que el anterior termine de
+    // abrirse y a que su título llegue a la parte baja de la pantalla. Nunca se cierran solos,
+    // así lo que estás leyendo no salta.
+    var busy = false, ticking = false;
+    function inZone(d) { var r = d.getBoundingClientRect(); return r.top < window.innerHeight * 0.72 && r.bottom > 0; }
+    function advance() {
+      ticking = false;
+      if (busy) return;
+      for (var i = 0; i < all.length; i++) {
+        var d = all[i];
+        if (d.dataset.touched) continue;
+        if (inZone(d)) {
+          d.dataset.touched = '1';
+          busy = true;
+          animateOpen(d, function () { busy = false; setTimeout(advance, 160); });
+        }
+        return;
+      }
+      window.removeEventListener('scroll', onScroll);
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(advance); } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    advance();
+
+    function openSystem(k, scroll) {
+      var t = $('#sys-' + k);
+      if (!t) return;
+      t.dataset.touched = '1';
+      animateOpen(t);
+      if (scroll) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }
     box.addEventListener('click', function (e) {
       var link = e.target.closest('[data-open-system]');
       if (link) { e.preventDefault(); openSystem(link.dataset.openSystem, true); return; }

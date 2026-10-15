@@ -3,110 +3,534 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qontrolab — Plataforma Modular de Gestión Clínica</title>
-  <meta name="description" content="Plataforma modular para laboratorios, clínicas, sanatorios, hospitales, farmacias y operaciones de salud independientes.">
+  <title>Qontrol — Plataforma modular de gestión de salud</title>
+  <meta name="description" content="Qontrol es la plataforma modular para hospitales, sanatorios, laboratorios, clínicas y farmacias: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm.">
+  <link rel="canonical" href="https://qontrolab.site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Qontrol">
+  <meta property="og:url" content="https://qontrolab.site/">
+  <meta property="og:title" content="Qontrol — Plataforma modular de gestión de salud">
+  <meta property="og:description" content="Pacientes, órdenes, resultados, internamiento, farmacia, inventario y caja en una sola plataforma para hospitales, sanatorios, laboratorios, clínicas y farmacias.">
+  <meta property="og:image" content="https://qontrolab.site/assets/img/og-qontrol.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Qontrol: tu operación de salud, clara y conectada.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#F7F8FC">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    // Tema antes de pintar: sigue el tema del navegador (claro u oscuro),
+    // salvo que la persona haya elegido uno con el botón.
+    (function () {
+      var saved = null, sys = 'light';
+      try { saved = localStorage.getItem('qontrol-theme'); } catch (e) {}
+      if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) sys = 'dark';
+      var t = saved === 'dark' || saved === 'light' ? saved : sys;
+      if (/[?&]tema=oscuro/.test(location.search)) t = 'dark';
+      if (/[?&]tema=claro/.test(location.search)) t = 'light';
+      document.documentElement.dataset.theme = t;
+      document.documentElement.classList.add('js');
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t === 'dark' ? '#09090A' : '#F7F8FC');
+    })();
+  </script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Qontrolab">
-  <meta property="og:url" content="https://qontrolab.site/">
-  <meta property="og:title" content="Qontrolab — Plataforma Modular de Gestión Clínica">
-  <meta property="og:description" content="Pacientes, órdenes, resultados, clínica, farmacia, inventario y caja en una sola plataforma para laboratorios, clínicas, sanatorios, hospitales y farmacias.">
-  <meta property="og:image" content="https://qontrolab.site/assets/img/og-image.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Qontrolab: tu operación de salud, clara y conectada.">
-  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261015-1">
-  <link rel="stylesheet" href="assets/css/experience.css?v=20260517-2">
-  <link rel="stylesheet" href="assets/css/polish.css?v=20261015-1">
-  <link rel="stylesheet" href="assets/css/mobile.css?v=20261015-2">
-  <link rel="stylesheet" href="assets/css/module-illustrations.css?v=20260517-2">
-  <link rel="stylesheet" href="assets/css/elevate.css?v=20260711-3">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261015-p1">
 </head>
 <body>
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
-  <div class="site-background"></div>
-  <div class="grain"></div>
+  <canvas class="ambient" id="ambient" aria-hidden="true"></canvas>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
 
-  <nav class="nav" id="nav">
-    <div class="nav__inner">
-      <a class="brand" href="#top">Qontro<strong>lab</strong></a>
-      <div class="nav__links">
+  <header class="nav" id="nav">
+    <div class="nav__bar">
+      <a class="brand" href="#top" aria-label="Qontrol, inicio">
+        <img class="mark mark--on-light" src="assets/img/mark-navy.svg" alt="" width="26" height="26">
+        <img class="mark mark--on-dark" src="assets/img/mark-white.svg" alt="" width="26" height="26">
+        <span>Qontrol</span>
+      </a>
+      <nav class="nav__links" aria-label="Principal">
+        <a href="#soluciones">Soluciones</a>
         <a href="#beneficios">Beneficios</a>
-        <a href="#experiencia">Experiencia</a>
-        <a href="#workflow">Flujo</a>
         <a href="#modulos">Módulos</a>
-        <a href="#faq">Preguntas</a>
-      </div>
+        <a href="#implementacion">Implementación</a>
+        <a href="#preguntas">Preguntas</a>
+      </nav>
       <div class="nav__actions">
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar tema"><span class="theme-toggle__icon" aria-hidden="true"></span></button>
-        <a class="nav-cta" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Solicitar demo</a>
+        <a class="btn btn--ghost" href="https://qontrolab.com/">Iniciar sesión <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Solicitar demo</a>
+      </div>
+      <button class="theme" id="themeToggle" type="button" aria-label="Cambiar a tema oscuro" aria-pressed="false">
+        <svg class="theme__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="theme__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+      </button>
+      <button class="nav__toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav__menu" id="mobileMenu" hidden>
+      <a href="#soluciones">Soluciones</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#implementacion">Implementación</a>
+      <a href="#preguntas">Preguntas</a>
+      <div class="nav__menu-actions">
+        <a class="btn btn--ghost" href="https://qontrolab.com/">Iniciar sesión <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Solicitar demo</a>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <main>
+  <main id="contenido">
+    <!-- Hero -->
     <section class="hero" id="top">
-      <div class="hero__grid">
-        <div class="hero__content">
-          <div class="eyebrow motion-enter">Plataforma modular para operación real</div>
-          <h1>Convierte procesos complejos en una operación clara, conectada y profesional.</h1>
-          <p>Qontrolab centraliza pacientes, órdenes, resultados, clínica, farmacia, inventario, caja, reportes, cotizaciones, agenda, portales y conexión con equipos en una experiencia modular para laboratorios, clínicas, sanatorios, hospitales, farmacias y operaciones independientes.</p>
+      <div class="hero__copy">
+        <h1 class="hero__title" data-split>Tu operación de salud, clara y conectada.</h1>
+        <hr class="rule">
+        <div class="hero__foot">
+          <p>Qontrol centraliza pacientes, órdenes, resultados, farmacia, inventario y caja en una sola plataforma modular para hospitales, sanatorios, laboratorios, clínicas y farmacias.</p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Solicitar demo</a>
-            <a class="btn btn--secondary" href="#modulos">Ver módulos</a>
-          </div>
-          <div class="proof-row">
-            <span>+5,000 órdenes al mes</span>
-            <span>20+ módulos</span>
-            <span>Soporte 24/7</span>
+            <a class="btn btn--primary btn--lg" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Solicitar demo <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn--soft btn--lg" href="#plataforma">Cómo funciona</a>
           </div>
         </div>
-        <div class="product-stage">
-          <div class="product-orbit product-orbit--one"></div>
-          <div class="product-orbit product-orbit--two"></div>
-          <div class="floating-card floating-card--right motion-float"><small>Estado operativo</small><strong>Resultados listos</strong><span>Validación y entrega profesional</span></div>
-          <div class="floating-card floating-card--left motion-float-slow"><small>Synapse</small><strong>Equipos conectados</strong><span>Menos digitación manual</span></div>
-          <div class="system-window">
-            <div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><div class="browser-url">app.qontrolab.com</div></div>
-            <div class="app-mock">
-              <aside class="app-sidebar" id="moduleSidebar"><b>Qontro<strong>lab</strong></b></aside>
-              <section class="app-content">
-                <div class="app-top"><div><small id="moduleLabel">Dashboard</small><h3 id="mockTitle">Órdenes recientes</h3></div><span class="live" id="mockStatus">En vivo</span></div>
-                <div class="kpis"><div class="kpi"><b id="mockKpiOne">24</b><span id="mockKpiOneLabel">Órdenes</span></div><div class="kpi"><b id="mockKpiTwo">7</b><span id="mockKpiTwoLabel">Pendientes</span></div><div class="kpi"><b id="mockKpiThree">142</b><span id="mockKpiThreeLabel">Pacientes/mes</span></div></div>
-                <div class="preview" id="mockPreview"><div class="rows" id="mockRows"></div><div class="note" id="mockNote"></div></div>
-              </section>
+      </div>
+      <div class="hero__media media" aria-hidden="true">
+        <canvas class="particles" id="heroParticles"></canvas>
+        <div class="hero__caption"><span id="shapeIndex">01</span><span id="shapeLabel">Qontrol</span></div>
+      </div>
+    </section>
+
+    <!-- Soluciones: una plataforma, cuatro productos -->
+    <section class="suite" id="soluciones">
+      <div class="split-head reveal">
+        <h2>Una plataforma, cuatro soluciones.</h2>
+        <p>Qontrol se adapta a tu tipo de institución. Elige la solución que necesitas: todas comparten la misma base y puedes crecer de una a otra sin cambiar de sistema. Y solo para laboratorios sin internet estable, existe QontroLab Edge.</p>
+      </div>
+      <ul class="suite__grid reveal">
+        <li><a class="prod" href="#areas" data-open-tab="0">
+          <small>Hospitales y sanatorios</small>
+          <strong class="pw">Qontrol<b>Hosp</b></strong>
+          <span class="prod__text">La operación completa: internamiento, enfermería, quirófano, imagen, laboratorio y farmacia, con una sola cuenta por paciente.</span>
+          <span class="prod__more">Ver QontrolHosp <span class="arrow" aria-hidden="true">→</span></span>
+        </a></li>
+        <li><a class="prod" href="#areas" data-open-tab="1">
+          <small>Laboratorios</small>
+          <strong class="pw">Qontro<b>Lab</b></strong>
+          <span class="prod__text">Órdenes, resultados validados y PDFs, equipos conectados con Synapse, control de calidad y laboratorios referentes.</span>
+          <span class="prod__more">Ver QontroLab <span class="arrow" aria-hidden="true">→</span></span>
+        </a></li>
+        <li><a class="prod" href="#areas" data-open-tab="2">
+          <small>Clínicas</small>
+          <strong class="pw">Qontrol<b>Clinic</b></strong>
+          <span class="prod__text">Consultas, historia clínica, agenda, recetas y constancias, con portal del paciente.</span>
+          <span class="prod__more">Ver QontrolClinic <span class="arrow" aria-hidden="true">→</span></span>
+        </a></li>
+        <li><a class="prod" href="#areas" data-open-tab="3">
+          <small>Farmacias</small>
+          <strong class="pw">Qontrol<b>Farm</b></strong>
+          <span class="prod__text">Punto de venta, caja, recetas, inventario por bodega, traslados, compras y proveedores.</span>
+          <span class="prod__more">Ver QontrolFarm <span class="arrow" aria-hidden="true">→</span></span>
+        </a></li>
+      </ul>
+
+      <div class="edge reveal" id="edge">
+        <div class="edge__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48"><rect x="9" y="8" width="30" height="11" rx="3"/><rect x="9" y="22" width="30" height="11" rx="3"/><path d="M15 13.5h4M15 27.5h4"/><circle cx="33" cy="13.5" r="1.4"/><circle cx="33" cy="27.5" r="1.4"/><path d="M24 33v5M14 41h20"/><path class="edge__slash" d="M38 36l6 6M44 36l-6 6"/></svg>
+        </div>
+        <div class="edge__copy">
+          <small>Solo para laboratorios · sin internet estable</small>
+          <strong class="pw">Qontro<b>Lab</b> <span class="edge__tag">Edge</span></strong>
+          <p>El sistema funciona dentro de tu laboratorio, en un equipo propio conectado a la red local. Aunque se caiga el internet, tu sede sigue recibiendo pacientes, procesando, validando e imprimiendo resultados.</p>
+          <p class="edge__scope">Incluye pacientes, citas, órdenes y resultados, catálogo de exámenes, Synapse para equipos, inventario y reportes. Es exclusivo para laboratorios: no aplica para hospitales, sanatorios, clínicas ni farmacias, y no incluye caja ni facturación.</p>
+        </div>
+        <a class="btn btn--soft" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20QontroLab%20Edge" target="_blank" rel="noreferrer">Consultar QontroLab Edge <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <!-- Todo conectado: la red de módulos -->
+    <section class="connect" id="conectado" aria-labelledby="connectTitle">
+      <div class="network reveal">
+        <div class="network__copy">
+          <h2 id="connectTitle">Todo conectado, de verdad.</h2>
+          <p>Cada punto es un módulo de Qontrol. Así viaja la información de un paciente entre admisión, enfermería, laboratorio, imagen, farmacia y caja, sin volver a digitarse.</p>
+          <div class="hop" id="hop">
+            <small>Así viaja la información</small>
+            <p class="hop__route" id="hopRoute"><span>Recepción</span><i aria-hidden="true">→</i><span>Internamiento</span></p>
+            <p class="hop__text" id="hopText">El paciente se admite a internamiento desde recepción.</p>
+          </div>
+        </div>
+        <div class="network__canvas" aria-hidden="true"><canvas class="particles" id="networkCanvas"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Declaración + PC -->
+    <section class="statement" id="plataforma">
+      <div class="split-head reveal">
+        <h2>De procesos sueltos a una operación bajo control.</h2>
+        <p>Las hojas sueltas y los sistemas desconectados definieron la forma de trabajar de muchas instituciones. Qontrol conecta admisión, enfermería, laboratorio, farmacia y caja en un mismo sistema.</p>
+      </div>
+      <div class="media stage reveal" aria-hidden="true">
+        <div class="monitor" id="monitor">
+          <div class="monitor__screen" id="monitorScreen">
+            <div class="ui-fit">
+              <div class="ui" id="monitorUi">
+                <aside class="ui__side">
+                  <span class="ui__brand">Qontrol<b>Hosp</b></span>
+                  <span class="is-on">Dashboard</span><span>Pacientes</span><span>Citas y Agenda</span><span>Órdenes de Trabajo</span><span>Consultas</span><span>Farmacia</span><span>Inventario</span><span>Caja y Cobros</span><span>Reportes</span><span>Configuración</span>
+                </aside>
+                <div class="ui__main">
+                  <div class="ui__top"><div><small>DASHBOARD</small><strong>Resumen operativo</strong></div><em class="ui__tag">Sucursal Central</em></div>
+                  <div class="ui__kpis">
+                    <div><b>24</b><span>Órdenes hoy</span></div>
+                    <div><b>7</b><span>Pendientes</span></div>
+                    <div><b>Q4.2k</b><span>Ingresos</span></div>
+                    <div><b>18</b><span>Resultados listos</span></div>
+                  </div>
+                  <div class="ui__table">
+                    <div class="ui__row ui__row--head"><span>Orden</span><span>Paciente</span><span>Estudio</span><span>Estado</span></div>
+                    <div class="ui__row"><span>OT-0847</span><span>Ana Martínez</span><span>Hemograma + Perfil lipídico</span><em class="pill pill--ok">Validado</em></div>
+                    <div class="ui__row"><span>OT-0848</span><span>Luis Pérez</span><span>Glucosa en ayunas</span><em class="pill">En proceso</em></div>
+                    <div class="ui__row"><span>OT-0849</span><span>María López</span><span>Perfil tiroideo</span><em class="pill pill--wait">Muestra</em></div>
+                    <div class="ui__row"><span>OT-0850</span><span>Carlos Ruiz</span><span>Preoperatorio</span><em class="pill">Pago</em></div>
+                  </div>
+                  <div class="ui__duo">
+                    <div class="ui__panel"><small>Ingresos · semana</small><div class="ui__bars"><i style="--h:42%"></i><i style="--h:58%"></i><i style="--h:50%"></i><i style="--h:74%"></i><i style="--h:66%"></i><i style="--h:88%"></i><i style="--h:54%"></i></div></div>
+                    <div class="ui__panel"><small>Alertas</small><p class="ui__alert"><i class="dot"></i>Reactivo de glucosa vence en 12 días</p><p class="ui__alert"><i class="dot dot--warm"></i>2 resultados pendientes de validar</p></div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="monitor__neck"></div>
+          <div class="monitor__base"></div>
+        </div>
+        <span class="note">Imagen ilustrativa · datos de ejemplo</span>
+      </div>
+    </section>
+
+    <!-- Pestañas por área -->
+    <section class="areas" id="areas">
+      <div class="areas__head reveal">
+        <div class="areas__intro">
+          <h2>Cada solución, a la medida de tu institución.</h2>
+          <p>Activa solo lo que necesitas: el hospital completo, el laboratorio, la clínica o la farmacia. Todo comparte pacientes, órdenes y cuentas.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Soluciones de Qontrol">
+          <button role="tab" id="tab-0" aria-controls="panel-0" aria-selected="true"><span class="tab__n">01</span><span class="tab__name">Qontrol<b>Hosp</b></span><i class="tabs__bar"></i></button>
+          <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="false" tabindex="-1"><span class="tab__n">02</span><span class="tab__name">Qontro<b>Lab</b></span><i class="tabs__bar"></i></button>
+          <button role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1"><span class="tab__n">03</span><span class="tab__name">Qontrol<b>Clinic</b></span><i class="tabs__bar"></i></button>
+          <button role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1"><span class="tab__n">04</span><span class="tab__name">Qontrol<b>Farm</b></span><i class="tabs__bar"></i></button>
+          <button role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1"><span class="tab__n">05</span><span class="tab__name">Administración</span><i class="tabs__bar"></i></button>
+        </div>
+      </div>
+
+      <div class="areas__panels reveal">
+        <div class="area is-active" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
+          <div class="media area__media" aria-hidden="true">
+            <div class="card">
+              <div class="card__head"><small>INTERNAMIENTO · HAB. 204</small><em class="pill pill--ok">Activo</em></div>
+              <div class="adm"><span>Paciente</span><b>María López</b></div>
+              <div class="adm"><span>Médico tratante</span><b>Dr. Carlos Ruiz</b></div>
+              <div class="adm adm--sub"><span>Cargos a la cuenta</span></div>
+              <div class="pos"><span>Laboratorio · Hemograma</span><b>Q90.00</b></div>
+              <div class="pos"><span>Rayos X · Tórax PA</span><b>Q250.00</b></div>
+              <div class="pos"><span>Ultrasonido · Abdominal</span><b>Q350.00</b></div>
+              <div class="pos pos--total"><span>Cuenta</span><b>Q690.00</b></div>
+              <div class="card__foot"><span class="doc"></span>Dieta blanda asignada · cocina por habitación</div>
+            </div>
+            <div class="chip">Encamamiento · censo de camas</div>
+            <span class="note">Datos de ejemplo</span>
+          </div>
+          <div class="area__copy">
+            <small class="area__for">Hospitales y sanatorios</small>
+            <h3 class="pw">Qontrol<b>Hosp</b></h3>
+            <p>Internamiento con censo de camas, médico tratante y la cuenta de cada paciente. Enfermería y emergencia con sus propias pantallas, quirófano, Rayos X, ultrasonidos y dietas de cocina. El laboratorio y la imagen se cargan directo a la cuenta del internamiento.</p>
+            <ul class="tags"><li>Internamiento</li><li>Enfermería y Emergencia</li><li>Quirófano</li><li>Rayos X</li><li>Ultrasonidos</li><li>Cocina</li><li>Historia Clínica</li></ul>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="hosp">Ver módulos de QontrolHosp <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="area" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
+          <div class="media area__media" aria-hidden="true">
+            <div class="card">
+              <div class="card__head"><small>RESULTADOS · OT-2026-0847</small><em class="pill pill--ok">Validado</em></div>
+              <div class="res res--head"><span>Prueba</span><span>Resultado</span><span>Referencia</span></div>
+              <div class="res"><span>Hemoglobina</span><b>14.2 g/dL</b><span>12 – 16</span></div>
+              <div class="res"><span>Glucosa</span><b>91 mg/dL</b><span>70 – 100</span></div>
+              <div class="res"><span>Colesterol total</span><b>178 mg/dL</b><span>&lt; 200</span></div>
+              <div class="res res--flag"><span>Triglicéridos</span><b>162 mg/dL</b><span>&lt; 150</span></div>
+              <div class="card__foot"><span class="doc"></span>PDF listo para entregar</div>
+            </div>
+            <div class="chip">Synapse · ASTM · HL7</div>
+            <span class="note">Datos de ejemplo</span>
+          </div>
+          <div class="area__copy">
+            <small class="area__for">Laboratorios</small>
+            <h3 class="pw">Qontro<b>Lab</b></h3>
+            <p>Órdenes, toma de muestra, resultados validados y PDFs profesionales con valores de referencia. Conecta tus analizadores con Synapse, lleva control de calidad y envía muestras a laboratorios de referencia.</p>
+            <ul class="tags"><li>Órdenes de Trabajo</li><li>Resultados</li><li>Synapse</li><li>Control de Calidad</li><li>Laboratorios Referentes</li><li>Logística</li></ul>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="lab">Ver módulos de QontroLab <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="area" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
+          <div class="media area__media" aria-hidden="true">
+            <div class="card">
+              <div class="card__head"><small>CONSULTA · ANA MARTÍNEZ</small><em class="pill">En curso</em></div>
+              <div class="vitals">
+                <div><small>Presión</small><b>120/80</b></div>
+                <div><small>Frec. cardiaca</small><b>72 lpm</b></div>
+                <div><small>Temperatura</small><b>36.6 °C</b></div>
+                <div><small>SpO₂</small><b>98 %</b></div>
+              </div>
+              <svg class="ecg" viewBox="0 0 300 48" preserveAspectRatio="none"><path d="M0 26 H70 L80 26 L88 8 L98 44 L106 18 L112 26 H180 L190 26 L198 8 L208 44 L216 18 L222 26 H300"/></svg>
+              <div class="card__foot"><span class="doc"></span>Receta y constancia generadas</div>
+            </div>
+            <div class="chip">Historia clínica · recetas</div>
+            <span class="note">Datos de ejemplo</span>
+          </div>
+          <div class="area__copy">
+            <small class="area__for">Clínicas</small>
+            <h3 class="pw">Qontrol<b>Clinic</b></h3>
+            <p>Consultas, signos vitales, historia clínica, recetas y constancias, con agenda y portal del paciente. La receta llega a farmacia y los exámenes al laboratorio sin volver a escribirlos.</p>
+            <ul class="tags"><li>Consultas</li><li>Historia Clínica</li><li>Citas y Agenda</li><li>Catálogo de Servicios</li><li>Portal del Paciente</li></ul>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="clinic">Ver módulos de QontrolClinic <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="area" role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden>
+          <div class="media area__media" aria-hidden="true">
+            <div class="card">
+              <div class="card__head"><small>PUNTO DE VENTA · VENTA #1042</small><em class="pill pill--ok">Pagado</em></div>
+              <div class="pos"><span>Amoxicilina 500 mg × 2</span><b>Q48.00</b></div>
+              <div class="pos"><span>Ibuprofeno 400 mg × 1</span><b>Q22.00</b></div>
+              <div class="pos"><span>Suero oral × 3</span><b>Q55.50</b></div>
+              <div class="pos pos--total"><span>Total</span><b>Q125.50</b></div>
+              <div class="card__foot"><span class="doc"></span>Receta vinculada a la consulta</div>
+            </div>
+            <div class="chip">Inventario por bodega</div>
+            <span class="note">Datos de ejemplo</span>
+          </div>
+          <div class="area__copy">
+            <small class="area__for">Farmacias</small>
+            <h3 class="pw">Qontrol<b>Farm</b></h3>
+            <p>Punto de venta, caja, recetas, inventario, traslados entre bodegas, catálogo, proveedores, compras y precios. Funciona sola o conectada con la clínica y la caja.</p>
+            <ul class="tags"><li>Punto de Venta</li><li>Recetas</li><li>Compras y Proveedores</li><li>Traslados y Bodegas</li></ul>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="farm">Ver módulos de QontrolFarm <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <div class="area" role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden>
+          <div class="media area__media" aria-hidden="true">
+            <div class="card">
+              <div class="card__head"><small>REPORTES · ESTA SEMANA</small><em class="pill pill--ok">Corte Q8,420</em></div>
+              <div class="bars">
+                <i style="--h:46%"></i><i style="--h:62%"></i><i style="--h:54%"></i><i style="--h:78%"></i><i style="--h:70%"></i><i style="--h:92%"></i><i style="--h:58%"></i>
+              </div>
+              <div class="bars__labels"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+              <div class="card__foot"><span class="doc"></span>Factura FEL emitida desde el cobro</div>
+            </div>
+            <div class="chip">Comisiones por médico</div>
+            <span class="note">Datos de ejemplo</span>
+          </div>
+          <div class="area__copy">
+            <small class="area__for">Para todas las soluciones</small>
+            <h3>Administración</h3>
+            <p>Caja y cortes, facturación electrónica FEL, contabilidad, reportes, médicos y comisiones, sucursales, usuarios y permisos. Decisiones con datos sin revisar hojas separadas.</p>
+            <ul class="tags"><li>Facturación FEL</li><li>Contabilidad</li><li>Reportes</li><li>Médicos y Comisiones</li><li>Multi-sucursal</li><li>Permisos</li></ul>
+            <a class="btn btn--soft" href="#modulos" data-filter-link="all">Ver todos los módulos <span class="arrow" aria-hidden="true">→</span></a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="beneficios"><div class="section-head section-head--split reveal"><div><span class="eyebrow">Beneficios</span><h2>Diseñado para ordenar operaciones de salud modulares.</h2></div><p>La propuesta no es solo digitalizar formularios: es conectar recepción, laboratorio, clínica, farmacia, caja, inventario y administración en una operación más clara.</p></div><div class="bento-grid"><article class="bento-card bento-card--large reveal"><span class="bento-number">01</span><h3>Menos pasos manuales, más seguimiento.</h3><p>Desde que el paciente entra hasta que recibe atención, resultados, medicamentos o seguimiento, Qontrolab mantiene cada estado visible para que el equipo sepa qué sigue y qué está pendiente.</p></article><article class="bento-card reveal"><span class="bento-number">02</span><h3>Resultados y documentos profesionales.</h3><p>Entrega PDFs claros, consistentes y alineados a la imagen de cada institución.</p></article><article class="bento-card reveal"><span class="bento-number">03</span><h3>Administración con datos reales.</h3><p>Ingresos, órdenes, médicos, inventario, farmacia y actividad general en reportes útiles.</p></article><article class="bento-card bento-card--wide reveal"><span class="bento-number">04</span><h3>Modular según cada operación.</h3><p>Activa solo laboratorio, solo farmacia, clínica, sanatorio, hospital completo o una combinación según lo que realmente necesita cada institución.</p></article></div></section>
+    <!-- Beneficios concretos -->
+    <section class="benefits" id="beneficios">
+      <div class="split-head reveal">
+        <h2>Menos trabajo manual, medido con tus números.</h2>
+        <p>Mueve los controles con los datos de tu laboratorio y calcula cuántas horas de digitación podrías dejar de hacer cuando los resultados llegan solos desde tus equipos.</p>
+      </div>
 
-    <section class="experience-section section--panel" id="experiencia"><div class="container-like experience-grid"><div class="experience-copy reveal"><span class="eyebrow">Experiencia Qontrolab</span><h2>Más que una lista de módulos: una operación visualmente conectada.</h2><p>El sistema se entiende como un circuito de salud: recepción, consulta, muestra, resultado, caja, farmacia, inventario y gerencia conversan entre sí para reducir fricción operativa.</p><div class="experience-tags"><span>Recepción</span><span>Clínica</span><span>Laboratorio</span><span>Farmacia</span></div></div><div class="operation-visual reveal" aria-hidden="true"><div class="operation-card operation-card--main"><small>Flujo activo</small><strong>Orden OT-2026-0847</strong><div class="operation-meta"><span>Paciente: Ana Martínez</span><span>Hemograma + Perfil lipídico</span><span>Caja: Pagado</span></div><div class="operation-steps"><span class="done">Paciente</span><span class="done">Muestra</span><span class="active">Resultado</span><span>PDF</span></div></div><div class="operation-node node-a">Caja · Q325.00</div><div class="operation-node node-b">Synapse · 3 datos</div><div class="operation-node node-c">Stock OK</div><div class="operation-pulse"></div></div></div></section>
+      <div class="calc reveal">
+        <form class="calc__inputs" id="calc" aria-label="Calculadora de horas de digitación" onsubmit="return false">
+          <div class="field">
+            <div class="field__top"><label for="cOrders">Órdenes al día</label><output for="cOrders" id="oOrders">40</output></div>
+            <input type="range" id="cOrders" min="5" max="300" step="5" value="40">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cExams">Exámenes por orden, en promedio</label><output for="cExams" id="oExams">3</output></div>
+            <input type="range" id="cExams" min="1" max="10" step="0.5" value="3">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cMinutes">Minutos para transcribir un examen a mano</label><output for="cMinutes" id="oMinutes">2 min</output></div>
+            <input type="range" id="cMinutes" min="0.5" max="10" step="0.5" value="2">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cShare">Exámenes que salen de equipos conectables</label><output for="cShare" id="oShare">60%</output></div>
+            <input type="range" id="cShare" min="0" max="100" step="5" value="60">
+          </div>
+          <p class="calc__assume">Calculamos con 26 días hábiles al mes. Solo cuenta el tiempo de copiar resultados desde los equipos; la revisión y validación siguen en manos de tu equipo.</p>
+        </form>
 
-    <section class="section section--panel" id="workflow"><div class="section-head reveal"><span class="eyebrow">Flujo de trabajo</span><h2>De la recepción al cierre operativo, todo conectado.</h2><p>Qontrolab organiza procesos completos para que laboratorios, clínicas, sanatorios, hospitales, farmacias o profesionales independientes trabajen con trazabilidad y menos dependencia de hojas sueltas.</p></div><div class="workflow"><article class="workflow-card reveal"><span>01</span><h3>Ingreso del paciente</h3><p>Registro, cita, cotización o admisión inicial.</p></article><article class="workflow-card reveal"><span>02</span><h3>Atención y operación</h3><p>Consulta, exámenes, farmacia, pago, estado y seguimiento.</p></article><article class="workflow-card reveal"><span>03</span><h3>Documentos validados</h3><p>Resultados, recetas, constancias, comprobantes y PDFs profesionales.</p></article><article class="workflow-card reveal"><span>04</span><h3>Reportes y control</h3><p>Administración, caja, inventario, médicos, farmacia y gerencia.</p></article></div></section>
+        <div class="calc__result media" aria-live="polite">
+          <small>Digitación que podrías evitar</small>
+          <p class="calc__hours"><b id="rHours">62</b><span>horas al mes</span></p>
+          <ul class="calc__facts">
+            <li><b id="rDays">7.8</b> jornadas de 8 horas</li>
+            <li><b id="rExams">1,872</b> exámenes al mes que ya no se copian a mano</li>
+          </ul>
+          <p class="calc__formula" id="rFormula">40 órdenes × 3 exámenes × 60% × 2 min × 26 días</p>
+          <p class="calc__note">Estimación con tus propios datos. El ahorro real depende de tus equipos y procesos; lo confirmamos contigo en el diagnóstico.</p>
+        </div>
+      </div>
 
-    <section class="section" id="modulos"><div class="section-head reveal"><span class="eyebrow">Módulos principales</span><h2>Todo lo que necesita tu operación de salud en un solo lugar.</h2><p>Las tarjetas resumen cada área. Presiona “Ver detalle” para conocer cómo cada módulo ayuda a resolver problemas reales del día a día.</p></div><div class="modules-grid" id="moduleGrid"></div></section>
+      <div class="swap reveal">
+        <h3 class="swap__title">Tareas que dejan de hacerse a mano</h3>
+        <ul class="swap__grid">
+          <li><em>Internamiento</em><strong>La cuenta del paciente internado</strong><dl><dt>Antes</dt><dd>Juntar a mano los cargos de laboratorio e imagen para cobrar al alta.</dd><dt>Con Qontrol</dt><dd>Laboratorio, Rayos X y ultrasonidos se cargan directo a la cuenta del internamiento.</dd></dl></li>
+          <li><em>Enfermería</em><strong>Medicamentos administrados</strong><dl><dt>Antes</dt><dd>Descontar del inventario, a mano y después, lo que se le administró al paciente.</dd><dt>Con Qontrol</dt><dd>Al registrar el medicamento administrado, se descuenta de la bodega.</dd></dl></li>
+          <li><em>Cocina</em><strong>Dietas por habitación</strong><dl><dt>Antes</dt><dd>Avisar a cocina en papel o por mensaje qué dieta lleva cada paciente.</dd><dt>Con Qontrol</dt><dd>La dieta se asigna en el internamiento y cocina la ve ordenada por habitación.</dd></dl></li>
+          <li><em>Synapse</em><strong>Resultados de los equipos</strong><dl><dt>Antes</dt><dd>Copiar cada valor del analizador al sistema o a un documento.</dd><dt>Con Qontrol</dt><dd>El resultado llega del equipo por ASTM, HL7 o archivo plano; tu equipo solo revisa y valida.</dd></dl></li>
+          <li><em>Resultados</em><strong>Reportes en PDF</strong><dl><dt>Antes</dt><dd>Armar el reporte en Word o Excel y darle formato uno por uno.</dd><dt>Con Qontrol</dt><dd>El PDF sale con tu formato, tu logo y los valores de referencia al validar.</dd></dl></li>
+          <li><em>Citas y Agenda</em><strong>Del agendado a la orden</strong><dl><dt>Antes</dt><dd>Volver a escribir los datos del paciente cuando llega a su cita.</dd><dt>Con Qontrol</dt><dd>La cita se convierte en orden de trabajo sin volver a capturar datos.</dd></dl></li>
+          <li><em>Recetas</em><strong>De la consulta a la farmacia</strong><dl><dt>Antes</dt><dd>La farmacia vuelve a escribir lo que indicó el médico.</dd><dt>Con Qontrol</dt><dd>La receta llega a la cola de farmacia para despacharla.</dd></dl></li>
+          <li><em>Facturación FEL</em><strong>Facturar después de cobrar</strong><dl><dt>Antes</dt><dd>Hacer la factura en otro sistema, repitiendo los datos del cobro.</dd><dt>Con Qontrol</dt><dd>La factura electrónica se emite desde el mismo cobro.</dd></dl></li>
+          <li><em>Portal del Paciente</em><strong>Preguntas por resultados</strong><dl><dt>Antes</dt><dd>Atender llamadas para saber si los resultados ya están listos.</dd><dt>Con Qontrol</dt><dd>El paciente consulta su historial y resultados en su propio portal.</dd></dl></li>
+        </ul>
+      </div>
+    </section>
 
-    <section class="section section--panel" id="faq"><div class="section-head reveal"><span class="eyebrow">Preguntas frecuentes</span><h2>Dudas comunes antes de implementar Qontrolab.</h2><p>Estas respuestas ayudan a entender cómo puede adaptarse Qontrolab a la operación real de un laboratorio, clínica, sanatorio, hospital, farmacia o consulta independiente.</p></div><div class="faq-grid"><article class="faq-card reveal"><h3>¿Qontrolab sirve solo para laboratorios clínicos?</h3><p>No. Qontrolab es modular: puede funcionar para un laboratorio, una farmacia, una clínica, un sanatorio, un hospital o una operación individual, activando solo lo que se necesita.</p></article><article class="faq-card reveal"><h3>¿Necesito instalar algo en cada computadora?</h3><p>No. Qontrolab funciona como plataforma web, por lo que puede utilizarse desde navegador en computadoras, tablets o celulares autorizados.</p></article><article class="faq-card reveal"><h3>¿Puede manejar varias sucursales?</h3><p>Sí. La operación puede organizarse por sede o sucursal para mantener datos separados y una visión general de toda la institución.</p></article><article class="faq-card reveal"><h3>¿Puedo contratar solo algunos módulos?</h3><p>Sí. Puedes usar solo laboratorio, solo farmacia, clínica, farmacia con laboratorio o una operación más completa según el crecimiento y las necesidades reales.</p></article><article class="faq-card reveal"><h3>¿Puede conectarse con equipos de laboratorio?</h3><p>Sí, mediante Synapse. Según el equipo, se puede evaluar conexión por ASTM, HL7 o archivos planos para reducir digitación manual.</p></article><article class="faq-card reveal"><h3>¿Qué pasa con el soporte?</h3><p>Qontrolab contempla acompañamiento y soporte para resolver dudas, revisar procesos y ayudar al equipo durante la implementación y uso del sistema.</p></article></div></section>
+    <!-- Cifras -->
+    <section class="stats" aria-labelledby="statsTitle">
+      <h2 class="reveal" id="statsTitle">La columna operativa de hospitales, sanatorios y laboratorios.</h2>
+      <div class="stats__row reveal" id="statsRow">
+        <div class="stat is-active"><b data-count="5000" data-prefix="+" data-format="comma">+5,000</b><span>órdenes gestionadas al mes</span></div>
+        <div class="stat"><b data-count="36">36</b><span>módulos activables</span></div>
+        <div class="stat"><b>24/7</b><span>soporte disponible</span></div>
+        <i class="stats__line"><i class="stats__seg"></i></i>
+      </div>
+    </section>
 
-    <section class="cta reveal" id="contacto"><div><span class="eyebrow">Demo gratuita</span><h2>Moderniza tu operación sin perder control.</h2><p>Solicita una demostración y conoce cómo Qontrolab puede adaptarse a laboratorio, clínica, farmacia, sanatorio, hospital o una operación individual con módulos según tus necesidades.</p></div><a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Hablar por WhatsApp</a></section>
+    <!-- Capacidades -->
+    <section class="caps" aria-label="Capacidades">
+      <ul class="caps__list reveal">
+        <li><span class="cap"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>Plataforma web, sin instalar</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><path d="M3 21V9l6-4 6 4v12"/><path d="M15 21V12h6v9M3 21h18M8 13h2M8 17h2"/></svg></span>Multi-sucursal</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z"/><path d="M10 2v5M14 2v5M10 17v5M14 17v5M2 10h5M2 14h5M17 10h5M17 14h5"/></svg></span>Equipos vía ASTM · HL7</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>Facturación FEL</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/><path d="M12 14v4M10 16h4"/></svg></span>Portal médico</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>Portal del paciente</li>
+        <li><span class="cap"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>Permisos por rol o persona</li>
+      </ul>
+    </section>
+
+    <!-- Módulos por sistema -->
+    <section class="modules" id="modulos">
+      <div class="split-head reveal">
+        <h2><span id="moduleCount">36</span> módulos.<br>Activa solo lo que necesitas.</h2>
+        <p>Abre tu tipo de sistema para ver qué incluye. Toca cualquier módulo para ver el detalle.</p>
+      </div>
+      <div class="systems reveal" id="systems"></div>
+    </section>
+
+    <!-- Flujo -->
+    <section class="flow" id="flujo">
+      <div class="split-head reveal">
+        <h2>De la recepción al cierre operativo.</h2>
+        <p>Cada paso deja rastro: el equipo sabe qué sigue, qué está pendiente y quién es responsable.</p>
+      </div>
+      <ol class="flow__steps reveal" id="flowSteps">
+        <li><span>01</span><h3>Ingreso del paciente</h3><p>Registro, cita, cotización o admisión inicial.</p></li>
+        <li><span>02</span><h3>Atención y operación</h3><p>Consulta, exámenes, farmacia, pago, estado y seguimiento.</p></li>
+        <li><span>03</span><h3>Documentos validados</h3><p>Resultados, recetas, constancias, facturas y PDFs profesionales.</p></li>
+        <li><span>04</span><h3>Reportes y control</h3><p>Administración, caja, inventario, médicos, farmacia y gerencia.</p></li>
+        <i class="flow__line"><i class="flow__fill"></i></i>
+      </ol>
+    </section>
+
+    <!-- Implementación -->
+    <section class="impl" id="implementacion">
+      <div class="split-head reveal">
+        <h2>Cómo se implementa Qontrol.</h2>
+        <p>Sin servidores ni programas que instalar: trabajamos contigo paso a paso, según los módulos que actives y el ritmo de tu institución.</p>
+      </div>
+      <div class="impl__body">
+        <aside class="impl__aside reveal">
+          <h3>Lo que necesitas para empezar</h3>
+          <ul class="checklist">
+            <li>Computadoras, tablets o celulares con navegador e internet.</li>
+            <li>Tu catálogo de exámenes, perfiles y precios.</li>
+            <li>Logo y datos de tu institución para los PDFs.</li>
+            <li>La lista de usuarios y qué puede hacer cada uno.</li>
+            <li>Marca y modelo de tus equipos, si quieres conectarlos.</li>
+          </ul>
+          <p class="impl__time">El tiempo de implementación depende de los módulos, las sucursales y los equipos que conectes. Te lo confirmamos por escrito en el diagnóstico.</p>
+          <a class="btn btn--primary btn--lg" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20agendar%20un%20diagn%C3%B3stico%20de%20Qontrol" target="_blank" rel="noreferrer">Agendar diagnóstico <span class="arrow" aria-hidden="true">→</span></a>
+        </aside>
+        <ol class="impl__steps" id="implSteps">
+          <li><span class="impl__n">01</span><div><h3>Diagnóstico y demo</h3><p>Conocemos cómo trabaja tu institución hoy: áreas, camas, sucursales, volumen y equipos. Definimos juntos qué módulos y qué modo de operación necesitas.</p></div></li>
+          <li><span class="impl__n">02</span><div><h3>Configuración a tu medida</h3><p>Activamos tus módulos y cargamos tu catálogo de exámenes y precios, tus usuarios con sus permisos y el formato de tus PDFs con tu imagen.</p></div></li>
+          <li><span class="impl__n">03</span><div><h3>Conexión de equipos</h3><p>Evaluamos tus analizadores y conectamos los compatibles con Synapse por ASTM, HL7 o archivos planos. Si no vas a conectar equipos, este paso se omite.</p></div></li>
+          <li><span class="impl__n">04</span><div><h3>Capacitación por área</h3><p>Admisión, enfermería, laboratorio, clínica, farmacia, caja y administración aprenden con las pantallas y permisos que cada quien va a usar.</p></div></li>
+          <li><span class="impl__n">05</span><div><h3>Arranque acompañado</h3><p>Empiezas a operar con acompañamiento cercano para resolver dudas y ajustar procesos, y con soporte disponible 24/7.</p></div></li>
+          <i class="impl__line" aria-hidden="true"><i class="impl__fill"></i></i>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Preguntas -->
+    <section class="faq" id="preguntas">
+      <h2 class="reveal">Preguntas frecuentes</h2>
+      <div class="faq__list reveal">
+        <details><summary>¿Qué diferencia hay entre QontrolHosp, QontroLab, QontrolClinic y QontrolFarm?</summary><p>Son las soluciones de la misma plataforma Qontrol según tu tipo de institución: QontrolHosp para hospitales y sanatorios con operación completa, QontroLab para laboratorios, QontrolClinic para clínicas y QontrolFarm para farmacias. Puedes empezar con una y crecer a otra sin cambiar de sistema.</p></details>
+        <details><summary>¿Qontrol sirve solo para laboratorios clínicos?</summary><p>No. Qontrol es modular: puede funcionar para un hospital, un sanatorio, un laboratorio, una clínica, una farmacia o una operación individual, activando solo lo que se necesita.</p></details>
+        <details><summary>¿Funciona sin internet?</summary><p>Qontrol es una plataforma web: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm trabajan en línea. Solo para laboratorios existe QontroLab Edge, que funciona dentro del laboratorio en un equipo propio: aunque se caiga el internet, se siguen recibiendo pacientes, procesando, validando e imprimiendo resultados. Edge no aplica para hospitales, sanatorios, clínicas ni farmacias.</p></details>
+        <details><summary>¿Necesito instalar algo en cada computadora?</summary><p>No. Qontrol funciona como plataforma web, por lo que puede utilizarse desde el navegador en computadoras, tablets o celulares autorizados.</p></details>
+        <details><summary>¿Puede manejar varias sucursales?</summary><p>Sí. La operación puede organizarse por sede o sucursal para mantener datos separados y una visión general de toda la institución.</p></details>
+        <details><summary>¿Puedo contratar solo algunos módulos?</summary><p>Sí. Puedes usar solo laboratorio, solo farmacia, clínica, o la operación hospitalaria completa con internamiento, enfermería y quirófano, según el crecimiento y las necesidades reales.</p></details>
+        <details><summary>¿Puede conectarse con equipos de laboratorio?</summary><p>Sí, mediante Synapse. Según el equipo, se puede evaluar conexión por ASTM, HL7 o archivos planos para reducir digitación manual.</p></details>
+        <details><summary>¿Cuánto tarda la implementación?</summary><p>Depende de los módulos que actives, de cuántas sucursales tengas y de si vas a conectar equipos. En el diagnóstico revisamos tu caso y te entregamos un plan con tiempos claros antes de empezar.</p></details>
+        <details><summary>¿Qué pasa con el soporte?</summary><p>Qontrol contempla acompañamiento y soporte para resolver dudas, revisar procesos y ayudar al equipo durante la implementación y uso del sistema.</p></details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta reveal" id="contacto">
+      <div>
+        <h2>Moderniza tu operación sin perder control.</h2>
+        <p>Agenda una demostración y te mostramos cómo se adapta Qontrol a tu hospital, sanatorio, laboratorio, clínica o farmacia.</p>
+      </div>
+      <a class="btn btn--primary btn--lg" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Hablar por WhatsApp <span class="arrow" aria-hidden="true">→</span></a>
+    </section>
   </main>
 
-  <footer><b>Qontrolab</b><span>Plataforma Modular de Gestión Clínica · © 2026</span></footer>
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a class="brand brand--light" href="#top"><img src="assets/img/mark-white.svg" alt="" width="26" height="26"><span>Qontrol</span></a>
+        <p>Plataforma modular de gestión clínica.</p>
+      </div>
+      <div class="footer__cols">
+        <div><h4>Soluciones</h4><a href="#areas" data-open-tab="0">QontrolHosp</a><a href="#areas" data-open-tab="1">QontroLab</a><a href="#areas" data-open-tab="2">QontrolClinic</a><a href="#areas" data-open-tab="3">QontrolFarm</a><a href="#edge">QontroLab Edge</a></div><div><h4>Producto</h4><a href="#plataforma">Plataforma</a><a href="#beneficios">Beneficios</a><a href="#modulos">Módulos</a><a href="#implementacion">Implementación</a><a href="#preguntas">Preguntas</a></div>
+        <div><h4>Contacto</h4><a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">WhatsApp</a><a href="https://qontrolab.com/">Iniciar sesión</a></div>
+      </div>
+    </div>
+    <div class="footer__bottom"><span>© 2026 Qontrol. Todos los derechos reservados.</span><span>Hospitales · Sanatorios · Laboratorios · Clínicas · Farmacias</span></div>
+  </footer>
 
-  <nav class="mobile-quick-actions" aria-label="Acciones rápidas"><a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Demo</a><a href="#modulos">Módulos</a></nav>
+  <dialog class="sheet" id="moduleSheet" aria-labelledby="sheetTitle">
+    <form method="dialog"><button class="sheet__close" aria-label="Cerrar">×</button></form>
+    <small id="sheetArea"></small>
+    <h3 id="sheetTitle"></h3>
+    <p id="sheetText"></p>
+    <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
+  </dialog>
 
-  <div class="module-modal" id="moduleModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalText"><div class="module-modal__panel"><button class="module-modal__close" id="modalClose" type="button" aria-label="Cerrar detalle del módulo">×</button><div class="module-modal__visual" aria-hidden="true"><div class="module-orb module-orb--one"></div><div class="module-orb module-orb--two"></div><div class="mini-system-card"><div class="mini-system-card__bar"><span></span><span></span><span></span></div><div class="mini-system-card__body"><small id="modalMiniLabel">Módulo</small><strong id="modalVisualTitle">Dashboard</strong><div class="mini-system-flow" id="modalFlowRows"></div></div></div></div><div class="module-modal__content"><span class="eyebrow">Detalle del módulo</span><h3 id="modalTitle"></h3><p id="modalText"></p><div class="module-modal__grid"><article><span>01</span><strong>Ordena</strong><p id="modalBenefitOne">Información centralizada para el equipo.</p></article><article><span>02</span><strong>Reduce</strong><p id="modalBenefitTwo">Menos pasos manuales y menos errores.</p></article><article><span>03</span><strong>Mejora</strong><p id="modalBenefitThree">Seguimiento claro para la operación diaria.</p></article></div></div></div></div>
-
-  <script src="assets/js/app.js?v=20261015-1"></script>
-  <script src="assets/js/elevate.js?v=20260711-3"></script>
+  <script src="assets/js/site.js?v=20261015-p1"></script>
 </body>
 </html>
