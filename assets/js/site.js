@@ -38,7 +38,6 @@
       root.dataset.theme = theme;
       var dark = theme === 'dark';
       btn.setAttribute('aria-pressed', String(dark));
-      btn.setAttribute('aria-label', dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
       if (meta) meta.setAttribute('content', dark ? '#09090A' : '#F7F8FC');
       readPalette();
       document.dispatchEvent(new CustomEvent('qontrol:theme'));
@@ -155,31 +154,34 @@
   function initAmbient() {
     var canvas = $('#ambient');
     if (!canvas) return;
-    var ctx, w, h, dots = [], raf = 0, last = 0, running = false;
-    function build() {
+    var ctx, w, h, dots = [], pos = null, raf = 0, last = 0, lastDraw = 0, running = false, idleT = 0;
+    function size() {
       var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       w = window.innerWidth; h = window.innerHeight;
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var n = Math.round(clamp(w * h / 24000, 28, 80));
+    }
+    function build() {
+      size();
+      var n = Math.round(clamp(w * h / (w < 700 ? 30000 : 24000), 18, 70));
       dots = [];
       for (var i = 0; i < n; i++) {
         var d = 0.25 + Math.random() * 0.75;
         dots.push({ x: Math.random() * w, y: Math.random() * (h + 60), d: d, s: 0.9 + d * 1.3, a: 0.1 + d * 0.22,
           vx: (Math.random() - 0.5) * 0.006, ph: Math.random() * 6.28, accent: Math.random() < 0.16 });
       }
+      pos = new Float32Array(n * 2);
       draw(performance.now());
     }
     function draw(now) {
       ctx.clearRect(0, 0, w, h);
-      var sy = window.scrollY, span = h + 60, t = now * 0.001;
+      var sy = reduceMotion ? 0 : window.scrollY, span = h + 60, t = now * 0.001;
       var inkCol = 'rgb(' + palette['p-ink'] + ')', accentCol = 'rgb(' + palette['p-node'] + ')';
-      var pos = [];
       for (var i = 0; i < dots.length; i++) {
         var p = dots[i];
         var y = ((p.y - sy * p.d * 0.32) % span + span) % span - 30;
         var x = ((p.x % w) + w) % w;
-        pos.push(x, y);
+        pos[i * 2] = x; pos[i * 2 + 1] = y;
         ctx.globalAlpha = p.a * (0.75 + Math.sin(t * 0.6 + p.ph) * 0.25);
         ctx.fillStyle = p.accent ? accentCol : inkCol;
         ctx.beginPath(); ctx.arc(x, y, p.s, 0, Math.PI * 2); ctx.fill();
@@ -199,23 +201,30 @@
       ctx.globalAlpha = 1;
     }
     function tick(now) {
-      var dt = last ? Math.min(now - last, 50) : 16; last = now;
+      raf = requestAnimationFrame(tick);
+      if (now - lastDraw < 32) return; // ~30 cuadros por segundo bastan para algo tan lento
+      var dt = last ? Math.min(now - last, 80) : 32; last = now; lastDraw = now;
       for (var i = 0; i < dots.length; i++) { var p = dots[i]; p.y -= dt * 0.006 * p.d; p.x += p.vx * dt; }
       draw(now);
-      raf = requestAnimationFrame(tick);
     }
-    function start() { if (running) return; running = true; last = 0; raf = requestAnimationFrame(tick); }
+    function start() { if (running || document.hidden) return; running = true; last = 0; raf = requestAnimationFrame(tick); }
     function stop() { running = false; cancelAnimationFrame(raf); }
+    // Se mueve mientras la persona baja y descansa a los pocos segundos de quietud (ahorra batería).
+    function wake() { start(); clearTimeout(idleT); idleT = setTimeout(stop, 6000); }
     build();
-    if (reduceMotion) {
-      window.addEventListener('scroll', function () { requestAnimationFrame(function () { draw(performance.now()); }); }, { passive: true });
-    } else {
-      start();
-      document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    if (!reduceMotion) {
+      wake();
+      window.addEventListener('scroll', wake, { passive: true });
+      document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else wake(); });
     }
     document.addEventListener('qontrol:theme', function () { if (!running) draw(performance.now()); });
     var rt = 0;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 200); });
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        if (window.innerWidth === w) { size(); draw(performance.now()); } else build();
+      }, 200);
+    });
   }
 
   /* ---------- Partículas del hero: Q → tubos → corazón → cápsula ---------- */
@@ -295,9 +304,12 @@
   function sampleShape(shape, w, h, count) {
     var off = document.createElement('canvas');
     off.width = Math.round(w); off.height = Math.round(h);
+    if (!off.width || !off.height) return [];
     var c = off.getContext('2d');
+    if (!c) return [];
     shape.draw(c, w / 2, h * 0.47, Math.min(w, h) * 0.6, '#f00');
     var data = c.getImageData(0, 0, off.width, off.height).data;
+    off.width = off.height = 0; // libera la memoria (Safari en iPhone tiene un límite)
     var pts = [];
     for (var y = 0; y < off.height; y += 2) {
       for (var x = 0; x < off.width; x += 2) {
@@ -307,6 +319,7 @@
     }
     for (var k = pts.length - 1; k > 0; k--) { var j = (Math.random() * (k + 1)) | 0; var t = pts[k]; pts[k] = pts[j]; pts[j] = t; }
     var out = [];
+    if (!pts.length) return out;
     for (var n = 0; n < count; n++) {
       var p = pts[n % pts.length];
       out.push({ x: p.x + (Math.random() - 0.5) * 1.6, y: p.y + (Math.random() - 0.5) * 1.6, accent: p.accent });
@@ -345,6 +358,7 @@
 
     function assign(k, kick) {
       var t = targets[k];
+      if (!t || !t.length) return;
       particles.forEach(function (p, i) {
         p.tx = t[i].x; p.ty = t[i].y; p.accent = t[i].accent;
         if (kick) { p.vx += (Math.random() - 0.5) * 6; p.vy += (Math.random() - 0.5) * 6; }
@@ -401,11 +415,19 @@
     function stop() { running = false; cancelAnimationFrame(raf); }
 
     build();
-    whenVisible(canvas, function (vis) { vis ? start() : stop(); });
-    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    var heroVisible = false;
+    whenVisible(canvas, function (vis) { heroVisible = vis; vis ? start() : stop(); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else if (heroVisible) start(); });
     document.addEventListener('qontrol:theme', function () { if (!running) draw(); });
-    var rt = 0;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 180); });
+    // En celular la barra de direcciones cambia la altura al bajar: solo reconstruir si cambia el tamaño real.
+    var rt = 0, lastW = canvas.clientWidth, lastH = canvas.clientHeight;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        if (canvas.clientWidth === lastW && canvas.clientHeight === lastH) return;
+        lastW = canvas.clientWidth; lastH = canvas.clientHeight; build();
+      }, 180);
+    });
     if (finePointer) {
       canvas.parentElement.addEventListener('pointermove', function (e) { var r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
       canvas.parentElement.addEventListener('pointerleave', function () { mouse.x = mouse.y = -9999; });
@@ -470,15 +492,17 @@
       }
     }
     function syncPause() { list.classList.toggle('is-paused', !visible || hovering); }
+    var auto = !reduceMotion;
+    function stopAuto() { auto = false; list.classList.add('is-static'); }
 
     if (reduceMotion) list.classList.add('is-static');
     tabs.forEach(function (t, i) {
-      t.addEventListener('click', function () { select(i); });
-      $('.tabs__bar', t).addEventListener('animationend', function () { if (!reduceMotion) select(current + 1); });
+      t.addEventListener('click', function () { stopAuto(); select(i); });
+      $('.tabs__bar', t).addEventListener('animationend', function () { if (auto) select(current + 1); });
     });
     list.addEventListener('keydown', function (e) {
       var map = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: tabs.length - 1 };
-      if (e.key in map) { e.preventDefault(); select(map[e.key], true); }
+      if (e.key in map) { e.preventDefault(); stopAuto(); select(map[e.key], true); }
     });
     [list, $('.areas__panels')].forEach(function (el) {
       el.addEventListener('pointerenter', function () { hovering = true; syncPause(); });
@@ -490,7 +514,7 @@
     syncPause();
     // Tarjetas de producto y enlaces del pie abren su pestaña
     $$('[data-open-tab]').forEach(function (a) {
-      a.addEventListener('click', function () { select(+a.dataset.openTab); });
+      a.addEventListener('click', function () { stopAuto(); select(+a.dataset.openTab); });
     });
   }
 
@@ -536,8 +560,8 @@
     ['Consultas', 'Laboratorio', 'El médico solicita exámenes de laboratorio.', 1],
     ['Historia Clínica', 'Consultas', 'El médico revisa los antecedentes antes de atender.', 1],
     ['Internamiento', 'Enfermería', 'Enfermería recibe al paciente en su cama.', 3],
-    ['Internamiento', 'Rayos X', 'Se pide una placa y queda cargada a la cuenta del paciente.', 1],
-    ['Internamiento', 'Ultrasonidos', 'Se pide un ultrasonido y queda en la cuenta del internamiento.', 1],
+    ['Internamiento', 'Rayos X', 'Se solicita una placa de Rayos X para el paciente internado.', 1],
+    ['Internamiento', 'Ultrasonidos', 'Se solicita un ultrasonido para el paciente internado.', 1],
     ['Internamiento', 'Quirófano', 'Se programa la cirugía del paciente.', 1],
     ['Internamiento', 'Cocina', 'La dieta se asigna desde el internamiento y cocina la ve por habitación.', 1],
     ['Internamiento', 'Caja', 'Al dar de alta, la cuenta ya trae los cargos del internamiento.', 1],
@@ -553,8 +577,8 @@
     ['Resultados', 'Internamiento', 'El médico tratante ve el resultado del paciente internado.', 2],
     ['Resultados', 'Portal del Paciente', 'El paciente consulta su resultado validado en su portal.', 1],
     ['Resultados', 'Historia Clínica', 'El resultado queda en la historia clínica.', 1],
-    ['Portal del Paciente', 'Recepción', 'Menos llamadas a recepción preguntando por resultados.', 1],
-    ['Farmacia', 'Inventario', 'La venta descuenta el stock de la bodega.', 1],
+    ['Portal del Paciente', 'Recepción', 'Menos llamadas a recepción para preguntar por resultados.', 1],
+    ['Farmacia', 'Inventario', 'La venta descuenta las existencias de la bodega.', 1],
     ['Farmacia', 'Caja', 'La venta se cobra en caja.', 1],
     ['Inventario', 'Reportes', 'Existencias y vencimientos a la vista de gerencia.', 1],
     ['Caja', 'Facturación FEL', 'La factura FEL sale del mismo cobro.', 2],
@@ -788,8 +812,14 @@
     whenVisible(canvas, function (vis) { visible = vis; vis ? start() : stop(); });
     document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else if (visible) start(); });
     document.addEventListener('qontrol:theme', function () { if (!running) draw(); });
-    var rt = 0;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 180); });
+    var rt = 0, lastW = canvas.clientWidth, lastH = canvas.clientHeight;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        if (canvas.clientWidth === lastW && canvas.clientHeight === lastH) return;
+        lastW = canvas.clientWidth; lastH = canvas.clientHeight; build();
+      }, 180);
+    });
     if (finePointer) {
       canvas.parentElement.addEventListener('pointermove', function (e) {
         var r = canvas.getBoundingClientRect();
@@ -811,9 +841,9 @@
     ['hos', 'Ultrasonidos', 'Estudios de ultrasonido.', 'Solicitudes de ultrasonido con su catálogo y su cobro, o cargadas directamente a la cuenta de un paciente internado.', ['hosp']],
     ['hos', 'Cocina', 'Dietas de pacientes internados.', 'Muestra las dietas activas de los pacientes internados, ordenadas por habitación. Las dietas se asignan desde el internamiento.', ['hosp']],
     ['lab', 'Órdenes de Trabajo', 'Proceso controlado de principio a fin.', 'Controla todo el proceso desde que entra el paciente: exámenes solicitados, pagos, muestra, estado de proceso y entrega final. Todo queda trazable.', ['hosp', 'lab']],
-    ['lab', 'Resultados', 'Captura, validación y PDFs.', 'Captura, valida y entrega resultados con formato profesional, dentro de la misma orden de trabajo. Maneja valores de referencia y genera PDFs listos para el paciente o el médico.', ['hosp', 'lab']],
+    ['lab', 'Resultados', 'Captura, validación y PDF.', 'Captura, valida y entrega resultados con formato profesional, dentro de la misma orden de trabajo. Maneja valores de referencia y genera PDF listos para el paciente o el médico.', ['hosp', 'lab']],
     ['lab', 'Catálogo de Exámenes', 'Exámenes y precios claros.', 'Mantén ordenados tus exámenes, perfiles, precios y áreas. Facilita cotizar, crear órdenes y estandarizar la forma en que trabaja el laboratorio.', ['hosp', 'lab']],
-    ['lab', 'Synapse', 'Equipos conectados.', 'Conecta equipos de laboratorio para reducir digitación manual. Recibe resultados de analizadores mediante ASTM, HL7 o archivos planos, según el equipo.', ['hosp', 'lab']],
+    ['lab', 'Synapse', 'Equipos conectados.', 'Conecta equipos de laboratorio para reducir la digitación. Recibe resultados de analizadores mediante ASTM, HL7 o archivos planos, según el equipo.', ['hosp', 'lab']],
     ['lab', 'Control de Calidad', 'Controles internos y trazabilidad.', 'Gestión de calidad del laboratorio: controles internos de equipos, temperatura y ambiente, lotes de material de control, estadística acumulada, revisión y trazabilidad.', ['hosp', 'lab']],
     ['lab', 'Bitácora Diaria', 'Evidencia diaria del laboratorio.', 'Registra controles de inicio de turno, temperaturas, control de calidad y observaciones. Ayuda a mantener evidencia interna y orden en la operación.', ['hosp', 'lab']],
     ['lab', 'Laboratorios Referentes', 'Referencias y comisiones.', 'Registra los laboratorios y hospitales que te refieren exámenes, con su comisión. Cada laboratorio referente puede consultar sus comisiones desde su propio portal.', ['hosp', 'lab', 'clinic']],
@@ -822,10 +852,10 @@
     ['cli', 'Historia Clínica', 'El expediente clínico completo.', 'Reúne la historia clínica del paciente para que el médico tenga antecedentes, consultas y seguimiento en un solo lugar.', ['hosp', 'clinic']],
     ['cli', 'Catálogo de Servicios', 'Servicios clínicos y precios.', 'Mantén ordenados los servicios clínicos y sus precios para cotizar, cobrar y cargarlos a la cuenta del paciente.', ['hosp', 'clinic']],
     ['cli', 'Portal del Paciente', 'Resultados e historial en línea.', 'Permite que el paciente consulte su historial, órdenes y resultados desde un portal propio. Reduce llamadas repetitivas y mejora la entrega.', ['hosp', 'lab', 'clinic']],
-    ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectada con la clínica.', ['hosp', 'farm']],
+    ['far', 'Farmacia y Punto de Venta', 'Ventas rápidas y caja.', 'Opera una farmacia completa con punto de venta, ventas, caja propia, clientes y reportes. Funciona como sistema de farmacia independiente o conectado con la clínica.', ['hosp', 'farm']],
     ['far', 'Recetas', 'De la consulta a la farmacia.', 'Las recetas que emite el médico llegan a una cola de farmacia para despacharlas sin volver a escribirlas.', ['hosp', 'farm']],
     ['far', 'Compras y Proveedores', 'Abastecimiento ordenado.', 'Catálogo de productos, proveedores, compras, entradas y precios de la farmacia en un mismo flujo.', ['hosp', 'farm']],
-    ['far', 'Traslados y Bodegas', 'Stock donde se necesita.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.', ['hosp', 'farm']],
+    ['far', 'Traslados y Bodegas', 'Existencias donde se necesitan.', 'Lleva el inventario de farmacia por bodega y mueve existencias entre bodegas con registro de cada traslado.', ['hosp', 'farm']],
     ['op', 'Dashboard', 'Vista general de la operación.', 'Ten a la vista lo más importante: órdenes del día, pendientes, ingresos, farmacia, clínica y actividad general. Ideal para tomar decisiones rápidas sin revisar hojas o reportes separados.', ['hosp', 'lab', 'clinic', 'farm']],
     ['op', 'Pacientes', 'Expedientes ordenados.', 'Centraliza la información de cada paciente en un expediente ordenado. Evita duplicar datos y permite consultar historial, órdenes anteriores y seguimiento en segundos.', ['hosp', 'lab', 'clinic', 'farm']],
     ['op', 'Citas y Agenda', 'Atención mejor organizada.', 'Organiza la atención diaria con horarios, estados y seguimiento. Ayuda a evitar confusiones en recepción y convierte una cita en orden de trabajo cuando el paciente llega.', ['hosp', 'lab', 'clinic']],
@@ -833,20 +863,20 @@
     ['op', 'Caja y Cobros', 'Control real de ingresos.', 'Lleva control de cobros, saldos, pagos parciales y cortes de caja. Ayuda a saber qué está pagado, qué está pendiente y cuánto ingresó realmente. Puede operar como caja separada de la recepción.', ['hosp', 'lab', 'clinic']],
     ['op', 'Inventario y Bodegas', 'Evita faltantes y pérdidas.', 'Controla insumos, reactivos, lotes, bodegas por sucursal y vencimientos. Evita quedarte sin materiales clave y ayuda a reducir pérdidas por productos vencidos o mal registrados.', ['hosp', 'lab', 'clinic']],
     ['op', 'Reportes', 'Decisiones con datos.', 'Consulta información clave sobre ingresos, órdenes, pacientes, médicos, exámenes, farmacia, inventario y actividad clínica. Ideal para administración y gerencia.', ['hosp', 'lab', 'clinic']],
-    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede emitir los cobros que quedaron pendientes de facturar.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Facturación FEL', 'Facturas desde el cobro.', 'Emite facturas electrónicas FEL desde los cobros. Administración gestiona la facturación y caja puede facturar los cobros que quedaron pendientes.', ['hosp', 'lab', 'clinic', 'farm']],
     ['adm', 'Contabilidad', 'Cuentas bancarias y movimientos.', 'Cuentas bancarias, saldos y movimientos. Las transferencias cobradas llegan a la cuenta que elijas como predeterminada.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Médicos y Comisiones', 'Referencias bajo control.', 'Gestiona médicos referentes, órdenes enviadas y comisiones. Cada médico puede consultar sus pacientes, órdenes y comisiones desde el Portal Médico.', ['hosp', 'lab', 'clinic']],
     ['adm', 'Portal Médico', 'Comunicación más ágil.', 'Permite que médicos referentes consulten sus pacientes, órdenes y comisiones sin llamar ni saturar al equipo.', ['hosp', 'lab', 'clinic']],
-    ['adm', 'Multi-sucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.', ['hosp', 'lab', 'clinic', 'farm']],
+    ['adm', 'Multisucursal', 'Varias sedes en orden.', 'Opera varias sedes desde una misma plataforma. Usuarios, bodegas e información organizados por sucursal, con una visión general de toda la operación.', ['hosp', 'lab', 'clinic', 'farm']],
     ['adm', 'Configuración y Permisos', 'Sistema adaptado a tu operación.', 'Adapta el sistema a tu institución: datos generales, usuarios, permisos por rol o por persona, formatos de PDF, menú y módulos activos.', ['hosp', 'lab', 'clinic', 'farm']],
-    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'QontroLab se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
+    ['adm', 'Modos de Operación', 'Activa solo lo que necesitas.', 'Qontrol se adapta por módulos: solo laboratorio, solo clínica, laboratorio y clínica, solo farmacia, clínica con farmacia u operación completa.', ['hosp', 'lab', 'clinic', 'farm']]
   ];
   var AREAS = { hos: 'Hospital y sanatorio', lab: 'Laboratorio', cli: 'Clínica', far: 'Farmacia', op: 'Operación', adm: 'Administración' };
   var PRODUCTS = { hosp: ['Qontrol', 'Hosp'], lab: ['Qontro', 'Lab'], clinic: ['Qontrol', 'Clinic'], farm: ['Qontrol', 'Farm'] };
   var SHORT = { hosp: 'Hosp', lab: 'Lab', clinic: 'Clinic', farm: 'Farm' };
 
   var SYSTEMS = [
-    { key: 'hosp', area: 'hos', for: 'Hospitales y sanatorios', lead: 'Lo propio de hospital y sanatorio' },
+    { key: 'hosp', area: 'hos', for: 'Hospitales y sanatorios', lead: 'Lo propio del hospital y el sanatorio' },
     { key: 'lab', area: 'lab', for: 'Laboratorios', lead: 'Lo propio del laboratorio' },
     { key: 'clinic', area: 'cli', for: 'Clínicas', lead: 'Lo propio de la clínica' },
     { key: 'farm', area: 'far', for: 'Farmacias', lead: 'Lo propio de la farmacia' }
@@ -957,7 +987,11 @@
       $('#sheetText').textContent = m[3];
       sheet.showModal();
     });
-    if (sheet) sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
+    if (sheet) sheet.addEventListener('click', function (e) {
+      if (e.target !== sheet) return;
+      var r = sheet.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) sheet.close();
+    });
     // Botones "Ver módulos de…" de las pestañas abren su sistema
     $$('[data-filter-link]').forEach(function (a) {
       a.addEventListener('click', function () { var k = a.dataset.filterLink; if (PRODUCTS[k]) openSystem(k, false); });
@@ -975,6 +1009,8 @@
       hours: $('#rHours'), days: $('#rDays'), examsMonth: $('#rExams'), formula: $('#rFormula')
     };
     var shown = { hours: 0, days: 0, exams: 0 }, raf = 0;
+    var announce = $('#calcAnnounce'), announceT = 0;
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
     var fmt = function (v, dec) { return Number(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }); };
     var num = function (v) { return String(+v).replace(/\.0$/, ''); };
 
@@ -994,11 +1030,19 @@
       el.oExams.textContent = num(exams);
       el.oMinutes.textContent = num(minutes) + ' min';
       el.oShare.textContent = share + '%';
+      el.orders.setAttribute('aria-valuetext', orders + ' órdenes al día');
+      el.exams.setAttribute('aria-valuetext', num(exams) + ' exámenes por orden');
+      el.minutes.setAttribute('aria-valuetext', num(minutes) + ' minutos por examen');
+      el.share.setAttribute('aria-valuetext', share + ' por ciento de exámenes conectables');
       [el.orders, el.exams, el.minutes, el.share].forEach(paintFill);
 
       var examsDay = orders * exams * share / 100;
       var target = { hours: examsDay * minutes * DAYS / 60, exams: examsDay * DAYS };
       target.days = target.hours / 8;
+      clearTimeout(announceT);
+      announceT = setTimeout(function () {
+        if (announce) announce.textContent = 'Podrías evitar unas ' + Math.round(target.hours) + ' horas de digitación al mes.';
+      }, 450);
       el.formula.textContent = orders + ' órdenes × ' + num(exams) + ' exámenes × ' + share + '% × ' + num(minutes) + ' min × ' + DAYS + ' días';
 
       cancelAnimationFrame(raf);
@@ -1053,19 +1097,11 @@
   }
 
   function boot() {
-    initTheme();
-    initAmbient();
-    initNav();
-    initReveal();
-    initHeroParticles();
-    initMonitor();
-    initTabs();
-    initStats();
-    initNetwork();
-    initModules();
-    initCalc();
-    initFlow();
-    initImpl();
+    // Primero lo que hace visible el contenido; cada parte aislada para que un fallo no apague las demás.
+    [initReveal, initTheme, initNav, initAmbient, initHeroParticles, initMonitor, initTabs, initStats,
+     initNetwork, initModules, initCalc, initFlow, initImpl].forEach(function (init) {
+      try { init(); } catch (e) { if (window.console) console.error(e); }
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
