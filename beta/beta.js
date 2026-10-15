@@ -64,7 +64,7 @@
         links.forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + entry.target.id); });
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
-    ['plataforma', 'modulos', 'flujo', 'preguntas'].forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+    ['plataforma', 'beneficios', 'modulos', 'implementacion', 'preguntas'].forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
   }
 
   /* ---------- Titular por palabras + revelado ---------- */
@@ -673,6 +673,79 @@
     $$('[data-filter-link]').forEach(function (a) { a.addEventListener('click', function () { applyFilter(a.dataset.filterLink); }); });
   }
 
+  /* ---------- Calculadora: horas de digitación que se evitan ---------- */
+  function initCalc() {
+    var form = $('#calc');
+    if (!form) return;
+    var DAYS = 26;
+    var el = {
+      orders: $('#cOrders'), exams: $('#cExams'), minutes: $('#cMinutes'), share: $('#cShare'),
+      oOrders: $('#oOrders'), oExams: $('#oExams'), oMinutes: $('#oMinutes'), oShare: $('#oShare'),
+      hours: $('#rHours'), days: $('#rDays'), examsMonth: $('#rExams'), formula: $('#rFormula')
+    };
+    var shown = { hours: 0, days: 0, exams: 0 }, raf = 0;
+    var fmt = function (v, dec) { return Number(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }); };
+    var num = function (v) { return String(+v).replace(/\.0$/, ''); };
+
+    function paintFill(input) {
+      var pct = (input.value - input.min) / (input.max - input.min) * 100;
+      input.style.setProperty('--fill', pct + '%');
+    }
+    function render(target) {
+      var smart = function (v) { return v < 0.05 ? '0' : fmt(v, v < 10 ? 1 : 0); };
+      el.hours.textContent = smart(target.hours);
+      el.days.textContent = smart(target.days);
+      el.examsMonth.textContent = fmt(target.exams, 0);
+    }
+    function update() {
+      var orders = +el.orders.value, exams = +el.exams.value, minutes = +el.minutes.value, share = +el.share.value;
+      el.oOrders.textContent = orders;
+      el.oExams.textContent = num(exams);
+      el.oMinutes.textContent = num(minutes) + ' min';
+      el.oShare.textContent = share + '%';
+      [el.orders, el.exams, el.minutes, el.share].forEach(paintFill);
+
+      var examsDay = orders * exams * share / 100;
+      var target = { hours: examsDay * minutes * DAYS / 60, exams: examsDay * DAYS };
+      target.days = target.hours / 8;
+      el.formula.textContent = orders + ' órdenes × ' + num(exams) + ' exámenes × ' + share + '% × ' + num(minutes) + ' min × ' + DAYS + ' días';
+
+      cancelAnimationFrame(raf);
+      if (reduceMotion) { shown = target; render(target); return; }
+      var from = { hours: shown.hours, days: shown.days, exams: shown.exams }, start = performance.now();
+      (function tick(now) {
+        var t = clamp((now - start) / 420, 0, 1), e = 1 - Math.pow(1 - t, 3);
+        shown = { hours: from.hours + (target.hours - from.hours) * e, days: from.days + (target.days - from.days) * e, exams: from.exams + (target.exams - from.exams) * e };
+        render(shown);
+        if (t < 1) raf = requestAnimationFrame(tick);
+      })(start);
+    }
+    form.addEventListener('input', update);
+    update();
+  }
+
+  /* ---------- Implementación: los pasos se encienden al bajar ---------- */
+  function initImpl() {
+    var list = $('#implSteps');
+    if (!list) return;
+    var items = $$('li', list);
+    list.classList.add('is-live');
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var line = window.innerHeight * 0.6, reached = -1;
+      items.forEach(function (li, i) { if (li.getBoundingClientRect().top < line) reached = i; });
+      if (reduceMotion) reached = items.length - 1;
+      items.forEach(function (li, i) { li.classList.toggle('is-on', i <= reached); });
+      var r = list.getBoundingClientRect();
+      var p = reduceMotion ? 1 : clamp((line - r.top) / r.height, 0, 1);
+      list.style.setProperty('--p', p.toFixed(3));
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
   /* ---------- Línea del flujo ---------- */
   function initFlow() {
     var steps = $('#flowSteps');
@@ -698,7 +771,9 @@
     initStats();
     initNetwork();
     initModules();
+    initCalc();
     initFlow();
+    initImpl();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

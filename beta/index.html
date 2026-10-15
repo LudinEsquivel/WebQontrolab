@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="beta.css?v=20261015-2">
+  <link rel="stylesheet" href="beta.css?v=20261015-3">
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -38,8 +38,9 @@
       </a>
       <nav class="nav__links" aria-label="Principal">
         <a href="#plataforma">Plataforma</a>
+        <a href="#beneficios">Beneficios</a>
         <a href="#modulos">Módulos</a>
-        <a href="#flujo">Flujo</a>
+        <a href="#implementacion">Implementación</a>
         <a href="#preguntas">Preguntas</a>
       </nav>
       <div class="nav__actions">
@@ -56,8 +57,9 @@
     </div>
     <div class="nav__menu" id="mobileMenu" hidden>
       <a href="#plataforma">Plataforma</a>
+      <a href="#beneficios">Beneficios</a>
       <a href="#modulos">Módulos</a>
-      <a href="#flujo">Flujo</a>
+      <a href="#implementacion">Implementación</a>
       <a href="#preguntas">Preguntas</a>
       <div class="nav__menu-actions">
         <a class="btn btn--ghost" href="https://qontrolab.com/">Iniciar sesión <span class="arrow" aria-hidden="true">→</span></a>
@@ -237,6 +239,59 @@
       </div>
     </section>
 
+    <!-- Beneficios concretos -->
+    <section class="benefits" id="beneficios">
+      <div class="split-head reveal">
+        <h2>Menos trabajo manual, medido con tus números.</h2>
+        <p>Mueve los controles con los datos de tu laboratorio y calcula cuántas horas de digitación podrías dejar de hacer cuando los resultados llegan solos desde tus equipos.</p>
+      </div>
+
+      <div class="calc reveal">
+        <form class="calc__inputs" id="calc" aria-label="Calculadora de horas de digitación" onsubmit="return false">
+          <div class="field">
+            <div class="field__top"><label for="cOrders">Órdenes al día</label><output for="cOrders" id="oOrders">40</output></div>
+            <input type="range" id="cOrders" min="5" max="300" step="5" value="40">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cExams">Exámenes por orden, en promedio</label><output for="cExams" id="oExams">3</output></div>
+            <input type="range" id="cExams" min="1" max="10" step="0.5" value="3">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cMinutes">Minutos para transcribir un examen a mano</label><output for="cMinutes" id="oMinutes">2 min</output></div>
+            <input type="range" id="cMinutes" min="0.5" max="10" step="0.5" value="2">
+          </div>
+          <div class="field">
+            <div class="field__top"><label for="cShare">Exámenes que salen de equipos conectables</label><output for="cShare" id="oShare">60%</output></div>
+            <input type="range" id="cShare" min="0" max="100" step="5" value="60">
+          </div>
+          <p class="calc__assume">Calculamos con 26 días hábiles al mes. Solo cuenta el tiempo de copiar resultados desde los equipos; la revisión y validación siguen en manos de tu equipo.</p>
+        </form>
+
+        <div class="calc__result media" aria-live="polite">
+          <small>Digitación que podrías evitar</small>
+          <p class="calc__hours"><b id="rHours">62</b><span>horas al mes</span></p>
+          <ul class="calc__facts">
+            <li><b id="rDays">7.8</b> jornadas de 8 horas</li>
+            <li><b id="rExams">1,872</b> exámenes al mes que ya no se copian a mano</li>
+          </ul>
+          <p class="calc__formula" id="rFormula">40 órdenes × 3 exámenes × 60% × 2 min × 26 días</p>
+          <p class="calc__note">Estimación con tus propios datos. El ahorro real depende de tus equipos y procesos; lo confirmamos contigo en el diagnóstico.</p>
+        </div>
+      </div>
+
+      <div class="swap reveal">
+        <h3 class="swap__title">Tareas que dejan de hacerse a mano</h3>
+        <ul class="swap__grid">
+          <li><em>Synapse</em><strong>Resultados de los equipos</strong><dl><dt>Antes</dt><dd>Copiar cada valor del analizador al sistema o a un documento.</dd><dt>Con Qontrolab</dt><dd>El resultado llega del equipo por ASTM, HL7 o archivo plano; tu equipo solo revisa y valida.</dd></dl></li>
+          <li><em>Resultados</em><strong>Reportes en PDF</strong><dl><dt>Antes</dt><dd>Armar el reporte en Word o Excel y darle formato uno por uno.</dd><dt>Con Qontrolab</dt><dd>El PDF sale con tu formato, tu logo y los valores de referencia al validar.</dd></dl></li>
+          <li><em>Citas y Agenda</em><strong>Del agendado a la orden</strong><dl><dt>Antes</dt><dd>Volver a escribir los datos del paciente cuando llega a su cita.</dd><dt>Con Qontrolab</dt><dd>La cita se convierte en orden de trabajo sin volver a capturar datos.</dd></dl></li>
+          <li><em>Recetas</em><strong>De la consulta a la farmacia</strong><dl><dt>Antes</dt><dd>La farmacia vuelve a escribir lo que indicó el médico.</dd><dt>Con Qontrolab</dt><dd>La receta llega a la cola de farmacia para despacharla.</dd></dl></li>
+          <li><em>Facturación FEL</em><strong>Facturar después de cobrar</strong><dl><dt>Antes</dt><dd>Hacer la factura en otro sistema, repitiendo los datos del cobro.</dd><dt>Con Qontrolab</dt><dd>La factura electrónica se emite desde el mismo cobro.</dd></dl></li>
+          <li><em>Portal del Paciente</em><strong>Preguntas por resultados</strong><dl><dt>Antes</dt><dd>Atender llamadas para saber si los resultados ya están listos.</dd><dt>Con Qontrolab</dt><dd>El paciente consulta su historial y resultados en su propio portal.</dd></dl></li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Cifras + red conectada -->
     <section class="stats" aria-labelledby="statsTitle">
       <h2 class="reveal" id="statsTitle">La columna operativa de laboratorios, clínicas y farmacias.</h2>
@@ -304,6 +359,36 @@
       </ol>
     </section>
 
+    <!-- Implementación -->
+    <section class="impl" id="implementacion">
+      <div class="split-head reveal">
+        <h2>Cómo se implementa Qontrolab.</h2>
+        <p>Sin servidores ni programas que instalar: trabajamos contigo paso a paso, según los módulos que actives y el ritmo de tu institución.</p>
+      </div>
+      <div class="impl__body">
+        <aside class="impl__aside reveal">
+          <h3>Lo que necesitas para empezar</h3>
+          <ul class="checklist">
+            <li>Computadoras, tablets o celulares con navegador e internet.</li>
+            <li>Tu catálogo de exámenes, perfiles y precios.</li>
+            <li>Logo y datos de tu institución para los PDFs.</li>
+            <li>La lista de usuarios y qué puede hacer cada uno.</li>
+            <li>Marca y modelo de tus equipos, si quieres conectarlos.</li>
+          </ul>
+          <p class="impl__time">El tiempo de implementación depende de los módulos, las sucursales y los equipos que conectes. Te lo confirmamos por escrito en el diagnóstico.</p>
+          <a class="btn btn--primary btn--lg" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20agendar%20un%20diagn%C3%B3stico%20de%20Qontrolab" target="_blank" rel="noreferrer">Agendar diagnóstico <span class="arrow" aria-hidden="true">→</span></a>
+        </aside>
+        <ol class="impl__steps" id="implSteps">
+          <li><span class="impl__n">01</span><div><h3>Diagnóstico y demo</h3><p>Conocemos cómo trabaja tu institución hoy: áreas, sucursales, volumen y equipos. Definimos juntos qué módulos y qué modo de operación necesitas.</p></div></li>
+          <li><span class="impl__n">02</span><div><h3>Configuración a tu medida</h3><p>Activamos tus módulos y cargamos tu catálogo de exámenes y precios, tus usuarios con sus permisos y el formato de tus PDFs con tu imagen.</p></div></li>
+          <li><span class="impl__n">03</span><div><h3>Conexión de equipos</h3><p>Evaluamos tus analizadores y conectamos los compatibles con Synapse por ASTM, HL7 o archivos planos. Si no vas a conectar equipos, este paso se omite.</p></div></li>
+          <li><span class="impl__n">04</span><div><h3>Capacitación por área</h3><p>Recepción, laboratorio, clínica, farmacia, caja y administración aprenden con las pantallas y permisos que cada quien va a usar.</p></div></li>
+          <li><span class="impl__n">05</span><div><h3>Arranque acompañado</h3><p>Empiezas a operar con acompañamiento cercano para resolver dudas y ajustar procesos, y con soporte disponible 24/7.</p></div></li>
+          <i class="impl__line" aria-hidden="true"><i class="impl__fill"></i></i>
+        </ol>
+      </div>
+    </section>
+
     <!-- Preguntas -->
     <section class="faq" id="preguntas">
       <h2 class="reveal">Preguntas frecuentes</h2>
@@ -313,6 +398,7 @@
         <details><summary>¿Puede manejar varias sucursales?</summary><p>Sí. La operación puede organizarse por sede o sucursal para mantener datos separados y una visión general de toda la institución.</p></details>
         <details><summary>¿Puedo contratar solo algunos módulos?</summary><p>Sí. Puedes usar solo laboratorio, solo farmacia, clínica, farmacia con laboratorio o una operación más completa según el crecimiento y las necesidades reales.</p></details>
         <details><summary>¿Puede conectarse con equipos de laboratorio?</summary><p>Sí, mediante Synapse. Según el equipo, se puede evaluar conexión por ASTM, HL7 o archivos planos para reducir digitación manual.</p></details>
+        <details><summary>¿Cuánto tarda la implementación?</summary><p>Depende de los módulos que actives, de cuántas sucursales tengas y de si vas a conectar equipos. En el diagnóstico revisamos tu caso y te entregamos un plan con tiempos claros antes de empezar.</p></details>
         <details><summary>¿Qué pasa con el soporte?</summary><p>Qontrolab contempla acompañamiento y soporte para resolver dudas, revisar procesos y ayudar al equipo durante la implementación y uso del sistema.</p></details>
       </div>
     </section>
@@ -334,7 +420,7 @@
         <p>Plataforma modular de gestión clínica.</p>
       </div>
       <div class="footer__cols">
-        <div><h4>Producto</h4><a href="#plataforma">Plataforma</a><a href="#modulos">Módulos</a><a href="#flujo">Flujo</a><a href="#preguntas">Preguntas</a></div>
+        <div><h4>Producto</h4><a href="#plataforma">Plataforma</a><a href="#beneficios">Beneficios</a><a href="#modulos">Módulos</a><a href="#implementacion">Implementación</a><a href="#preguntas">Preguntas</a></div>
         <div><h4>Contacto</h4><a href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">WhatsApp</a><a href="https://qontrolab.com/">Iniciar sesión</a></div>
       </div>
     </div>
@@ -349,6 +435,6 @@
     <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrolab" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
   </dialog>
 
-  <script src="beta.js?v=20261015-2"></script>
+  <script src="beta.js?v=20261015-3"></script>
 </body>
 </html>

@@ -420,6 +420,80 @@ main>section{padding:0 var(--gutter)}
 .footer__cols a:hover{color:#fff}
 .footer__bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:72px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:#8F93AA}
 
+/* ---------- Beneficios: calculadora ---------- */
+.benefits{padding-top:clamp(110px,12vw,170px)!important;display:grid;gap:var(--gutter)}
+.calc{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:var(--gutter);align-items:stretch}
+.calc__inputs{display:grid;gap:30px;align-content:start;padding:clamp(24px,3vw,40px);background:var(--surface);border-radius:var(--radius-media);box-shadow:inset 0 0 0 1px var(--line);transition:background .45s var(--ease)}
+.field{display:grid;gap:14px}
+.field__top{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.field label{font-size:15px;color:var(--body)}
+.field output{font-family:var(--font-display);font-size:26px;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.field input[type=range]{--fill:50%;-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer}
+.field input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--accent) var(--fill),var(--line) var(--fill))}
+.field input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:var(--line)}
+.field input[type=range]::-moz-range-progress{height:4px;border-radius:4px;background:var(--accent)}
+.field input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-9px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 2px 8px rgba(15,16,35,.18);transition:transform .2s var(--ease)}
+.field input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 2px 8px rgba(15,16,35,.18)}
+.field input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+.field input[type=range]:focus-visible{outline:none}
+.field input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--accent-soft)}
+.field input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px var(--accent-soft)}
+.calc__assume{font-size:13.5px;line-height:1.55;color:var(--body);padding-top:20px;border-top:1px solid var(--line)}
+
+.calc__result{display:flex;flex-direction:column;gap:20px;padding:clamp(28px,3.4vw,48px);color:var(--panel-ink)}
+.calc__result::before{content:"";position:absolute;inset:auto -10% -40% -10%;height:80%;background:radial-gradient(ellipse at 40% 70%,rgba(var(--glow),.28),transparent 62%);z-index:-1}
+.calc__result small{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--panel-muted)}
+.calc__hours{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;color:var(--panel-ink)}
+.calc__hours b{font-family:var(--font-display);font-weight:400;font-size:clamp(84px,10vw,150px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.calc__hours span{font-size:20px;color:var(--panel-muted)}
+.calc__facts{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.calc__facts li{font-size:16px;color:var(--panel-muted);padding-top:10px;border-top:1px solid var(--panel-line)}
+.calc__facts b{font-family:var(--font-display);font-weight:400;font-size:22px;color:var(--panel-ink);margin-right:6px;font-variant-numeric:tabular-nums}
+.calc__formula{margin-top:auto;font-size:13px;color:var(--panel-muted);font-variant-numeric:tabular-nums}
+.calc__note{font-size:12.5px;line-height:1.5;color:var(--panel-muted)}
+
+/* ---------- Beneficios: antes / con Qontrolab ---------- */
+.swap{margin-top:clamp(40px,5vw,72px);display:grid;gap:24px}
+.swap__title{font-size:clamp(24px,2.4vw,32px);line-height:1.1}
+.swap__grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.swap__grid li{display:grid;gap:12px;align-content:start;padding:24px;background:var(--surface);border-radius:var(--radius-tile);transition:background .45s var(--ease)}
+.swap__grid em{justify-self:start;font-style:normal;font-size:12px;font-weight:500;color:var(--accent-ink);background:var(--accent-soft);padding:4px 10px;border-radius:999px}
+.swap__grid strong{font-family:var(--font-display);font-weight:400;font-size:22px;line-height:1.15;letter-spacing:-.025em;color:var(--ink)}
+.swap__grid dl{margin:4px 0 0;display:grid;gap:6px}
+.swap__grid dt{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.swap__grid dd{margin:0 0 10px;font-size:14.5px;line-height:1.5;color:var(--body)}
+.swap__grid dt:nth-of-type(1)+dd{text-decoration:line-through;text-decoration-color:var(--muted);text-decoration-thickness:1px;color:var(--muted)}
+.swap__grid dt:nth-of-type(2){color:var(--accent-ink)}
+.swap__grid dt:nth-of-type(2)+dd{color:var(--ink);margin-bottom:0}
+
+/* ---------- Implementación ---------- */
+.impl{padding-top:clamp(110px,12vw,170px)!important;display:grid;gap:0}
+.impl__body{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(32px,6vw,96px);padding-top:clamp(40px,5vw,64px);align-items:start}
+.impl__aside{position:sticky;top:110px;display:grid;gap:22px;align-content:start}
+.impl__aside h3{font-size:clamp(24px,2.4vw,32px);line-height:1.1}
+.checklist{list-style:none;margin:0;padding:0;display:grid}
+.checklist li{position:relative;padding:14px 0 14px 34px;border-top:1px solid var(--line);font-size:15.5px;color:var(--ink)}
+.checklist li:last-child{border-bottom:1px solid var(--line)}
+.checklist li::before{content:"";position:absolute;left:2px;top:16px;width:18px;height:18px;border-radius:50%;background:var(--accent-soft)}
+.checklist li::after{content:"";position:absolute;left:8px;top:20px;width:5px;height:9px;border:solid var(--accent-ink);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.impl__time{font-size:14.5px;line-height:1.55}
+.impl__aside .btn{justify-self:start}
+.impl__steps{position:relative;list-style:none;margin:0;padding:0 0 0 56px;display:grid}
+.impl__steps li{position:relative;padding:28px 0 36px;border-top:1px solid var(--line)}
+.impl__steps li:first-of-type{border-top:0;padding-top:0}
+.impl__n{position:absolute;left:-56px;top:24px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;transition:background .4s var(--ease),color .4s,box-shadow .4s}
+.impl__steps li:first-of-type .impl__n{top:-4px}
+.impl__steps li>div{display:grid;gap:10px}
+.impl__steps h3{font-size:clamp(24px,2.4vw,32px);line-height:1.1;color:var(--muted);transition:color .4s}
+.impl__steps p{max-width:52ch;color:var(--muted);transition:color .4s}
+.impl__steps li.is-on h3{color:var(--ink)}
+.impl__steps li.is-on p{color:var(--body)}
+.impl__steps li.is-on .impl__n{background:var(--accent);color:var(--on-accent);box-shadow:none}
+.impl__line{position:absolute;left:16px;top:6px;bottom:40px;width:2px;background:var(--line);border-radius:2px}
+.impl__fill{position:absolute;inset:0;background:var(--accent);transform:scaleY(var(--p,0));transform-origin:top;border-radius:2px}
+.impl__steps:not(.is-live) li h3{color:var(--ink)}
+.impl__steps:not(.is-live) li p{color:var(--body)}
+
 /* ---------- Revelado ---------- */
 .js .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease-out),transform 1s var(--ease-out)}
 .js .reveal.is-in{opacity:1;transform:none}
@@ -508,6 +582,25 @@ main>section{padding:0 var(--gutter)}
   .tile strong{font-size:17px}
 }
 
+@media (max-width:1100px){
+  .swap__grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:860px){
+  .benefits,.impl{padding-top:96px!important}
+  .calc{grid-template-columns:1fr}
+  .calc__inputs{gap:26px;padding:22px 18px}
+  .field label{font-size:14px}
+  .field output{font-size:22px}
+  .calc__result{padding:26px 22px}
+  .swap__grid{grid-template-columns:1fr}
+  .swap__grid li{padding:20px}
+  .impl__body{grid-template-columns:1fr;gap:48px}
+  .impl__aside{position:static}
+  .impl__aside .btn{justify-self:stretch;justify-content:center}
+  .impl__steps{padding-left:48px}
+  .impl__n{left:-48px}
+  .impl__line{left:15px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .js .reveal{opacity:1;transform:none}
