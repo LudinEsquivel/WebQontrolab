@@ -308,12 +308,13 @@
     var c = off.getContext('2d');
     if (!c) return [];
     shape.draw(c, w / 2, h * 0.47, Math.min(w, h) * 0.6, '#f00');
-    var data = c.getImageData(0, 0, off.width, off.height).data;
+    var ow = off.width, oh = off.height;
+    var data = c.getImageData(0, 0, ow, oh).data;
     off.width = off.height = 0; // libera la memoria (Safari en iPhone tiene un límite)
     var pts = [];
-    for (var y = 0; y < off.height; y += 2) {
-      for (var x = 0; x < off.width; x += 2) {
-        var i = (y * off.width + x) * 4;
+    for (var y = 0; y < oh; y += 2) {
+      for (var x = 0; x < ow; x += 2) {
+        var i = (y * ow + x) * 4;
         if (data[i + 3] > 140) pts.push({ x: x, y: y, accent: data[i + 1] < 120 });
       }
     }
