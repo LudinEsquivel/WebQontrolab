@@ -151,12 +151,10 @@ p{margin:0;color:var(--body)}
 .nav{position:fixed;inset:0 0 auto;z-index:100;padding:12px var(--gutter);transition:background .35s var(--ease),box-shadow .35s var(--ease)}
 .nav.is-scrolled{background:var(--nav-bg);box-shadow:0 1px 0 var(--line)}
 .nav__bar{display:flex;align-items:center;gap:40px;height:44px}
-.brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:24px;font-weight:500;letter-spacing:-.03em;color:var(--ink)}
-.brand .mark,.brand img{border-radius:7px}
+/* La Q del logo hace de primera letra: «[Q]ontrol», sin repetir la Q */
+.brand{display:inline-flex;align-items:baseline;font-family:var(--font-display);font-size:30px;font-weight:500;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.brand__q{width:.76em;height:.76em;margin-right:.01em;transform:translateY(.035em)}
 .brand b{font-weight:500;color:var(--brand-b);transition:color .45s}
-.mark--on-dark{display:none}
-:root[data-theme="dark"] .mark--on-light{display:none}
-:root[data-theme="dark"] .mark--on-dark{display:block}
 .brand--light{color:#fff}
 .brand--light b{color:var(--accent)}
 :root[data-theme="dark"] .brand--light b{color:#8E8E96}
@@ -584,7 +582,7 @@ main>section{padding:0 var(--gutter)}
   .nav__menu>a{padding:14px 12px;font-family:var(--font-display);font-size:24px;letter-spacing:-.02em;border-bottom:1px solid var(--line)}
   .nav__menu-actions{display:grid;gap:8px;padding-top:12px}
   .nav__menu-actions .btn{justify-content:center;height:48px}
-  .brand{font-size:22px}
+  .brand{font-size:28px}
 
   .hero{grid-template-columns:1fr;min-height:0;padding-top:96px!important;gap:28px}
   .hero__copy{padding-top:24px}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="110 96 300 300">
+  <!-- Qontrol — la Q del logo, sin la loseta, para usarla como la Q del nombre. -->
+  <defs>
+    <linearGradient id="q" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#66D4FF"/>
+      <stop offset="1" stop-color="#0A84FF"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="242" r="123" fill="none" stroke="url(#q)" stroke-width="40"/>
+  <line x1="312" y1="298" x2="382" y2="368" stroke="url(#q)" stroke-width="40" stroke-linecap="round"/>
+</svg>
