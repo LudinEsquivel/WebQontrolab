@@ -130,7 +130,6 @@ p{margin:0;color:var(--body)}
 .tabs button:focus-visible{outline-offset:-3px}
 ::selection{background:var(--accent-soft)}
 
-.ambient{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .skip{position:absolute;left:12px;top:-60px;z-index:200;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px}
 .skip:focus{top:12px}
 
@@ -237,7 +236,8 @@ main>section{padding:0 var(--gutter)}
 .ui__kpis b{display:block;font-family:var(--font-display);font-size:28px;font-weight:400;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .ui__kpis span{color:var(--ui-body);font-size:12px}
 .ui__table{background:var(--ui-surface);border:1px solid var(--ui-line);border-radius:10px;padding:4px 14px}
-.ui__row{display:grid;grid-template-columns:.8fr 1.1fr 1.8fr auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ui-line)}
+.ui__row{display:grid;grid-template-columns:.8fr 1.1fr 1.8fr 92px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ui-line)}
+.ui__row>:last-child{justify-self:end}
 .ui__row:first-child{border-top:0}
 .ui__row--head{color:var(--ui-muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
 .ui__row span:first-child{font-variant-numeric:tabular-nums;color:var(--ui-body)}
@@ -253,6 +253,22 @@ main>section{padding:0 var(--gutter)}
 .ui .pill{background:var(--ui-bg);border:1px solid var(--ui-line)}
 .pill--ok,.ui .pill--ok{background:var(--ui-accent-soft);color:var(--ui-accent);border-color:transparent}
 .pill--wait,.ui .pill--wait{background:var(--warn-bg);color:var(--warn-ink);border-color:transparent}
+/* Pantalla viva (JS): encendido y relevos suaves, un realce a la vez */
+.ui__row{position:relative;z-index:0;transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.ui__row::before{content:"";position:absolute;inset:0 -14px;z-index:-1;border-radius:6px;background:var(--ui-accent-soft);opacity:0;pointer-events:none;transition:opacity 1.4s var(--ease)}
+.ui__row.is-fresh::before{opacity:1;transition-duration:.4s}
+.ui__row.is-entering{opacity:0;transform:translateY(10px)}
+.ui__row.is-gone{opacity:0;transition-duration:.38s}
+.ui__kpis div{transition:border-color 1.2s var(--ease)}
+.ui__kpis div.is-flash{border-color:var(--ui-accent);transition-duration:.3s}
+.ui__kpis b,.ui .pill,.ui__alert span{transition:opacity .24s var(--ease),transform .34s var(--ease),box-shadow 1.2s var(--ease)}
+.ui .pill.is-flash{box-shadow:0 0 0 3px var(--ui-accent-soft);transition-duration:.24s,.34s,.3s}
+.ui .is-leaving{opacity:0;transform:translateY(-35%)}
+.ui .is-arriving{opacity:0;transform:translateY(35%);transition:none}
+.ui__bars i{transform-origin:bottom;transition:transform .9s var(--ease-out),height .9s var(--ease-out)}
+.ui__alert{transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.ui.is-off .ui__row:not(.ui__row--head),.ui.is-off .ui__alert{opacity:0;transform:translateY(10px)}
+.ui.is-off .ui__bars i{transform:scaleY(0)}
 
 /* ---------- Áreas (pestañas) ---------- */
 .areas{padding-top:var(--section)!important}
@@ -484,7 +500,7 @@ main>section{padding:0 var(--gutter)}
 .impl__steps{position:relative;list-style:none;margin:0;padding:0 0 0 56px;display:grid}
 .impl__steps li{position:relative;padding:28px 0 36px;border-top:1px solid var(--line)}
 .impl__steps li:first-of-type{border-top:0;padding-top:0}
-.impl__n{position:absolute;left:-56px;top:24px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;font-weight:600;color:var(--muted-text);font-variant-numeric:tabular-nums;transition:background .4s var(--ease),color .4s,box-shadow .4s}
+.impl__n{position:absolute;z-index:1;left:-56px;top:24px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);font-size:12.5px;font-weight:600;color:var(--muted-text);font-variant-numeric:tabular-nums;transition:background .4s var(--ease),color .4s,box-shadow .4s}
 .impl__steps li:first-of-type .impl__n{top:-4px}
 .impl__steps li>div{display:grid;gap:10px}
 .impl__steps h3{font-size:clamp(24px,2.4vw,32px);line-height:1.1;color:var(--muted-text);transition:color .4s}
@@ -667,18 +683,30 @@ main>section{padding:0 var(--gutter)}
   .edge .btn{justify-content:center}
   .prod{min-height:0;padding:22px 20px}
   .calc{grid-template-columns:1fr}
-  .calc__inputs{gap:26px;padding:22px 18px}
+  .calc__inputs{gap:18px;padding:20px 18px}
+  .field{gap:6px}
   .field label{font-size:14px}
   .field output{font-size:22px}
-  .calc__result{padding:26px 22px}
-  .swap__grid{grid-template-columns:1fr}
-  .swap__grid li{padding:20px}
-  .impl__body{grid-template-columns:1fr;gap:48px}
-  .impl__aside{position:static}
+  .calc__assume{padding-top:14px}
+  .calc__result{padding:22px 20px;gap:14px}
+  /* Las tareas se deslizan de lado: una tarjeta a la vista y la siguiente asomándose */
+  .swap{gap:16px}
+  .swap__grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:84%;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 var(--gutter);margin:0 calc(var(--gutter) * -1);padding:0 var(--gutter) 4px;scrollbar-width:none}
+  .swap__grid::-webkit-scrollbar{display:none}
+  .swap__grid li{padding:20px;scroll-snap-align:start}
+  .impl__body{grid-template-columns:1fr;gap:32px}
+  .impl__aside{position:static;gap:16px}
   .impl__aside .btn{justify-self:stretch;justify-content:center}
   .impl__steps{padding-left:48px}
-  .impl__n{left:-48px}
-  .impl__steps::before,.impl__steps::after{left:15px}
+  .impl__steps li{padding:16px 0 18px}
+  .impl__steps li>div{gap:6px}
+  .impl__steps h3{font-size:21px}
+  .impl__steps p{font-size:15.5px;line-height:1.5}
+  .checklist li{padding:10px 0 10px 32px;font-size:15px}
+  .checklist li::before{top:12px}
+  .checklist li::after{top:16px}
+  .impl__n{left:-48px;top:12px}
+  .impl__steps::before,.impl__steps::after{left:15px;bottom:24px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
