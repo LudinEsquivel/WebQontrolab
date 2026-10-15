@@ -150,83 +150,6 @@
     io.observe(el);
   }
 
-  /* ---------- Puntos de fondo: pocos, suaves, acompañan al bajar ---------- */
-  function initAmbient() {
-    var canvas = $('#ambient');
-    if (!canvas) return;
-    var ctx, w, h, dots = [], pos = null, raf = 0, last = 0, lastDraw = 0, running = false, idleT = 0;
-    function size() {
-      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      w = window.innerWidth; h = window.innerHeight;
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    function build() {
-      size();
-      var n = Math.round(clamp(w * h / (w < 700 ? 30000 : 24000), 18, 70));
-      dots = [];
-      for (var i = 0; i < n; i++) {
-        var d = 0.25 + Math.random() * 0.75;
-        dots.push({ x: Math.random() * w, y: Math.random() * (h + 60), d: d, s: 0.9 + d * 1.3, a: 0.1 + d * 0.22,
-          vx: (Math.random() - 0.5) * 0.006, ph: Math.random() * 6.28, accent: Math.random() < 0.16 });
-      }
-      pos = new Float32Array(n * 2);
-      draw(performance.now());
-    }
-    function draw(now) {
-      ctx.clearRect(0, 0, w, h);
-      var sy = reduceMotion ? 0 : window.scrollY, span = h + 60, t = now * 0.001;
-      var inkCol = 'rgb(' + palette['p-ink'] + ')', accentCol = 'rgb(' + palette['p-node'] + ')';
-      for (var i = 0; i < dots.length; i++) {
-        var p = dots[i];
-        var y = ((p.y - sy * p.d * 0.32) % span + span) % span - 30;
-        var x = ((p.x % w) + w) % w;
-        pos[i * 2] = x; pos[i * 2 + 1] = y;
-        ctx.globalAlpha = p.a * (0.75 + Math.sin(t * 0.6 + p.ph) * 0.25);
-        ctx.fillStyle = p.accent ? accentCol : inkCol;
-        ctx.beginPath(); ctx.arc(x, y, p.s, 0, Math.PI * 2); ctx.fill();
-      }
-      // Hilos muy tenues entre puntos cercanos (como la red, pero en susurro)
-      ctx.strokeStyle = inkCol;
-      ctx.lineWidth = 0.6;
-      for (var a = 0; a < dots.length; a++) {
-        for (var b = a + 1; b < dots.length; b++) {
-          var dx = pos[a * 2] - pos[b * 2], dy = pos[a * 2 + 1] - pos[b * 2 + 1], d2 = dx * dx + dy * dy;
-          if (d2 < 11000) {
-            ctx.globalAlpha = (1 - d2 / 11000) * 0.07;
-            ctx.beginPath(); ctx.moveTo(pos[a * 2], pos[a * 2 + 1]); ctx.lineTo(pos[b * 2], pos[b * 2 + 1]); ctx.stroke();
-          }
-        }
-      }
-      ctx.globalAlpha = 1;
-    }
-    function tick(now) {
-      raf = requestAnimationFrame(tick);
-      if (now - lastDraw < 32) return; // ~30 cuadros por segundo bastan para algo tan lento
-      var dt = last ? Math.min(now - last, 80) : 32; last = now; lastDraw = now;
-      for (var i = 0; i < dots.length; i++) { var p = dots[i]; p.y -= dt * 0.006 * p.d; p.x += p.vx * dt; }
-      draw(now);
-    }
-    function start() { if (running || document.hidden) return; running = true; last = 0; raf = requestAnimationFrame(tick); }
-    function stop() { running = false; cancelAnimationFrame(raf); }
-    // Se mueve mientras la persona baja y descansa a los pocos segundos de quietud (ahorra batería).
-    function wake() { start(); clearTimeout(idleT); idleT = setTimeout(stop, 6000); }
-    build();
-    if (!reduceMotion) {
-      wake();
-      window.addEventListener('scroll', wake, { passive: true });
-      document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else wake(); });
-    }
-    document.addEventListener('qontrol:theme', function () { if (!running) draw(performance.now()); });
-    var rt = 0;
-    window.addEventListener('resize', function () {
-      clearTimeout(rt);
-      rt = setTimeout(function () {
-        if (window.innerWidth === w) { size(); draw(performance.now()); } else build();
-      }, 200);
-    });
-  }
-
   /* ---------- Partículas del hero: Q → tubos → corazón → cápsula ---------- */
   var SHAPES = [
     { label: 'Qontrol', draw: function (c, cx, cy, s, accent) {
@@ -473,6 +396,161 @@
     window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     window.addEventListener('resize', update);
     update();
+  }
+
+  /* ---------- Pantalla del sistema: se enciende al verla y cuenta un día real ----------
+     Solo se mueve cuando de verdad se está viendo: al menos la mitad de la pantalla (o de lo
+     que se ve con zoom de pellizco) dentro de lo visible y con la pestaña activa; si no, se
+     pausa y al volver sigue donde iba. Siempre hay cuatro filas, así que nada cambia de tamaño
+     mientras alguien lee. Con «reducir movimiento» queda la imagen fija. */
+  function initScreenLive() {
+    var ui = $('#monitorUi'), screen = $('#monitorScreen');
+    if (!ui || !screen || reduceMotion || !('IntersectionObserver' in window)) return;
+    var table = $('.ui__table', ui), kpis = $$('.ui__kpis b', ui), bars = $$('.ui__bars i', ui), alerts = $$('.ui__alert', ui);
+    var rows = function () { return $$('.ui__row:not(.ui__row--head)', table); };
+    if (kpis.length !== 4 || !bars.length || alerts.length < 2 || rows().length !== 4) return;
+
+    // Órdenes hoy, pendientes, ingresos y resultados listos
+    var vals = [24, 7, 4200, 18];
+    var fmt = function (i, v) { v = Math.round(v); return i === 2 ? 'Q' + v.toLocaleString('en-US') : String(v); };
+    var PILL = { 'Pago': 'pill', 'Muestra': 'pill pill--wait', 'En proceso': 'pill', 'Validado': 'pill pill--ok' };
+    var NEXT = { 'Pago': 'Muestra', 'Muestra': 'En proceso', 'En proceso': 'Validado' };
+    // Órdenes que van llegando (datos de ejemplo) y lo que cuesta cada estudio
+    var ARRIVALS = [
+      ['Sofía Herrera', 'Hemograma completo', 75], ['Jorge Ramírez', 'Examen general de orina', 40],
+      ['Lucía Méndez', 'Perfil hepático', 225], ['Diego Castillo', 'Hemoglobina glicosilada', 150],
+      ['Andrea Morales', 'Prueba de embarazo', 60], ['Fernando Rosales', 'Creatinina y BUN', 90],
+      ['Gabriela Pineda', 'Perfil lipídico', 150], ['Roberto Aguilar', 'Urocultivo', 180]
+    ];
+    [225, 30, 350, 400].forEach(function (price, i) { rows()[i]._price = price; });
+    var seq = 850, arrived = 0, toValidate = 2, today = parseFloat(bars[bars.length - 1].style.getPropertyValue('--h')) || 54;
+    var alertText = document.createElement('span');
+    alertText.textContent = alerts[1].lastChild.textContent.trim();
+    alerts[1].replaceChild(alertText, alerts[1].lastChild);
+
+    function flash(el) {
+      el.classList.remove('is-flash'); void el.offsetWidth; el.classList.add('is-flash');
+      clearTimeout(el._flash); el._flash = setTimeout(function () { el.classList.remove('is-flash'); }, 1400);
+    }
+    // Relevo suave: el texto anterior sube y se va, el nuevo entra desde abajo
+    function swap(el, text, cls) {
+      el.classList.add('is-leaving');
+      setTimeout(function () {
+        el.textContent = text;
+        if (cls) el.className = cls;
+        el.classList.remove('is-leaving'); el.classList.add('is-arriving');
+        void el.offsetWidth;
+        el.classList.remove('is-arriving');
+      }, 240);
+    }
+    function setKpi(i, v, quiet) { vals[i] = v; swap(kpis[i], fmt(i, v)); if (!quiet) flash(kpis[i].parentNode); }
+    function setAlert(n) { toValidate = n; swap(alertText, n === 1 ? '1 resultado pendiente de validar' : n + ' resultados pendientes de validar'); }
+    function byState(state) { return rows().filter(function (r) { return r.lastElementChild.textContent === state; })[0]; }
+
+    // Una orden avanza un paso: Pago → Muestra → En proceso → Validado
+    function advance(row) {
+      if (!row) return;
+      var pill = row.lastElementChild, to = NEXT[pill.textContent];
+      if (!to) return;
+      swap(pill, to, PILL[to]);
+      setTimeout(function () { flash(pill); }, 260);
+      setTimeout(function () {
+        if (to === 'Validado') { setKpi(3, vals[3] + 1); setKpi(1, vals[1] - 1, true); setAlert(toValidate - 1); }
+        else if (to === 'En proceso') setAlert(toValidate + 1);
+        else {
+          setKpi(2, vals[2] + (row._price || 0));
+          today = Math.min(today + 3, 92);
+          bars[bars.length - 1].style.setProperty('--h', today + '%');
+        }
+      }, 380);
+    }
+    // Llega una orden nueva al final; la más antigua se despide y las demás suben un lugar
+    function newOrder() {
+      var list = rows(), old = list[0], d = ARRIVALS[arrived++ % ARRIVALS.length];
+      old.classList.add('is-gone');
+      setTimeout(function () {
+        var tops = list.map(function (r) { return r.offsetTop; });
+        var row = document.createElement('div');
+        row.className = 'ui__row is-entering';
+        row.innerHTML = '<span></span><span></span><span></span><em class="pill">Pago</em>';
+        row.children[0].textContent = 'OT-' + String(++seq).padStart(4, '0');
+        row.children[1].textContent = d[0];
+        row.children[2].textContent = d[1];
+        row._price = d[2];
+        old.remove(); table.appendChild(row);
+        list.slice(1).forEach(function (r, i) { r.style.transition = 'none'; r.style.transform = 'translateY(' + (tops[i + 1] - r.offsetTop) + 'px)'; });
+        void table.offsetWidth;
+        list.slice(1).forEach(function (r) { r.style.transition = ''; r.style.transform = ''; });
+        row.classList.remove('is-entering'); row.classList.add('is-fresh');
+        setTimeout(function () { row.classList.remove('is-fresh'); }, 1600);
+        setKpi(0, vals[0] + 1); setKpi(1, vals[1] + 1, true);
+      }, 380);
+    }
+    // Un ciclo deja la tabla como empezó, con todo un paso más adelante
+    var STEPS = [
+      newOrder,
+      function () { advance(byState('En proceso')); },
+      function () { advance(byState('Muestra')); },
+      function () { advance(byState('Pago')); }
+    ];
+    var on = false, live = false, step = 0, timer = 0, raf = 0;
+    function tick() {
+      if (!live) return;
+      STEPS[step++ % STEPS.length]();
+      timer = setTimeout(tick, 5200);
+    }
+    function play(delay) { live = true; clearTimeout(timer); timer = setTimeout(tick, delay); }
+    function pause() { live = false; clearTimeout(timer); }
+
+    // Encendido: las filas aparecen, las barras crecen y los números suben desde cero
+    function powerOn() {
+      on = true;
+      var staged = [];
+      rows().forEach(function (r, i) { staged.push([r, 120 + i * 90]); });
+      bars.forEach(function (b, i) { staged.push([b, 200 + i * 60]); });
+      alerts.forEach(function (a, i) { staged.push([a, 650 + i * 140]); });
+      staged.forEach(function (s) { s[0].style.transitionDelay = s[1] + 'ms'; });
+      ui.classList.remove('is-off');
+      kpis.forEach(function (el, i) {
+        var t0 = performance.now() + i * 90;
+        (function count(now) {
+          var t = clamp((now - t0) / 1300, 0, 1);
+          el.textContent = fmt(i, vals[i] * (1 - Math.pow(1 - t, 3)));
+          if (t < 1) requestAnimationFrame(count);
+        })(performance.now());
+      });
+      setTimeout(function () { staged.forEach(function (s) { s[0].style.transitionDelay = ''; }); }, 2200);
+    }
+
+    // Cuánto de la pantalla se ve de verdad, contra lo visible (incluye el zoom de pellizco)
+    function seen() {
+      var r = screen.getBoundingClientRect(), vv = window.visualViewport;
+      var vx = vv ? vv.offsetLeft : 0, vy = vv ? vv.offsetTop : 0;
+      var vw = vv ? vv.width : window.innerWidth, vh = vv ? vv.height : window.innerHeight;
+      var w = Math.min(r.right, vx + vw) - Math.max(r.left, vx), h = Math.min(r.bottom, vy + vh) - Math.max(r.top, vy);
+      if (w <= 0 || h <= 0 || !r.width || !r.height) return 0;
+      return (w * h) / Math.min(r.width * r.height, vw * vh);
+    }
+    function check() {
+      raf = 0;
+      var ratio = document.hidden ? 0 : seen();
+      if (!on) { if (ratio >= 0.6) { powerOn(); play(3400); } return; }
+      if (ratio >= 0.35 && !live) play(1800);
+      else if (ratio < 0.35 && live) pause();
+    }
+    function queue() { if (!raf) raf = requestAnimationFrame(check); }
+
+    ui.classList.add('is-off');
+    kpis.forEach(function (el, i) { el.textContent = fmt(i, 0); });
+    new IntersectionObserver(queue, { threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }).observe(screen);
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('scroll', queue);
+      window.visualViewport.addEventListener('resize', queue);
+    }
+    // Sin requestAnimationFrame: en una pestaña oculta no corre y la pausa no llegaría
+    document.addEventListener('visibilitychange', check);
   }
 
   /* ---------- Pestañas por área ---------- */
@@ -1106,7 +1184,7 @@
 
   function boot() {
     // Primero lo que hace visible el contenido; cada parte aislada para que un fallo no apague las demás.
-    [initReveal, initTheme, initNav, initAmbient, initHeroParticles, initMonitor, initTabs, initStats,
+    [initReveal, initTheme, initNav, initHeroParticles, initMonitor, initScreenLive, initTabs, initStats,
      initNetwork, initModules, initCalc, initFlow, initImpl].forEach(function (init) {
       try { init(); } catch (e) { if (window.console) console.error(e); }
     });
