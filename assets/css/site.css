@@ -348,6 +348,7 @@ main>section{padding:0 var(--gutter)}
 .network__copy>p{font-size:15px;line-height:1.55}
 .network__canvas{position:relative;height:clamp(460px,50vw,680px)}
 .network__canvas::before{content:"";position:absolute;inset:0;background:radial-gradient(closest-side at 50% 56%,rgba(var(--glow),.18),rgba(var(--glow),.07) 50%,transparent 100%);pointer-events:none}
+:root[data-theme="light"] .network__canvas::before{display:none}
 .hop{display:grid;gap:8px;padding-top:16px;border-top:1px solid var(--line);min-height:128px;align-content:start}
 .hop small{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink)}
 .hop__route{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-family:var(--font-display);font-size:clamp(18px,1.6vw,22px);letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
