@@ -195,6 +195,10 @@ main>section{padding:0 var(--gutter)}
 .hero__media{min-height:520px;background:transparent;box-shadow:none}
 #heroParticles{-webkit-mask-image:radial-gradient(ellipse 74% 70% at 50% 48%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 74% 70% at 50% 48%,#000 60%,transparent 100%)}
 .particles{position:absolute;inset:0;width:100%;height:100%}
+.is-draggable{cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.is-draggable.is-grabbing{cursor:grabbing}
+.hero__hint{position:absolute;left:0;right:0;bottom:4px;z-index:2;margin:0;text-align:center;font-size:13px;color:var(--muted-text);pointer-events:none;transition:opacity .6s var(--ease)}
+.hero__hint:empty,.was-dragged .hero__hint{opacity:0}
 .hero__caption{position:absolute;left:20px;right:20px;bottom:18px;z-index:2;display:flex;gap:12px;align-items:baseline;color:var(--muted-text);font-size:13px;font-variant-numeric:tabular-nums}
 .hero__caption span:first-child{color:var(--accent-ink)}
 #shapeLabel{transition:opacity .4s var(--ease)}

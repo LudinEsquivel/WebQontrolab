@@ -679,6 +679,9 @@
     var box = $('#hop'), routeEl = $('#hopRoute'), textEl = $('#hopText');
     var ctx, w, h, dots = [], running = false, raf = 0, last = 0, clock = 0;
     var rotY = 0, tilt = 0.26, tiltTarget = 0.26;
+    // Arrastre: drag = puntero activo, spin = inercia al soltar (rad/ms),
+    // follow = cuánto vuelve el globo a seguir solo la información (0 a 1).
+    var drag = null, spin = 0, follow = 1, idleUntil = 0, userTilt = false;
     var TRAVEL = 1600, DWELL = 650, FADE = 6500, SEGS = 36;
     var nodes = {}, out = {}, trails = [], walkers = [], visible = false;
 
@@ -788,10 +791,22 @@
       var decay = Math.exp(-dt / 900);
       Object.keys(nodes).forEach(function (k) { nodes[k].lit *= decay; });
 
-      // El globo sigue con suavidad hacia donde va la información, sin saltos
-      var lead = walkers[0], target = lead.hop ? nodes[lead.phase === 'travel' ? lead.hop[1] : lead.at] : nodes['Recepción'];
-      rotY += angleTo(rotY, -target.lon) * (1 - Math.exp(-dt / 1700)) + dt * 0.00002;
-      tilt += (tiltTarget - tilt) * (1 - Math.exp(-dt / 400));
+      // Si alguien lo gira, el globo obedece; al soltar sigue un poco por inercia,
+      // espera y vuelve con suavidad a seguir la información, sin saltos.
+      if (drag) {
+        follow = 0;
+      } else if (spin) {
+        rotY += spin * dt; spin *= Math.exp(-dt / 650);
+        if (Math.abs(spin) < 0.00003) { spin = 0; idleUntil = clock + 1800; }
+      } else if (clock > idleUntil) {
+        if (userTilt) { userTilt = false; tiltTarget = 0.26; }
+        follow = Math.min(1, follow + dt / 2600);
+      }
+      if (!drag && !spin && follow > 0) {
+        var lead = walkers[0], target = lead.hop ? nodes[lead.phase === 'travel' ? lead.hop[1] : lead.at] : nodes['Recepción'];
+        rotY += (angleTo(rotY, -target.lon) * (1 - Math.exp(-dt / 1700)) + dt * 0.00002) * follow * follow;
+      }
+      if (!drag) tilt += (tiltTarget - tilt) * (1 - Math.exp(-dt / (follow < 1 ? 900 : 400)));
     }
 
     var tmp = { x: 0, y: 0, z: 0, s: 1 };
@@ -906,13 +921,47 @@
         lastW = canvas.clientWidth; lastH = canvas.clientHeight; build();
       }, 180);
     });
-    if (finePointer) {
-      canvas.parentElement.addEventListener('pointermove', function (e) {
-        var r = canvas.getBoundingClientRect();
-        tiltTarget = 0.26 + ((e.clientY - r.top) / r.height - 0.5) * 0.4;
-      });
-      canvas.parentElement.addEventListener('pointerleave', function () { tiltTarget = 0.26; });
+    // Mantener presionado y arrastrar gira el globo. En pantallas táctiles solo
+    // se gira de lado, para que deslizar hacia arriba o abajo siga moviendo la página.
+    var host = canvas.parentElement, hint = $('.hero__hint', host), vel = 0;
+    host.classList.add('is-draggable');
+    if (hint) hint.textContent = finePointer ? 'Mantén presionado y arrastra para girarlo' : 'Desliza de lado para girarlo';
+    host.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0 || drag) return;
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now() };
+      spin = 0; vel = 0;
+      try { host.setPointerCapture(e.pointerId); } catch (err) { /* sin captura también funciona */ }
+      host.classList.add('is-grabbing');
+      if (e.pointerType === 'mouse') e.preventDefault();
+    });
+    host.addEventListener('pointermove', function (e) {
+      if (!drag) {
+        if (finePointer && follow === 1) {
+          var r = canvas.getBoundingClientRect();
+          tiltTarget = 0.26 + ((e.clientY - r.top) / r.height - 0.5) * 0.4;
+        }
+        return;
+      }
+      if (e.pointerId !== drag.id) return;
+      var now = performance.now(), dx = e.clientX - drag.x, dy = e.clientY - drag.y, k = 1 / P.R;
+      vel = vel * 0.5 + (dx * k / Math.max(8, now - drag.t)) * 0.5;
+      drag.x = e.clientX; drag.y = e.clientY; drag.t = now;
+      rotY += dx * k;
+      if (e.pointerType !== 'touch') { tilt = clamp(tilt + dy * k * 0.7, -0.35, 0.85); tiltTarget = tilt; userTilt = true; }
+      if (dx || dy) host.classList.add('was-dragged');
+      if (!running) draw();
+    });
+    function release(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var still = performance.now() - drag.t > 90;
+      drag = null; follow = 0;
+      host.classList.remove('is-grabbing');
+      spin = reduceMotion || still || e.type === 'pointercancel' ? 0 : clamp(vel, -0.012, 0.012);
+      if (!spin) idleUntil = clock + 1800;
     }
+    host.addEventListener('pointerup', release);
+    host.addEventListener('pointercancel', release);
+    host.addEventListener('pointerleave', function () { if (!drag && follow === 1) tiltTarget = 0.26; });
   }
 
   /* ---------- Módulos (los 36 del sistema, hospital primero, por solución) ---------- */
