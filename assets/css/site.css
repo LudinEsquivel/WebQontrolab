@@ -1,58 +1,59 @@
 /* ============================================================
    Qontrol · Landing
-   Tema claro: lienzo con tinte, navy y teal.
+   Tema claro: azul clínico (celeste y azul del logo) sobre blanco frío.
    Tema oscuro: blanco y negro, sin acento de color.
    ============================================================ */
 
 :root,
 :root[data-theme="light"]{
-  --bg:#F7F8FC;
+  /* Azul clínico: el celeste y el azul salen del degradado de la Q del logo */
+  --bg:#F5F9FC;
   --surface:#FFFFFF;
-  --soft:#EDF0F7;
-  --soft-hover:#E3E8F2;
+  --soft:#EAF2F9;
+  --soft-hover:#DEEAF5;
   --ink:#0F1023;
-  --body:#5B6072;
-  --muted:#A2A6B5;
-  --muted-text:#6B7083;
-  --line:#E2E6F0;
+  --body:#556074;
+  --muted:#9FAABA;
+  --muted-text:#647086;
+  --line:#DFE8F1;
 
-  --panel:#0F1023;
-  --panel-border:transparent;
-  --panel-ink:#E8EAF2;
-  --panel-muted:rgba(232,234,242,.68);
-  --panel-line:rgba(255,255,255,.12);
+  --panel:linear-gradient(165deg,#F1F8FE 0%,#E1EFFB 55%,#D5E9FA 100%);
+  --panel-border:rgba(10,110,220,.10);
+  --panel-ink:#0F1023;
+  --panel-muted:rgba(15,16,35,.56);
+  --panel-line:rgba(10,100,200,.14);
 
-  --accent:#14B8A6;
-  --accent-ink:#0F766E;
-  --accent-soft:rgba(20,184,166,.14);
-  --on-accent:#0F1023;
-  --brand-b:#0F766E;
-  --glow:20,184,166;
-  --glow-2:74,77,124;
+  --accent:#0A6FDB;
+  --accent-ink:#0A62C2;
+  --accent-soft:rgba(10,132,255,.12);
+  --on-accent:#FFFFFF;
+  --brand-b:#0A72E0;
+  --glow:10,132,255;
+  --glow-2:102,212,255;
 
-  --ui-bg:#F7F8FC;
+  --ui-bg:#F5F9FC;
   --ui-surface:#FFFFFF;
-  --ui-line:#E2E6F0;
+  --ui-line:#E3EBF3;
   --ui-ink:#0F1023;
-  --ui-body:#5B6072;
-  --ui-muted:#A2A6B5;
-  --ui-accent:#0F766E;
-  --ui-accent-soft:rgba(20,184,166,.14);
-  --ui-bar:linear-gradient(#14B8A6,rgba(20,184,166,.3));
+  --ui-body:#556074;
+  --ui-muted:#9FAABA;
+  --ui-accent:#0A6FDB;
+  --ui-accent-soft:rgba(10,132,255,.12);
+  --ui-bar:linear-gradient(#2E9BFF,rgba(102,212,255,.35));
   --warn-bg:#FFF4E5;
   --warn-ink:#9A5B00;
   --flag:#B45309;
 
-  --nav-bg:rgba(247,248,252,.97);
-  --footer:#0F1023;
+  --nav-bg:rgba(245,249,252,.95);
+  --footer:#0B1630;
   --footer-border:transparent;
 
   /* canvas (r,g,b) */
   --p-base:15,16,35;
-  --p-accent:13,148,136;
+  --p-accent:10,111,219;
   --p-ink:15,16,35;
-  --p-node:20,184,166;
-  --p-bg:247,248,252;
+  --p-node:10,132,255;
+  --p-bg:245,249,252;
 
   --font-display:"Outfit",system-ui,sans-serif;
   --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -717,4 +718,96 @@ main>section{padding:0 var(--gutter)}
   .js .reveal{opacity:1;transform:none}
   [data-split] .w>span{transform:none}
   .ecg path{animation:none;stroke-dashoffset:0}
+}
+
+/* ============================================================
+   Identidad clínica (nov 2026)
+   Lo que dice «software de salud» sin perder la estética:
+   pulso de ECG bajo el titular,
+   tarjetas clínicas flotando sobre el globo, franja «Hecho para»
+   e íconos de línea por solución. Colores: celeste y azul del logo.
+   ============================================================ */
+
+/* Nombres de producto con el degradado de la Q */
+:root[data-theme="light"] .pw b,
+:root[data-theme="light"] .brand b{background:linear-gradient(120deg,#2BA9FF 0%,#0A6FDB 70%);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-theme="light"] .brand--light b{background:linear-gradient(120deg,#66D4FF,#2E9BFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Paneles claros: celeste clínico en lugar de azul espacial */
+:root[data-theme="light"] .card{box-shadow:0 30px 70px rgba(10,70,140,.16),0 2px 6px rgba(10,70,140,.06),0 0 0 1px rgba(10,100,200,.08)}
+:root[data-theme="light"] .chip{background:rgba(255,255,255,.72);border-color:rgba(10,100,200,.12)}
+:root[data-theme="light"] .area__media::after{background-image:linear-gradient(rgba(10,100,200,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(10,100,200,.07) 1px,transparent 1px)}
+:root[data-theme="light"] .area__media::before{background:radial-gradient(circle at 85% 0%,rgba(102,212,255,.35),transparent 45%),radial-gradient(circle at 0% 100%,rgba(10,132,255,.14),transparent 50%)}
+:root[data-theme="light"] .stage::before{background:radial-gradient(ellipse at 50% 115%,rgba(10,132,255,.22),transparent 55%),radial-gradient(circle at 12% 0%,rgba(102,212,255,.40),transparent 45%)}
+:root[data-theme="light"] .stage::after{background:linear-gradient(rgba(255,255,255,.7),rgba(255,255,255,.35))}
+:root[data-theme="light"] .monitor__neck{background:linear-gradient(90deg,#AEBCCB,#DCE5EE 50%,#AEBCCB)}
+:root[data-theme="light"] .monitor__base{background:linear-gradient(#D3DDE7,#A7B5C4)}
+:root[data-theme="light"] .monitor__screen{box-shadow:0 0 0 1px rgba(10,40,80,.2),0 50px 110px rgba(10,60,120,.28)}
+:root[data-theme="light"] .calc__result::before{background:radial-gradient(ellipse at 40% 70%,rgba(102,212,255,.45),transparent 62%)}
+
+.hero__title{max-width:12.5ch;font-size:clamp(44px,5.6vw,86px)}
+
+/* Pulso de ECG que reemplaza la línea bajo el titular */
+.pulse{display:flex;align-items:center;height:40px;margin:-8px 0 0}
+.pulse__line{flex:1 1 0;height:1px;background:var(--line)}
+.pulse__line:first-child{flex:0 0 18%}
+.pulse__beat{flex:0 0 160px;width:160px;height:40px;overflow:visible}
+.pulse__beat path{fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.pulse__base{stroke:var(--line)}
+.pulse__trace{stroke:var(--accent);stroke-dasharray:46 400;stroke-dashoffset:46;animation:trace 3.2s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes trace{0%{stroke-dashoffset:46}70%,100%{stroke-dashoffset:-260}}
+
+/* Tarjetas clínicas sobre el globo */
+.hero__media{overflow:visible}
+.float{position:absolute;z-index:2;width:262px;padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);box-shadow:0 24px 60px rgba(10,60,120,.14),0 0 0 1px var(--line);font-size:12.5px;color:var(--ink);pointer-events:none;animation:floatIn 1s var(--ease-out) both,bob 7s ease-in-out infinite}
+:root[data-theme="dark"] .float{box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px var(--line)}
+.float--a{left:2%;top:9%;animation-delay:.7s,1.7s}
+.float--b{right:0;bottom:15%;width:262px;animation-delay:1s,2s;animation-direction:normal,reverse}
+.float__head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.float__head small{font-size:9.5px;font-weight:600;letter-spacing:.12em;color:var(--muted-text)}
+.float__head .pill{font-size:10px;padding:3px 8px}
+.float__row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.float__row span{color:var(--body)}
+.float__row b{font-family:var(--font-display);font-weight:400;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
+.float--b .float__row b{font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:0}
+.float__row i{font-style:normal;font-size:12px;color:var(--muted-text)}
+.float__ref{display:grid;gap:6px;margin-top:8px;font-size:11px;color:var(--muted-text)}
+.float__bar{position:relative;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--soft) 0 20%,var(--accent-soft) 20% 80%,var(--soft) 80%)}
+.float__bar i{position:absolute;top:50%;left:var(--v);width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+@keyframes floatIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
+
+/* Franja «Hecho para» */
+.for{padding-top:clamp(8px,1.4vw,20px)!important}
+.for__bar{display:flex;align-items:center;gap:28px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.for__lead,.for__std{flex:0 0 auto;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-text);white-space:nowrap}
+.for__std{color:var(--accent-ink);letter-spacing:.08em}
+.for__list{flex:1;display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.for__list li{display:inline-flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);white-space:nowrap}
+.for__icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent-soft)}
+.for__icon svg,.prod__icon svg{width:19px;height:19px;fill:none;stroke:var(--accent-ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* Íconos de línea en las soluciones */
+.prod__icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--accent-soft);margin-bottom:6px;transition:transform .4s var(--ease)}
+.prod__icon svg{width:23px;height:23px}
+.prod:hover .prod__icon{transform:translateY(-2px) rotate(-4deg)}
+
+@media (max-width:1100px){
+  .for__bar{flex-wrap:wrap;gap:14px 24px}
+  .for__list{order:3;flex-basis:100%;justify-content:flex-start}
+  .for__std{margin-left:auto}
+}
+@media (max-width:860px){
+  .hero__title{font-size:clamp(38px,10.5vw,60px)}
+  .float{width:232px;padding:11px 13px}
+  .float__head small{white-space:nowrap}
+  .float--a{left:0;top:4%}
+  .float--b{display:none}
+  .float__row b{font-size:17px}
+  .for__list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .for__list li{font-size:14px;white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){
+  .pulse__trace{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+  .float{animation:none}
 }

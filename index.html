@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qontrol — Plataforma modular de gestión de salud</title>
-  <meta name="description" content="Qontrol es la plataforma modular para hospitales, sanatorios, laboratorios, clínicas y farmacias: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm.">
+  <title>Qontrol — Software para hospitales, laboratorios clínicos, clínicas y farmacias</title>
+  <meta name="description" content="Qontrol es el software de gestión para hospitales, sanatorios, laboratorios clínicos, clínicas y farmacias: admisión, internamiento, órdenes y resultados de laboratorio, recetas, farmacia y caja. Soluciones: QontrolHosp, QontroLab, QontrolClinic y QontrolFarm.">
   <link rel="canonical" href="https://qontrolab.site/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Qontrol">
   <meta property="og:url" content="https://qontrolab.site/">
-  <meta property="og:title" content="Qontrol — Plataforma modular de gestión de salud">
+  <meta property="og:title" content="Qontrol — Software para hospitales, laboratorios clínicos, clínicas y farmacias">
   <meta property="og:description" content="Pacientes, órdenes, resultados, internamiento, farmacia, inventario y caja en una sola plataforma para hospitales, sanatorios, laboratorios, clínicas y farmacias.">
   <meta property="og:image" content="https://qontrolab.site/assets/img/og-qontrol.jpg">
   <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"Organization","name":"Qontrol","url":"https://qontrolab.site/","logo":"https://qontrolab.site/assets/img/apple-touch-icon.png","description":"Plataforma modular de gestión de salud para hospitales, sanatorios, laboratorios, clínicas y farmacias."}
   </script>
-  <meta name="theme-color" content="#F7F8FC">
+  <meta name="theme-color" content="#F5F9FC">
   <meta name="color-scheme" content="light dark">
   <script>
     // Tema antes de pintar: sigue el tema del navegador (claro u oscuro),
@@ -35,7 +35,7 @@
       document.documentElement.dataset.theme = t;
       document.documentElement.classList.add('js');
       var m = document.querySelector('meta[name="theme-color"]');
-      if (m) m.setAttribute('content', t === 'dark' ? '#09090A' : '#F7F8FC');
+      if (m) m.setAttribute('content', t === 'dark' ? '#09090A' : '#F5F9FC');
     })();
   </script>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
@@ -44,7 +44,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/site.css?v=20261101-a">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261126-b">
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -91,10 +91,14 @@
     <!-- Hero -->
     <section class="hero" id="top">
       <div class="hero__copy">
-        <h1 class="hero__title" data-split>Tu operación de salud, clara y conectada.</h1>
-        <hr class="rule">
+        <h1 class="hero__title" data-split>Tu hospital y tu laboratorio, en un solo sistema.</h1>
+        <div class="pulse" aria-hidden="true">
+          <i class="pulse__line"></i>
+          <svg class="pulse__beat" viewBox="0 0 160 40" preserveAspectRatio="none"><path class="pulse__base" d="M0 20 H52 L60 20 L66 11 L72 20 L78 20 L84 1 L92 37 L98 20 L108 20 L116 15 L124 20 H160"/><path class="pulse__trace" d="M0 20 H52 L60 20 L66 11 L72 20 L78 20 L84 1 L92 37 L98 20 L108 20 L116 15 L124 20 H160"/></svg>
+          <i class="pulse__line"></i>
+        </div>
         <div class="hero__foot">
-          <p>Qontrol centraliza pacientes, órdenes, resultados, farmacia, inventario y caja en una sola plataforma modular para hospitales, sanatorios, laboratorios, clínicas y farmacias.</p>
+          <p>Admisión, internamiento, órdenes y resultados de laboratorio, consultas, recetas, farmacia y caja, conectados en una sola plataforma para hospitales, sanatorios, laboratorios clínicos, clínicas y farmacias.</p>
           <div class="hero__actions">
             <a class="btn btn--primary btn--lg" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Solicitar demo <span class="arrow" aria-hidden="true">→</span></a>
             <a class="btn btn--soft btn--lg" href="#plataforma">Cómo funciona</a>
@@ -103,7 +107,31 @@
       </div>
       <div class="hero__media media" aria-hidden="true">
         <canvas class="particles" id="networkCanvas"></canvas>
+        <div class="float float--a">
+          <div class="float__head"><small>LABORATORIO · OT-0847</small><em class="pill pill--ok">Validado</em></div>
+          <div class="float__row"><span>Hemoglobina</span><b>14.2 <i>g/dL</i></b></div>
+          <div class="float__ref"><span>Referencia 12 – 16</span><span class="float__bar"><i style="--v:55%"></i></span></div>
+        </div>
+        <div class="float float--b">
+          <div class="float__head"><small>INTERNAMIENTO · HAB. 204</small><em class="pill">Activo</em></div>
+          <div class="float__row"><span>Cargo a la cuenta</span><b>Rayos X · Tórax</b></div>
+        </div>
         <p class="hero__hint"></p>
+      </div>
+    </section>
+
+    <!-- Para quién es -->
+    <section class="for" aria-label="Para quién es Qontrol">
+      <div class="for__bar reveal">
+        <p class="for__lead">Hecho para</p>
+        <ul class="for__list">
+          <li><span class="for__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 5v14M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="2"/></svg></span>Hospitales y sanatorios</li>
+          <li><span class="for__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6M10 3v6.2L4.6 18.4A1.7 1.7 0 0 0 6.1 21h11.8a1.7 1.7 0 0 0 1.5-2.6L14 9.2V3"/><path d="M7.2 15h9.6"/></svg></span>Laboratorios clínicos</li>
+          <li><span class="for__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 3H4v6a5 5 0 0 0 10 0V3h-1"/><path d="M9 14v1.5a5.5 5.5 0 0 0 11 0V13"/><circle cx="20" cy="11" r="2"/></svg></span>Clínicas médicas</li>
+          <li><span class="for__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M6 11h3l1.5-3 2.5 6 1.5-3H18M9 21h6M12 17v4"/></svg></span>Centros de diagnóstico</li>
+          <li><span class="for__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/></svg></span>Farmacias</li>
+        </ul>
+        <p class="for__std">HL7 · ASTM · FEL</p>
       </div>
     </section>
 
@@ -115,24 +143,28 @@
       </div>
       <ul class="suite__grid reveal">
         <li><a class="prod" href="#areas" data-open-tab="0">
+          <span class="prod__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 5v14M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="2"/></svg></span>
           <small>Hospitales y sanatorios</small>
           <strong class="pw">Qontrol<b>Hosp</b></strong>
           <span class="prod__text">La operación completa: internamiento, enfermería, quirófano, imagen, laboratorio y farmacia, con laboratorio e imagen cargados a la cuenta del paciente.</span>
           <span class="prod__more">Ver QontrolHosp <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="1">
+          <span class="prod__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6M10 3v6.2L4.6 18.4A1.7 1.7 0 0 0 6.1 21h11.8a1.7 1.7 0 0 0 1.5-2.6L14 9.2V3"/><path d="M7.2 15h9.6"/></svg></span>
           <small>Laboratorios</small>
           <strong class="pw">Qontro<b>Lab</b></strong>
           <span class="prod__text">Órdenes, resultados validados y PDF, equipos conectados con Synapse, control de calidad y laboratorios referentes.</span>
           <span class="prod__more">Ver QontroLab <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="2">
+          <span class="prod__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 3H4v6a5 5 0 0 0 10 0V3h-1"/><path d="M9 14v1.5a5.5 5.5 0 0 0 11 0V13"/><circle cx="20" cy="11" r="2"/></svg></span>
           <small>Clínicas</small>
           <strong class="pw">Qontrol<b>Clinic</b></strong>
           <span class="prod__text">Consultas, historia clínica, agenda, recetas y constancias.</span>
           <span class="prod__more">Ver QontrolClinic <span class="arrow" aria-hidden="true">→</span></span>
         </a></li>
         <li><a class="prod" href="#areas" data-open-tab="3">
+          <span class="prod__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/></svg></span>
           <small>Farmacias</small>
           <strong class="pw">Qontrol<b>Farm</b></strong>
           <span class="prod__text">Punto de venta, caja, recetas, inventario por lote y vencimiento, traslados entre tus farmacias, compras y proveedores.</span>
@@ -517,7 +549,7 @@
     <div class="footer__top">
       <div class="footer__brand">
         <a class="brand brand--light" href="#top" aria-label="Qontrol, inicio"><img class="brand__q" src="assets/img/q.svg" alt="" width="22" height="22"><span>ontrol</span></a>
-        <p>Plataforma modular de gestión de salud.</p>
+        <p>Software para hospitales, laboratorios clínicos, clínicas y farmacias.</p>
       </div>
       <div class="footer__cols">
         <div><p class="footer__h">Soluciones</p><a href="#areas" data-open-tab="0">QontrolHosp</a><a href="#areas" data-open-tab="1">QontroLab</a><a href="#areas" data-open-tab="2">QontrolClinic</a><a href="#areas" data-open-tab="3">QontrolFarm</a><a href="#edge">QontroLab Edge</a></div><div><p class="footer__h">Producto</p><a href="#plataforma">Plataforma</a><a href="#beneficios">Beneficios</a><a href="#modulos">Módulos</a><a href="#implementacion">Implementación</a><a href="#preguntas">Preguntas</a></div>
@@ -535,6 +567,6 @@
     <a class="btn btn--primary" href="https://wa.me/50230012345?text=Hola%2C%20quiero%20una%20demo%20de%20Qontrol" target="_blank" rel="noreferrer">Ver este módulo en una demo <span class="arrow" aria-hidden="true">→</span></a>
   </dialog>
 
-  <script src="assets/js/site.js?v=20261101-a"></script>
+  <script src="assets/js/site.js?v=20261126-b"></script>
 </body>
 </html>
