@@ -38,7 +38,7 @@
       root.dataset.theme = theme;
       var dark = theme === 'dark';
       btn.setAttribute('aria-pressed', String(dark));
-      if (meta) meta.setAttribute('content', dark ? '#09090A' : '#F7F8FC');
+      if (meta) meta.setAttribute('content', dark ? '#09090A' : '#F5F9FC');
       readPalette();
       document.dispatchEvent(new CustomEvent('qontrol:theme'));
       requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.remove('theme-switching'); }); });
