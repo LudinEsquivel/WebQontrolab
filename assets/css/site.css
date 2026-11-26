@@ -749,13 +749,17 @@ main>section{padding:0 var(--gutter)}
 
 /* Pulso de ECG que reemplaza la línea bajo el titular */
 .pulse{display:flex;align-items:center;height:40px;margin:-8px 0 0}
-.pulse__line{flex:1 1 0;height:1px;background:var(--line)}
+.pulse__line{position:relative;overflow:hidden;flex:1 1 0;height:1px;background:var(--line)}
+.pulse__line::after{content:"";position:absolute;top:-1px;bottom:-1px;left:-45%;width:45%;background:linear-gradient(90deg,transparent,var(--accent) 70%,transparent);animation:sweepL 4.2s linear infinite}
+.pulse__line:last-child::after{left:-30%;width:30%;animation-name:sweepR}
+@keyframes sweepL{0%{left:-45%}24%,100%{left:100%}}
+@keyframes sweepR{0%,52%{left:-30%}100%{left:100%}}
 .pulse__line:first-child{flex:0 0 18%}
 .pulse__beat{flex:0 0 160px;width:160px;height:40px;overflow:visible}
 .pulse__beat path{fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .pulse__base{stroke:var(--line)}
-.pulse__trace{stroke:var(--accent);stroke-dasharray:46 400;stroke-dashoffset:46;animation:trace 3.2s cubic-bezier(.45,0,.25,1) infinite}
-@keyframes trace{0%{stroke-dashoffset:46}70%,100%{stroke-dashoffset:-260}}
+.pulse__trace{stroke:var(--accent);stroke-dasharray:46 400;stroke-dashoffset:46;animation:trace 4.2s linear infinite}
+@keyframes trace{0%,20%{stroke-dashoffset:46}56%,100%{stroke-dashoffset:-260}}
 
 /* Tarjetas clínicas sobre el globo */
 .hero__media{overflow:visible}
@@ -809,5 +813,6 @@ main>section{padding:0 var(--gutter)}
 }
 @media (prefers-reduced-motion:reduce){
   .pulse__trace{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+  .pulse__line::after{animation:none;display:none}
   .float{animation:none}
 }
