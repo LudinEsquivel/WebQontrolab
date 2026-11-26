@@ -748,18 +748,15 @@ main>section{padding:0 var(--gutter)}
 .hero__title{max-width:12.5ch;font-size:clamp(44px,5.6vw,86px)}
 
 /* Pulso de ECG que reemplaza la línea bajo el titular */
-.pulse{display:flex;align-items:center;height:40px;margin:-8px 0 0}
-.pulse__line{position:relative;overflow:hidden;flex:1 1 0;height:1px;background:var(--line)}
-.pulse__line::after{content:"";position:absolute;top:-1px;bottom:-1px;left:-45%;width:45%;background:linear-gradient(90deg,transparent,var(--accent) 70%,transparent);animation:sweepL 4.2s linear infinite}
-.pulse__line:last-child::after{left:-30%;width:30%;animation-name:sweepR}
-@keyframes sweepL{0%{left:-45%}24%,100%{left:100%}}
-@keyframes sweepR{0%,52%{left:-30%}100%{left:100%}}
-.pulse__line:first-child{flex:0 0 18%}
-.pulse__beat{flex:0 0 160px;width:160px;height:40px;overflow:visible}
-.pulse__beat path{fill:none;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.pulse__base{stroke:var(--line)}
-.pulse__trace{stroke:var(--accent);stroke-dasharray:46 400;stroke-dashoffset:46;animation:trace 4.2s linear infinite}
-@keyframes trace{0%,20%{stroke-dashoffset:46}56%,100%{stroke-dashoffset:-260}}
+.pulse{height:40px;margin:-8px 0 0}
+.pulse__svg{display:block;width:100%;height:40px;overflow:visible}
+.pulse__svg path{fill:none;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.pulse__base{stroke:var(--line);stroke-width:1.25}
+.pulse__trace,.pulse__glow{stroke:var(--accent);stroke-dasharray:0 100000;opacity:0}
+.pulse__trace{stroke-width:1.6}
+.pulse__glow{stroke-width:5;filter:blur(3px)}
+.pulse.is-live .pulse__trace{opacity:1}
+.pulse.is-live .pulse__glow{opacity:.35}
 
 /* Tarjetas clínicas sobre el globo */
 .hero__media{overflow:visible}
@@ -812,7 +809,5 @@ main>section{padding:0 var(--gutter)}
   .for__list li{font-size:14px;white-space:normal}
 }
 @media (prefers-reduced-motion:reduce){
-  .pulse__trace{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
-  .pulse__line::after{animation:none;display:none}
   .float{animation:none}
 }

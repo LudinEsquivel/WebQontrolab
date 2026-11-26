@@ -1231,9 +1231,37 @@
     update();
   }
 
+  /* ---------- Pulso de ECG bajo el titular ----------
+     Un solo trazo (línea + latido + línea) a la medida real del ancho,
+     así la luz lo recorre entero a velocidad constante, sin cortes. */
+  function initPulse() {
+    var host = $('.pulse'); if (!host || reduceMotion || !host.animate) return;
+    var svg = $('.pulse__svg', host), paths = $$('path', svg), anims = [];
+    // tramos (dx, dy) del latido
+    var BEAT = [[8,0],[6,-9],[6,9],[6,0],[6,-19],[8,36],[6,-17],[10,0],[8,-5],[8,5]];
+    function build() {
+      var w = Math.round(host.getBoundingClientRect().width); if (w < 120) return;
+      var x = Math.round(w * (w < 600 ? 0.3 : 0.24)), y = 20, d = 'M0 20 H' + x;
+      BEAT.forEach(function (s) { x += s[0]; y += s[1]; d += ' L' + x + ' ' + y; });
+      d += ' H' + w;
+      svg.setAttribute('viewBox', '0 0 ' + w + ' 40');
+      paths.forEach(function (p) { p.setAttribute('d', d); });
+      var len = paths[2].getTotalLength(), dash = Math.min(140, w * 0.22);
+      anims.forEach(function (a) { a.cancel(); }); anims = [];
+      paths.slice(1).forEach(function (p) {
+        p.style.strokeDasharray = dash + ' ' + (len + dash);
+        anims.push(p.animate([{ strokeDashoffset: dash }, { strokeDashoffset: -len }],
+          { duration: Math.max(2600, len / 0.26), iterations: Infinity, easing: 'linear' }));
+      });
+      host.classList.add('is-live');
+    }
+    var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(build, 150); });
+    build();
+  }
+
   function boot() {
     // Primero lo que hace visible el contenido; cada parte aislada para que un fallo no apague las demás.
-    [initReveal, initTheme, initNav, initHeroParticles, initMonitor, initScreenLive, initTabs, initStats,
+    [initReveal, initTheme, initNav, initPulse, initHeroParticles, initMonitor, initScreenLive, initTabs, initStats,
      initNetwork, initModules, initCalc, initFlow, initImpl].forEach(function (init) {
       try { init(); } catch (e) { if (window.console) console.error(e); }
     });
